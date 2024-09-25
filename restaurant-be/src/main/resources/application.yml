@@ -1,0 +1,20 @@
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nhahangne555@gmail.com
+    password: vhwoffeyqhxketit
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+thymeleaf:
+  prefix: classpath:/templates/
+  suffix: .html
+
+jwt:
+  secret: laptrinhandroid/nhahang555/63ktpm1/daihocthuyloi/2024
+  expiration: 3600000

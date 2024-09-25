@@ -1,0 +1,34 @@
+version: "3.8"
+name: restaurant
+services:
+  mysql:
+    image: 'bitnami/mysql:latest'
+    container_name: mysql
+    hostname: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: restaurant_555
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - restaurant
+
+  restaurant-be:
+    image: 'restaurant:0.0.1'
+    container_name: restaurant-be
+    hostname: restaurant-be
+    environment:
+      DB_HOST: mysql
+      BASE_URL: http://restaurant-be:8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - restaurant
+
+networks:
+  restaurant:
+    driver: bridge
