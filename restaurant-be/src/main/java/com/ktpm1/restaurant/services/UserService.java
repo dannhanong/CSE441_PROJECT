@@ -1,6 +1,7 @@
 package com.ktpm1.restaurant.services;
 
 import com.ktpm1.restaurant.dtos.request.ChangePasswordForm;
+import com.ktpm1.restaurant.dtos.request.UpdateProfileRequest;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
 import com.ktpm1.restaurant.models.User;
 import org.springframework.data.domain.Page;
@@ -20,4 +21,6 @@ public interface UserService extends UserDetailsService {
     User updateUser(User user, String username);
     boolean isEnableUser(String username);
     boolean verify(String verificationCode);
+    ResponseMessage updateProfile(UpdateProfileRequest updateProfileRequest, String username);
+    User getUser(String username);
 }

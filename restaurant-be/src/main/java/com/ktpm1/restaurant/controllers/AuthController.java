@@ -1,7 +1,9 @@
 package com.ktpm1.restaurant.controllers;
 
+import com.ktpm1.restaurant.dtos.request.ChangePasswordForm;
 import com.ktpm1.restaurant.dtos.request.LoginForm;
 import com.ktpm1.restaurant.dtos.request.SignupForm;
+import com.ktpm1.restaurant.dtos.request.UpdateProfileRequest;
 import com.ktpm1.restaurant.dtos.response.LoginResponse;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
 import com.ktpm1.restaurant.models.Role;
@@ -11,6 +13,7 @@ import com.ktpm1.restaurant.services.EmailService;
 import com.ktpm1.restaurant.security.jwt.JwtService;
 import com.ktpm1.restaurant.services.RoleService;
 import com.ktpm1.restaurant.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -170,4 +177,35 @@ public class AuthController {
                 .build(), verified ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
+    @GetMapping("/get/profile")
+    public ResponseEntity<?> getProfile(HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        String username = jwtService.extractUsername(token);
+        return ResponseEntity.ok(userService.getUser(username));
+    }
+
+    @PutMapping("/update-profile")
+    public ResponseEntity<?> updateProfile(@ModelAttribute UpdateProfileRequest updateProfileRequest,
+                                           HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        String username = jwtService.extractUsername(token);
+        return ResponseEntity.ok(userService.updateProfile(updateProfileRequest, username));
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordForm changePasswordForm,
+                                            HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        String username = jwtService.extractUsername(token);
+        return ResponseEntity.ok(userService.changePassword(username, changePasswordForm));
+    }
+
+
+    private String getTokenFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        throw new RuntimeException("JWT Token is missing");
+    }
 }
