@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "file_uploads")
+@jakarta.persistence.Table(name = "file_uploads")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
