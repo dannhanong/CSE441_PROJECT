@@ -61,4 +61,11 @@ public class TableServiceImpl implements TableService {
                 })
                 .orElse(null);
     }
+
+    @Override
+    public List<Table> getAvailableTables() {
+        List<Table> allTables = tableRepository.findAll();
+        allTables.removeIf(table -> !table.isAvailable());
+        return allTables;
+    }
 }

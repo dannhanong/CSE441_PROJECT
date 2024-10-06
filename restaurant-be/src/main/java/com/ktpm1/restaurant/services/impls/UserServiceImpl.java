@@ -1,11 +1,14 @@
 package com.ktpm1.restaurant.services.impls;
 
 import com.ktpm1.restaurant.dtos.request.ChangePasswordForm;
+import com.ktpm1.restaurant.dtos.request.UpdateProfileRequest;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
+import com.ktpm1.restaurant.models.FileUpload;
 import com.ktpm1.restaurant.models.Role;
 import com.ktpm1.restaurant.models.User;
 import com.ktpm1.restaurant.repositories.UserRepository;
 import com.ktpm1.restaurant.services.EmailService;
+import com.ktpm1.restaurant.services.FileUploadService;
 import com.ktpm1.restaurant.services.RoleService;
 import com.ktpm1.restaurant.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private RoleService roleService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private FileUploadService fileUploadService;
 
     @Override
     public User findByUsername(String username) {
@@ -124,6 +131,41 @@ public class UserServiceImpl implements UserService {
             enableUser(user.getId());
             return true;
         }
+    }
+
+    @Override
+    public ResponseMessage updateProfile(UpdateProfileRequest updateProfileRequest, String username) {
+        User currentUser = userRepository.findByUsername(username);
+        if (currentUser == null) {
+            return ResponseMessage.builder()
+                    .status(404)
+                    .message("user_not_found")
+                    .build();
+        }
+        currentUser.setName(updateProfileRequest.getName());
+        currentUser.setPhoneNumber(updateProfileRequest.getPhoneNumber());
+
+        MultipartFile avatar = updateProfileRequest.getAvatar();
+
+        if (avatar != null) {
+            try {
+                FileUpload fileUpload = fileUploadService.uploadFile(avatar);
+                currentUser.setAvatar(fileUpload);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        userRepository.save(currentUser);
+        return ResponseMessage.builder()
+                .status(200)
+                .message("update_profile_success")
+                .build();
+    }
+
+    @Override
+    public User getUser(String username) {
+        return userRepository.findByUsername(username);
     }
 
     private void enableUser(Long id) {

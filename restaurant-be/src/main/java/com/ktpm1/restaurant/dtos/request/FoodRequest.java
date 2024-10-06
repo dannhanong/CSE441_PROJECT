@@ -1,6 +1,5 @@
 package com.ktpm1.restaurant.dtos.request;
 
-import com.ktpm1.restaurant.models.FileUpload;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.multipart.MultipartFile;
