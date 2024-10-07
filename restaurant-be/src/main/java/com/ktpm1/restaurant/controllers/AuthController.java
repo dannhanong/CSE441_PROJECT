@@ -11,6 +11,7 @@ import com.ktpm1.restaurant.services.EmailService;
 import com.ktpm1.restaurant.security.jwt.JwtService;
 import com.ktpm1.restaurant.services.RoleService;
 import com.ktpm1.restaurant.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -170,4 +171,19 @@ public class AuthController {
                 .build(), verified ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
+    @GetMapping("/get/profile")
+    public ResponseEntity<User> getProfile(HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        String username = jwtService.extractUsername(token);
+        User user = userService.findByUsername(username);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    private String getTokenFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        throw new RuntimeException("JWT Token is missing");
+    }
 }

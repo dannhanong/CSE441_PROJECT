@@ -20,8 +20,15 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        Bundle bundle = getArguments();
+        String fullName = bundle != null ? bundle.getString("fullName") : "User";
+        HeaderFragment headerFragment = new HeaderFragment();
+        Bundle headerBundle = new Bundle();
+        headerBundle.putString("fullName", fullName);
+        headerFragment.setArguments(headerBundle);
+
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.headerContainer, new HeaderFragment())
+                .replace(R.id.headerContainer, headerFragment)
                 .commit();
 
         getChildFragmentManager().beginTransaction()
