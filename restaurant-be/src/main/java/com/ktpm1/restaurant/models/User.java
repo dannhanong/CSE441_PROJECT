@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,9 +50,7 @@ public class User {
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<Role> roles = new HashSet<>();
 
-    @OneToOne
-    @JoinColumn(name = "avatar_id", referencedColumnName = "id")
-    private FileUpload avatar;
+    private String avatarCode;
 
     public User(String name, String username, String encode, String email) {
         this.name = name;

@@ -52,6 +52,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, Endpoints.PRIVATE_DELETE_ENDPOINTS).authenticated()
                         .requestMatchers(HttpMethod.POST, Endpoints.PRIVATE_POST_ENDPOINTS).authenticated()
                         .requestMatchers(HttpMethod.GET, Endpoints.ADMIN_GET_ENDPOINTS).hasAuthority("ADMIN")
+                        .anyRequest().permitAll()
         );
         http.cors(cors -> {
             cors.configurationSource(request -> {

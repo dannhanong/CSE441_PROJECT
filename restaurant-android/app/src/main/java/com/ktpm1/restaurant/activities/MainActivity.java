@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, new HomeFragment())
+                    .replace(R.id.fragment_container, new HomeFragment())
                     .commit();
         }
 
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = new ProfileFragment();
                 }
 
-                getSupportFragmentManager().beginTransaction().replace(R.id.main, selectedFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
                 return true;
             }
         });

@@ -16,9 +16,12 @@ import java.util.List;
 public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder> {
 
     private List<MenuItem> menuItems;
+    private OnItemClickListener listener;
 
-    public MenuAdapter(List<MenuItem> menuItems) {
+    // Constructor nhận vào một interface listener để giao tiếp với Fragment
+    public MenuAdapter(List<MenuItem> menuItems, OnItemClickListener listener) {
         this.menuItems = menuItems;
+        this.listener = listener;
     }
 
     @NonNull
@@ -33,6 +36,9 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
         MenuItem menuItem = menuItems.get(position);
         holder.iconImageView.setImageResource(menuItem.getIconResId());
         holder.labelTextView.setText(menuItem.getLabel());
+
+        // Thiết lập sự kiện click cho từng item
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(position));
     }
 
     @Override
@@ -40,6 +46,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
         return menuItems.size();
     }
 
+    // ViewHolder của Menu
     public static class MenuViewHolder extends RecyclerView.ViewHolder {
         ImageView iconImageView;
         TextView labelTextView;
@@ -49,5 +56,10 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
             iconImageView = itemView.findViewById(R.id.menuItemIcon);
             labelTextView = itemView.findViewById(R.id.menuItemLabel);
         }
+    }
+
+    // Interface để truyền sự kiện click ra ngoài
+    public interface OnItemClickListener {
+        void onItemClick(int position);  // Phương thức callback
     }
 }

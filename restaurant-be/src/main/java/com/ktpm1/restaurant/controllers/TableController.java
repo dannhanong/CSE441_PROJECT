@@ -35,11 +35,6 @@ public class TableController {
         return ResponseEntity.ok(tableService.updateTable(table, id));
     }
 
-    @PutMapping("/admin/update/status/{id}")
-    public ResponseEntity<Table> updateTableStatus(@PathVariable Long id) {
-        return ResponseEntity.ok(tableService.updateTableStatus(id));
-    }
-
     @DeleteMapping("/admin/delete/{id}")
     public ResponseEntity<ResponseMessage> deleteTable(Long id) {
         return ResponseEntity.ok(tableService.deleteTable(id));

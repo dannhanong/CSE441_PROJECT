@@ -8,11 +8,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.MenuAdapter;
+import com.ktpm1.restaurant.fragments.PaymentFragment;
 import com.ktpm1.restaurant.models.MenuItem;
 
 import java.util.Arrays;
@@ -37,9 +39,31 @@ public class MenuFragment extends Fragment {
         );
 
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        menuAdapter = new MenuAdapter(menuItems);
+        menuAdapter = new MenuAdapter(menuItems, position -> {
+            switch (position) {
+                case 0:
+                    // Điều hướng đến Fragment Đồ ăn
+//                    openFragment(new FoodFragment());
+                    break;
+                case 1:
+                    // Điều hướng đến Fragment Bàn
+//                    openFragment(new TableFragment());
+                    break;
+                case 2:
+                    // Điều hướng đến Fragment Thanh toán
+                    openFragment(new PaymentFragment());
+                    break;
+            }
+        });
         recyclerView.setAdapter(menuAdapter);
 
         return view;
+    }
+
+    private void openFragment(Fragment fragment) {
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

@@ -13,5 +13,4 @@ public interface TableService {
     List<Table> getAllTable();
     ResponseMessage deleteTable(Long id);
     Table updateTableStatus(Long id);
-    List<Table> getAvailableTables();
 }

@@ -2,13 +2,12 @@ package com.ktpm1.restaurant.models;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 @Entity
-@Table(name = "file_uploads")
-@Data
+@Table(name = "files")
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileUpload {
@@ -19,5 +18,4 @@ public class FileUpload {
     private String fileType;
     private String fileCode;
     private Long size;
-    private boolean publicFile = false;
 }

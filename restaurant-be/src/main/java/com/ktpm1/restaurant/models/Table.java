@@ -21,7 +21,6 @@ public class Table {
     String tableNumber;
     int capacity;
     boolean available = true;
-    TableType tableType;
 
     @Override
     public boolean equals(Object o) {

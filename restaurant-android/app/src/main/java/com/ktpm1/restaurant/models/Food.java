@@ -1,5 +1,7 @@
 package com.ktpm1.restaurant.models;
 
+import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,4 +23,5 @@ public class Food {
     int price;
     Category category;
     String imageCode;
+    List<String> imageList;
 }

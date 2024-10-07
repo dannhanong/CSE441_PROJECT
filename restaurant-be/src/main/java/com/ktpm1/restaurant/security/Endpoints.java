@@ -28,8 +28,7 @@ public class Endpoints {
     };
 
     public static final String[] PRIVATE_GET_ENDPOINTS = {
-            "/orders/my-orders",
-            "/auth/get/profile"
+            "/auth/get/profile",
     };
 
     public static final String[] PUBLIC_PUT_ENDPOINTS = {
@@ -38,12 +37,11 @@ public class Endpoints {
 
     public static final String[] PRIVATE_PUT_ENDPOINTS = {
             "/auth/change-password",
-            "/auth/update-profile"
     };
 
     public static final String[] ADMIN_PUT_ENDPOINTS = {
             "/categories/admin/update/**",
-            "/foods/admin/**",
+            "/foods/admin/update/**",
             "/tables/admin/update/**",
     };
 
