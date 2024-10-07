@@ -151,6 +151,6 @@ public class FoodServiceImpl implements FoodService {
         } else if (now.isAfter(LocalTime.of(18, 0)) && now.isBefore(LocalTime.of(22, 0))) {
             return foodRepository.findAllBySessionTime(SessionTime.NIGHT);
         }
-        return null;
+        return foodRepository.findAllBySessionTime(SessionTime.MORNING);
     }
 }

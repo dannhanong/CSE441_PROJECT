@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        Intent intent = getIntent();
-        String fullName = intent.getStringExtra("fullName");
+//        Intent intent = getIntent();
+//        String fullName = intent.getStringExtra("fullName");
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -40,13 +40,13 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         if (savedInstanceState == null) {
-            HomeFragment homeFragment = new HomeFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("fullName", fullName);
-            homeFragment.setArguments(bundle);
+//            HomeFragment homeFragment = new HomeFragment();
+//            Bundle bundle = new Bundle();
+//            bundle.putString("fullName", fullName);
+//            homeFragment.setArguments(bundle);
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, homeFragment)
+                    .replace(R.id.fragment_container, new HomeFragment())
                     .commit();
         }
 

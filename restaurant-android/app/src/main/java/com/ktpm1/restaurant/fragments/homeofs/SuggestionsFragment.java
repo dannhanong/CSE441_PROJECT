@@ -51,7 +51,7 @@ public class SuggestionsFragment extends Fragment {
     private void fetchFoodList() {
         FoodApi foodApi = ApiClient.getClient().create(FoodApi.class);
 
-        Call<List<Food>> call = foodApi.getAllFoods("");
+        Call<List<Food>> call = foodApi.getAllFoodsBySession();
         call.enqueue(new Callback<List<Food>>() {
             @Override
             public void onResponse(Call<List<Food>> call, Response<List<Food>> response) {

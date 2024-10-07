@@ -13,4 +13,7 @@ public interface FoodApi {
     Call<List<Food>> getAllFoods(
             @Query("keyword") String keyword
     );
+
+    @GET("/foods/all/by-session")
+    Call<List<Food>> getAllFoodsBySession();
 }
