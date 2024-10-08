@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/foods")
 public class FoodController {
@@ -20,13 +22,13 @@ public class FoodController {
     private FoodService foodService;
 
     @GetMapping("/all")
-    public ResponseEntity<Page<Food>> getAllFoods(@RequestParam(defaultValue = "0") int page,
-                                                  @RequestParam(defaultValue = "10") int size,
-                                                  @RequestParam(defaultValue = "name") String sortBy,
-                                                  @RequestParam(defaultValue = "asc") String order,
-                                                  @RequestParam(defaultValue = "") String keyword) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortBy));
-        return ResponseEntity.ok(foodService.getAllFoods(pageable, keyword));
+    public ResponseEntity<List<Food>> getAllFoods(@RequestParam(defaultValue = "") String keyword) {
+        return ResponseEntity.ok(foodService.getAllFoods(keyword));
+    }
+
+    @GetMapping("/all/by-session")
+    public ResponseEntity<List<Food>> getAllFoodsBySessionTime() {
+        return ResponseEntity.ok(foodService.getAllFoodsBySessionTime());
     }
 
     @PostMapping("/admin/create")

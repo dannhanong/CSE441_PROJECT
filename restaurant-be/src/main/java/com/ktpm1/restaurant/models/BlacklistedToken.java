@@ -1,6 +1,7 @@
 package com.ktpm1.restaurant.models;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.*;
 
 import java.util.Date;
@@ -11,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "blacklisted_tokens")
+@jakarta.persistence.Table(name = "blacklisted_tokens")
 public class BlacklistedToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
