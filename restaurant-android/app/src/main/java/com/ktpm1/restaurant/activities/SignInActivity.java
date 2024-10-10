@@ -14,8 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
-import com.ktpm1.restaurant.dtos.RegisterRequest;
-import com.ktpm1.restaurant.dtos.responses.LoginResponse;
+import com.ktpm1.restaurant.dtos.requests.RegisterRequest;
 import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
 
 import java.util.HashSet;
@@ -25,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SignIn extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     private EditText fullNameInput, usernameInput, emailInput, passwordInput, confirmPasswordInput;
     private Button registerButton;
@@ -107,18 +106,18 @@ public class SignIn extends AppCompatActivity {
                 public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
                     if (response.isSuccessful()) {
                         ResponseMessage responseMessage = response.body();
-                        Toast.makeText(SignIn.this, responseMessage.getMessage(), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(SignIn.this, LoginActivity.class);
+                        Toast.makeText(SignInActivity.this, responseMessage.getMessage(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SignInActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
                     } else {
-                        Toast.makeText(SignIn.this, "Đăng ký không thành công", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignInActivity.this, "Đăng ký không thành công", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseMessage> call, Throwable throwable) {
-                    Toast.makeText(SignIn.this, "Đăng ký thất bại!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignInActivity.this, "Đăng ký thất bại!", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {

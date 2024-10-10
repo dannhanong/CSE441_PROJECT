@@ -1,11 +1,11 @@
 package com.ktpm1.restaurant.services.impls;
 
+import com.ktpm1.restaurant.dtos.events.EventCreateOrder;
 import com.ktpm1.restaurant.dtos.request.OrderRequest;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
-import com.ktpm1.restaurant.models.Order;
-import com.ktpm1.restaurant.models.OrderStatus;
-import com.ktpm1.restaurant.models.Table;
-import com.ktpm1.restaurant.models.User;
+import com.ktpm1.restaurant.dtos.response.VNPayMessage;
+import com.ktpm1.restaurant.models.*;
+import com.ktpm1.restaurant.repositories.CartRepository;
 import com.ktpm1.restaurant.repositories.OrderRepository;
 import com.ktpm1.restaurant.repositories.TableRepository;
 import com.ktpm1.restaurant.repositories.UserRepository;
@@ -13,6 +13,7 @@ import com.ktpm1.restaurant.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -26,22 +27,50 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository oderRepository;
     @Autowired
+    private CartRepository cartRepository;
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     private TableRepository tableRepository;
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
-    public Order createOrder(OrderRequest orderRequest, String username) {
+    public EventCreateOrder createOrder(OrderRequest orderRequest, String username) {
         User user = userRepository.findByUsername(username);
-        Order order = Order.builder()
-                .table(tableRepository.findById(orderRequest.getTableId()).orElse(null))
-                .orderTime(orderRequest.getOrderTime())
-                .endTime(orderRequest.getEndTime())
-                .totalPrice(100000)
-                .status(OrderStatus.SCHEDULED)
-                .user(user)
-                .build();
-        return oderRepository.save(order);
+        Cart cart = cartRepository.findByUser(user);
+
+        if (cart == null || cart.getCartItems().isEmpty()) {
+            return null;
+        }
+
+//        Order order = Order.builder()
+//                .user(user)
+//                .status(OrderStatus.CREATED)
+//                .table(tableRepository.findById(orderRequest.getTableId()).orElse(null))
+//                .orderTime(orderRequest.getOrderTime())
+//                .totalPrice(cart.getTotalPrice())
+//                .build();
+        Order order = new Order();
+        order.setUser(user);
+        order.setStatus(OrderStatus.CREATED);
+        order.setTable(tableRepository.findById(orderRequest.getTableId()).orElse(null));
+        order.setOrderTime(orderRequest.getOrderTime());
+        order.setTotalPrice(cart.getTotalPrice());
+
+        for (CartItem cartItem : cart.getCartItems()) {
+            OrderItem orderItem = OrderItem.builder()
+                    .food(cartItem.getFood())
+                    .quantity(cartItem.getQuantity())
+                    .itemPrice(cartItem.getPrice())
+                    .build();
+            order.getOrderItems().add(orderItem);
+        }
+
+//        kafkaTemplate.send("create-order", EventCreateOrder.builder().order(order).cart(cart).build());
+//        oderRepository.save(order);
+//        cartRepository.delete(cart);
+        return EventCreateOrder.builder().order(order).cart(cart).build();
     }
 
     @Override

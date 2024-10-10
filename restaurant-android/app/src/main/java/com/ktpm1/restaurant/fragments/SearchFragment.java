@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -37,6 +38,7 @@ public class SearchFragment extends Fragment {
     private List<Food> foodList;
     private EditText searchEditText;
     private ChipGroup chipGroupCategories;
+    private TextView tvNotFind;
 
     public SearchFragment() {
     }
@@ -45,9 +47,12 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+        tvNotFind = view.findViewById(R.id.tvNotFind);
         recyclerView = view.findViewById(R.id.recyclerViewSearchResults);
         searchEditText = view.findViewById(R.id.searchEditText);
         chipGroupCategories = view.findViewById(R.id.chipGroupCategories);
+
+        fetchCategories();
         foodList = new ArrayList<>();
 
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
@@ -63,9 +68,14 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() >= 0) {
+                if (s.length() > 0) {
+                    setChipsEnabled(false);
+                    searchFoods(s.toString());
+                } else if (s.length() == 0) {
+                    setChipsEnabled(true);
                     searchFoods(s.toString());
                 } else {
+                    setChipsEnabled(true);
                     foodList.clear();
                     foodAdapter.notifyDataSetChanged();
                 }
@@ -87,7 +97,10 @@ public class SearchFragment extends Fragment {
             public void onResponse(Call<List<Food>> call, Response<List<Food>> response) {
                 if (response.isSuccessful()) {
                     foodList = response.body();
-                    foodAdapter.setFoodList(foodList);
+                    if (foodList != null) {
+                        foodAdapter.setFoodList(foodList);
+                    }
+                    tvNotFind.setVisibility(foodList.size() == 0 ? View.VISIBLE : View.GONE);
                 }
             }
 
@@ -106,6 +119,7 @@ public class SearchFragment extends Fragment {
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
                 if (response.isSuccessful()) {
                     List<Category> categories = response.body();
+                    categories.add(0, Category.builder().name("Tất cả").build());
                     for (Category category : categories) {
                         Chip chip = new Chip(getContext());
                         chip.setText(category.getName());
@@ -113,7 +127,10 @@ public class SearchFragment extends Fragment {
 
                         chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                             if (isChecked) {
-                                searchEditText.setText(category.getName());
+                                if (category.getName().equals("Tất cả")) {
+                                    searchFoods("");
+                                } else
+                                    searchFoods(category.getName());
                             }
                         });
 
@@ -127,5 +144,12 @@ public class SearchFragment extends Fragment {
                 throwable.printStackTrace();
             }
         });
+    }
+
+    private void setChipsEnabled(boolean enabled) {
+        for (int i = 0; i < chipGroupCategories.getChildCount(); i++) {
+            Chip chip = (Chip) chipGroupCategories.getChildAt(i);
+            chip.setEnabled(enabled);
+        }
     }
 }

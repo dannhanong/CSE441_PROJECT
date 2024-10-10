@@ -1,10 +1,13 @@
 package com.ktpm1.restaurant.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -18,18 +21,17 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     User user;
-
     @ManyToOne
     @JoinColumn(name = "table_id")
     Table table;
-
-    Instant orderTime;
-    Instant endTime;
+    LocalDateTime orderTime;
     long totalPrice;
     OrderStatus status;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<OrderItem> orderItems = new HashSet<>();
 }
 

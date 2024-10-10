@@ -1,4 +1,4 @@
-package com.ktpm1.restaurant.dtos;
+package com.ktpm1.restaurant.dtos.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

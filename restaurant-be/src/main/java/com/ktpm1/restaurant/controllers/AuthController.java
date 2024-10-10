@@ -2,6 +2,7 @@ package com.ktpm1.restaurant.controllers;
 
 import com.ktpm1.restaurant.dtos.request.LoginForm;
 import com.ktpm1.restaurant.dtos.request.SignupForm;
+import com.ktpm1.restaurant.dtos.request.UpdateProfile;
 import com.ktpm1.restaurant.dtos.response.LoginResponse;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
 import com.ktpm1.restaurant.models.Role;
@@ -177,6 +178,14 @@ public class AuthController {
         String username = jwtService.extractUsername(token);
         User user = userService.findByUsername(username);
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PutMapping("/update/profile")
+    public ResponseEntity<ResponseMessage> updateProfile(@RequestBody UpdateProfile updateProfile,
+                                                         HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        String username = jwtService.extractUsername(token);
+        return new ResponseEntity<>(userService.updateProfile(updateProfile, username), HttpStatus.OK);
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

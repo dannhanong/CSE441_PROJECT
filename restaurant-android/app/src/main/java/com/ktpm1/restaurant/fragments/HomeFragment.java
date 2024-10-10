@@ -21,6 +21,7 @@ import java.util.Calendar;
 public class HomeFragment extends Fragment {
     TextView textViewSuggestion;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

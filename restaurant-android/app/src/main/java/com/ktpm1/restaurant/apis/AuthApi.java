@@ -1,7 +1,7 @@
 package com.ktpm1.restaurant.apis;
 
-import com.ktpm1.restaurant.dtos.LoginForm;
-import com.ktpm1.restaurant.dtos.RegisterRequest;
+import com.ktpm1.restaurant.dtos.requests.LoginForm;
+import com.ktpm1.restaurant.dtos.requests.RegisterRequest;
 import com.ktpm1.restaurant.dtos.responses.LoginResponse;
 import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
 import com.ktpm1.restaurant.models.User;

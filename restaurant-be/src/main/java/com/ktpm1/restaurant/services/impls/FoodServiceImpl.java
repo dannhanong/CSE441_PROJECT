@@ -1,17 +1,22 @@
 package com.ktpm1.restaurant.services.impls;
 
+import com.ktpm1.restaurant.dtos.events.EventHistoryFoodCreate;
 import com.ktpm1.restaurant.dtos.request.FoodRequest;
+import com.ktpm1.restaurant.dtos.response.FoodDetailAndRelated;
 import com.ktpm1.restaurant.models.FileUpload;
 import com.ktpm1.restaurant.models.Food;
 import com.ktpm1.restaurant.models.SessionTime;
+import com.ktpm1.restaurant.models.User;
 import com.ktpm1.restaurant.repositories.CategoryRepository;
 import com.ktpm1.restaurant.repositories.FoodRepository;
+import com.ktpm1.restaurant.repositories.UserRepository;
 import com.ktpm1.restaurant.services.FileUploadService;
 import com.ktpm1.restaurant.services.FoodService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +33,10 @@ public class FoodServiceImpl implements FoodService {
     private CategoryRepository categoryRepository;
     @Autowired
     private FileUploadService fileUploadService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     public Food createFood(FoodRequest foodRequest) {
@@ -80,11 +89,14 @@ public class FoodServiceImpl implements FoodService {
                     Food updatedFood = null;
 
                     if (file != null && !file.isEmpty()) {
-                        String fileCode = food1.getImageCode();
+                        String fileCode = null;
+                        fileCode = food1.getImageCode();
                         try {
                             FileUpload fileUpload = fileUploadService.uploadFile(file);
                             food1.setImageCode(fileUpload.getFileCode());
-                            fileUploadService.deleteFileByFileCode(fileCode);
+                            if (fileCode != null) {
+                                fileUploadService.deleteFileByFileCode(fileCode);
+                            }
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -152,5 +164,34 @@ public class FoodServiceImpl implements FoodService {
             return foodRepository.findAllBySessionTime(SessionTime.NIGHT);
         }
         return foodRepository.findAllBySessionTime(SessionTime.MORNING);
+    }
+
+    @Override
+    public FoodDetailAndRelated getFoodDetailAndRelated(Long id, String username) {
+        Food food = foodRepository.findById(id).orElse(null);
+        if (food == null) {
+            return null;
+        }
+
+        List<Food> relatedFoods = foodRepository.findByCategoryAndIdNot(food.getCategory(), id);
+        User user = userRepository.findByUsername(username);
+        kafkaTemplate.send("food-view", EventHistoryFoodCreate.builder().food(food).user(user).build());
+        return FoodDetailAndRelated.builder().food(food).relatedFoods(relatedFoods).build();
+    }
+
+    @Override
+    public FoodDetailAndRelated getFoodDetailAndRelated(Long id) {
+        Food food = foodRepository.findById(id).orElse(null);
+        if (food == null) {
+            return null;
+        }
+
+        List<Food> relatedFoods = foodRepository.findByCategoryAndIdNot(food.getCategory(), id);
+        return FoodDetailAndRelated.builder().food(food).relatedFoods(relatedFoods).build();
+    }
+
+    @Override
+    public Food getFoodById(Long id) {
+        return foodRepository.findById(id).orElse(null);
     }
 }
