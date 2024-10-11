@@ -50,7 +50,6 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartUpdateLi
 
         // Cập nhật tổng cộng
         updateTotalPrice();
-
         return view;
     }
 

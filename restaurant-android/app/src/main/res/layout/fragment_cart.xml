@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:text="1 bàn 1 ghế"
                 android:textSize="14sp"
-                android:textColor="@color/gray" />
+                android:textColor="@color/black" />
         </LinearLayout>
 
         <!-- Nút xóa chỗ ngồi -->
@@ -246,7 +246,7 @@
             android:layout_height="wrap_content"
             android:text="Tổng cộng: 102.000đ"
             android:textSize="18sp"
-            android:textColor="@color/black"
+            android:textColor="@color/gray"
             android:paddingTop="16dp" />
     </LinearLayout>
 

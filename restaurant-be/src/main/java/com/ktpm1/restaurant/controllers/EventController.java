@@ -21,14 +21,14 @@ public class EventController {
     @Autowired
     private OrderRepository orderRepository;
 
-    @KafkaListener(topics = "food-view")
-    public void listenFoodView(EventHistoryFoodCreate message) {
-        foodHistoryService.addFoodToHistory(message.getFood(), message.getUser());
-    }
-
-    @KafkaListener(topics = "create-order")
-    public void listenCreateOrder(EventCreateOrder message) {
-        orderRepository.save(message.getOrder());
-        cartRepository.delete(message.getCart());
-    }
+//    @KafkaListener(topics = "food-view")
+//    public void listenFoodView(EventHistoryFoodCreate message) {
+//        foodHistoryService.addFoodToHistory(message.getFood(), message.getUser());
+//    }
+//
+//    @KafkaListener(topics = "create-order")
+//    public void listenCreateOrder(EventCreateOrder message) {
+//        orderRepository.save(message.getOrder());
+//        cartRepository.delete(message.getCart());
+//    }
 }

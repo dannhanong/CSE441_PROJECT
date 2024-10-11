@@ -15,7 +15,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"http://192.168.1.13:8080\"")
+        buildConfigField("String", "BASE_URL", "\"http://192.168.1.16:8080\"")
     }
 
     // Bật tính năng BuildConfig
@@ -57,4 +57,5 @@ dependencies {
     runtimeOnly("androidx.viewpager2:viewpager2:1.1.0")
     implementation ("com.google.android.material:material:1.9.0")
     implementation ("me.relex:circleindicator:2.1.6")
+    implementation("me.relex:circleindicator:2.1.6")
 }

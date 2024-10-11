@@ -22,7 +22,6 @@ import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.dtos.responses.FoodDetailAndRelated;
 import com.ktpm1.restaurant.models.Food;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;

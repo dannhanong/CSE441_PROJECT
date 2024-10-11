@@ -1,9 +1,7 @@
-package com.ktpm1.restaurant.dtos.request;
+package com.ktpm1.restaurant.models;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -11,8 +9,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CartRequest {
-    Long foodId;
-    int quantity = 1;
-    List<Long> foodOptionIds;
+public class FoodOption {
+    Long id;
+    String name;
+    int price;
+    Food food;
 }
+

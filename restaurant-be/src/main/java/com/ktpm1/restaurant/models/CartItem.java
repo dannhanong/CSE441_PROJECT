@@ -6,6 +6,8 @@ import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @Table(name = "cart_items")
 @Getter
@@ -27,4 +29,11 @@ public class CartItem {
     Food food;
     int quantity;
     long price;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "cart_item_options",
+            joinColumns = @JoinColumn(name = "cart_item_id"),
+            inverseJoinColumns = @JoinColumn(name = "option_id")
+    )
+    List<FoodOption> options;
 }

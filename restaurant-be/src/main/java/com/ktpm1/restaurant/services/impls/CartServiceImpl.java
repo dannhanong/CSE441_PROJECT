@@ -2,19 +2,16 @@ package com.ktpm1.restaurant.services.impls;
 
 import com.ktpm1.restaurant.dtos.request.CartRequest;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
-import com.ktpm1.restaurant.models.Cart;
-import com.ktpm1.restaurant.models.CartItem;
-import com.ktpm1.restaurant.models.Food;
-import com.ktpm1.restaurant.models.User;
-import com.ktpm1.restaurant.repositories.CartItemRepository;
-import com.ktpm1.restaurant.repositories.CartRepository;
-import com.ktpm1.restaurant.repositories.FoodRepository;
-import com.ktpm1.restaurant.repositories.UserRepository;
+import com.ktpm1.restaurant.models.*;
+import com.ktpm1.restaurant.repositories.*;
 import com.ktpm1.restaurant.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class CartServiceImpl implements CartService {
@@ -28,6 +25,8 @@ public class CartServiceImpl implements CartService {
     private CartItemRepository cartItemRepository;
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
+    @Autowired
+    private FoodOptionRepository foodOptionRepository;
 
     @Override
     public Cart getCartByUser(String username) {
@@ -55,30 +54,43 @@ public class CartServiceImpl implements CartService {
 
         Food food = foodRepository.findById(cartRequest.getFoodId()).orElse(null);
         if (food != null) {
+            List<FoodOption> selectedOptions;
+            if (cartRequest.getFoodOptionIds() != null && !cartRequest.getFoodOptionIds().isEmpty()) {
+                selectedOptions = foodOptionRepository.findAllById(cartRequest.getFoodOptionIds());
+            } else {
+                selectedOptions = new ArrayList<>();
+            }
+
             CartItem cartItem = cart.getCartItems().stream()
-                    .filter(item -> item.getFood().getId().equals(cartRequest.getFoodId()))
+                    .filter(item -> item.getFood().getId().equals(cartRequest.getFoodId())
+                            && item.getOptions().containsAll(selectedOptions))
                     .findFirst()
                     .orElse(null);
+
+            int totalPrice = food.getPrice();
+            for (FoodOption option : selectedOptions) {
+                totalPrice += option.getPrice();
+            }
+
             if (cartItem != null) {
                 cartItem.setQuantity(cartRequest.getQuantity());
-                cartItem.setPrice(food.getPrice() * cartItem.getQuantity());
+                cartItem.setPrice(totalPrice * cartItem.getQuantity());
                 cartItemRepository.save(cartItem);
-                cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
-                cartRepository.save(cart);
-                return new ResponseMessage(200, "Thêm vào giỏ hàng thành công");
             } else {
                 cartItem = CartItem.builder()
                         .cart(cart)
                         .food(food)
                         .quantity(cartRequest.getQuantity())
-                        .price(food.getPrice() * cartRequest.getQuantity())
+                        .price(totalPrice * cartRequest.getQuantity())
+                        .options(selectedOptions)
                         .build();
                 cart.getCartItems().add(cartItem);
-                cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
-                cartRepository.save(cart);
-
-                return new ResponseMessage(200, "Thêm vào giỏ hàng thành công");
             }
+
+            cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
+            cartRepository.save(cart);
+
+            return new ResponseMessage(200, "Thêm vào giỏ hàng thành công");
         }
         return new ResponseMessage(400, "Món ăn không tồn tại");
     }
@@ -104,8 +116,9 @@ public class CartServiceImpl implements CartService {
             if (cartItem != null) {
                 cartItem.setQuantity(cartItem.getQuantity() + 1);
                 cartItem.setPrice(food.getPrice() * cartItem.getQuantity());
-                long totalPrice = cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum();
-                cart.setTotalPrice(totalPrice);
+                long totalPriceFood = cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum();
+                long totalPriceOption = cartItem.getOptions().stream().mapToLong(FoodOption::getPrice).sum();
+                cart.setTotalPrice(totalPriceFood + totalPriceOption);
                 cartItemRepository.save(cartItem);
                 cartRepository.save(cart);
                 return new ResponseMessage(200, "Thêm vào giỏ hàng thành công");
@@ -130,17 +143,37 @@ public class CartServiceImpl implements CartService {
         User user = userRepository.findByUsername(username);
         Cart cart = cartRepository.findByUser(user);
         Food food = foodRepository.findById(cartRequest.getFoodId()).orElse(null);
+
         if (food != null) {
+            List<FoodOption> selectedOptions;
+            if (cartRequest.getFoodOptionIds() != null && !cartRequest.getFoodOptionIds().isEmpty()) {
+                selectedOptions = foodOptionRepository.findAllById(cartRequest.getFoodOptionIds());
+            } else {
+                selectedOptions = new ArrayList<>();
+            }
+
+            System.out.println(cartRequest.getFoodId());
+
             CartItem cartItem = cart.getCartItems().stream()
-                    .filter(item -> item.getFood().getId().equals(cartRequest.getFoodId()))
+                    .filter(item -> item.getFood().getId().equals(cartRequest.getFoodId())) // Kiểm tra các tùy chọn
                     .findFirst()
                     .orElse(null);
+
             if (cartItem != null) {
+                // Cập nhật số lượng và giá dựa trên số lượng và các tùy chọn
+                int totalPrice = food.getPrice();
+                for (FoodOption option : selectedOptions) {
+                    totalPrice += option.getPrice();
+                }
                 cartItem.setQuantity(cartRequest.getQuantity());
-                cartItem.setPrice(cartRequest.getQuantity() * food.getPrice());
+                cartItem.setPrice(totalPrice * cartItem.getQuantity());
+                cartItem.setOptions(selectedOptions); // Cập nhật các tùy chọn
                 cartItemRepository.save(cartItem);
+
+                // Cập nhật tổng giá của giỏ hàng
                 cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
                 cartRepository.save(cart);
+
                 return new ResponseMessage(200, "Cập nhật giỏ hàng thành công");
             }
         }

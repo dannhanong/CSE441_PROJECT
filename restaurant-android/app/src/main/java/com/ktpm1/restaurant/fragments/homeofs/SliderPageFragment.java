@@ -39,10 +39,8 @@ public class SliderPageFragment extends Fragment {
         // Inflate layout cho fragment
         View view = inflater.inflate(R.layout.fragment_slider_page, container, false);
 
-        // Hiển thị hình ảnh trong ImageView
         ImageView imageView = view.findViewById(R.id.imageViewSliderPage);
         imageView.setImageResource(imageResId);
-
         return view;
     }
 }

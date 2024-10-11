@@ -175,7 +175,7 @@ public class FoodServiceImpl implements FoodService {
 
         List<Food> relatedFoods = foodRepository.findByCategoryAndIdNot(food.getCategory(), id);
         User user = userRepository.findByUsername(username);
-        kafkaTemplate.send("food-view", EventHistoryFoodCreate.builder().food(food).user(user).build());
+        // kafkaTemplate.send("food-view", EventHistoryFoodCreate.builder().food(food).user(user).build());
         return FoodDetailAndRelated.builder().food(food).relatedFoods(relatedFoods).build();
     }
 
