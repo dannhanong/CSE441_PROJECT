@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="titleTextView" type="id" />
+    <item name="foodImageView" type="id" />
+    <item name="foodNameTextView" type="id" />
+    <item name="foodPriceTextView" type="id" />
+    <item name="increaseButton" type="id" />
+    <item name="quantityTextView" type="id" />
+    <item name="decreaseButton" type="id" />
+    <item name="totalTextView" type="id" />
+    <item name="continueButton" type="id" />
+    <item name="foodSectionTitle" type="id" />
+    <item name="cartRecyclerView" type="id" />
+    <item name="deleteSeatButton" type="id" />
+</resources>

@@ -43,21 +43,20 @@ public class User {
     @Email(message = "Email không hợp lệ")
     @NotBlank(message = "Email không được để trống")
     private String email;
-    @Pattern(regexp = "(\\d{4}[-.]?\\d{3}[-.]?\\d{3})", message = "Số điện thoại phải bao gồm 10 chữ số và có thể có dấu chấm hoặc dấu gạch ngang giữa các phần tử")
+//    @Pattern(regexp = "(\\d{4}[-.]?\\d{3}[-.]?\\d{3})", message = "Số điện thoại phải bao gồm 10 chữ số và có thể có dấu chấm hoặc dấu gạch ngang giữa các phần tử")
     private String phoneNumber;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<Role> roles = new HashSet<>();
 
-    @OneToOne
-    @JoinColumn(name = "avatar_id", referencedColumnName = "id")
-    private FileUpload avatar;
+    private String avatarCode;
 
-    public User(String name, String username, String encode, String email) {
+    public User(String name, String username, String encode, String email, String phoneNumber) {
         this.name = name;
         this.username = username;
         this.password = encode;
         this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 }

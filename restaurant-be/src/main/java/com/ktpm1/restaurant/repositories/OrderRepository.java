@@ -17,4 +17,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByOrderTimeBetween(Instant start, Instant end);
     Page<Order> findAll(Pageable pageable);
     Page<Order> findByUser(Pageable pageable, User user);
+    List<Order> findByUser(User user);
 }

@@ -1,0 +1,103 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="500dp"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Product Title and Price -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/food_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mì tôm"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/food_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="42.000 VND"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:layout_marginStart="160dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/quantity_decrease"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/remove_circle"
+                android:background="@null"/>
+
+            <TextView
+                android:id="@+id/quantity_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:text="1" />
+
+            <ImageButton
+                android:id="@+id/quantity_increase"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/add_circle"
+                android:background="@null" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/extra_options_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Có thể thêm các lựa chọn khiến bạn hài lòng hơn"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Extra Options List -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/extra_options_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+<!--            <CheckBox-->
+<!--                android:id="@+id/extra_option_1"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Mì thêm - 12.000đ"/>-->
+        </LinearLayout>
+
+        <Button
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:id="@+id/addToCartButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_bg"
+            android:text="Thêm vào giỏ hàng"/>
+    </LinearLayout>
+</LinearLayout>

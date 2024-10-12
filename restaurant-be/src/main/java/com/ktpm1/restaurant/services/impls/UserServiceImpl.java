@@ -1,11 +1,14 @@
 package com.ktpm1.restaurant.services.impls;
 
 import com.ktpm1.restaurant.dtos.request.ChangePasswordForm;
+import com.ktpm1.restaurant.dtos.request.UpdateProfile;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
+import com.ktpm1.restaurant.models.FileUpload;
 import com.ktpm1.restaurant.models.Role;
 import com.ktpm1.restaurant.models.User;
 import com.ktpm1.restaurant.repositories.UserRepository;
 import com.ktpm1.restaurant.services.EmailService;
+import com.ktpm1.restaurant.services.FileUploadService;
 import com.ktpm1.restaurant.services.RoleService;
 import com.ktpm1.restaurant.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -31,6 +35,8 @@ public class UserServiceImpl implements UserService {
     private RoleService roleService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private FileUploadService fileUploadService;
 
     @Override
     public User findByUsername(String username) {
@@ -88,7 +94,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(currentUser);
             return ResponseMessage.builder()
                     .status(200)
-                    .message("change_password_success")
+                    .message("Đổi mật khẩu mới thành công")
                     .build();
         } else {
             return ResponseMessage.builder()
@@ -124,6 +130,47 @@ public class UserServiceImpl implements UserService {
             enableUser(user.getId());
             return true;
         }
+    }
+
+    @Override
+    public ResponseMessage updateProfile(UpdateProfile updateProfile, String username) {
+        User currentUser = userRepository.findByUsername(username);
+        if (currentUser == null) {
+            return ResponseMessage.builder()
+                    .status(404)
+                    .message("user_not_found")
+                    .build();
+        }
+        currentUser.setName(updateProfile.getName());
+        currentUser.setPhoneNumber(updateProfile.getPhone());
+
+        MultipartFile avatar = updateProfile.getAvatar();
+        if (avatar != null && !avatar.isEmpty()) {
+            try {
+                String avatarCode = currentUser.getAvatarCode();
+                FileUpload fileUpload = fileUploadService.uploadFile(avatar);
+                currentUser.setAvatarCode(fileUpload.getFileCode());
+                fileUploadService.deleteFileByFileCode(avatarCode);
+            } catch (Exception e) {
+                return ResponseMessage.builder()
+                        .status(500)
+                        .message("Lỗi khi cập nhật ảnh đại diện")
+                        .build();
+            }
+        }
+
+        userRepository.save(currentUser);
+        return ResponseMessage.builder()
+                .status(200)
+                .message("Cập nhật thông tin thành công")
+                .build();
+    }
+
+    @Override
+    public void updateVerificationCode(String username, String verificationCode) {
+        User user = userRepository.findByUsername(username);
+        user.setVerificationCode(verificationCode);
+        userRepository.save(user);
     }
 
     private void enableUser(Long id) {

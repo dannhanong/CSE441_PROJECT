@@ -3,7 +3,6 @@ package com.ktpm1.restaurant.services.impls;
 import com.ktpm1.restaurant.models.FileUpload;
 import com.ktpm1.restaurant.repositories.FileUploadRepository;
 import com.ktpm1.restaurant.services.FileUploadService;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -31,7 +30,6 @@ public class FileUploadServiceImpl implements FileUploadService {
     public FileUpload uploadFile(MultipartFile multipartFile) throws IOException {
         Path uploadDirectory = Paths.get("Files-Upload");
 
-        // Ensure the upload directory exists
         if (!Files.exists(uploadDirectory)) {
             Files.createDirectories(uploadDirectory);
         }

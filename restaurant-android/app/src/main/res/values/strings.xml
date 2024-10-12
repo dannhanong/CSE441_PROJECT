@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">restaurant-android</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="increase_quantity">Tăng số lượng</string>
+    <string name="decrease_quantity">Giảm số lượng</string>
+    <string name="add_to_cart">Thêm vào giỏ hàng</string>
+    <string name="food_name">Mì tôm</string>
+    <string name="add_options">Vui lòng chọn thêm từ 1 đến 2</string>
+</resources>

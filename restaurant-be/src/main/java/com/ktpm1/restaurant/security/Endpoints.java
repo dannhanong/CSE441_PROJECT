@@ -10,6 +10,7 @@ public class Endpoints {
     public static final String[] PRIVATE_POST_ENDPOINTS = {
             "/auth/logout",
             "/orders/create",
+            "/cart/**"
     };
 
     public static final String[] ADMIN_POST_ENDPOINTS = {
@@ -24,28 +25,33 @@ public class Endpoints {
             "/foods/**",
             "/tables/**",
             "/orders/create",
+            "/files/**",
     };
 
     public static final String[] PRIVATE_GET_ENDPOINTS = {
-            "/orders/my-orders",
+            "/auth/get/profile",
+            "/cart/**",
     };
 
     public static final String[] PUBLIC_PUT_ENDPOINTS = {
             "/auth/reset-password",
+            "/auth/update-verify-code",
     };
 
     public static final String[] PRIVATE_PUT_ENDPOINTS = {
             "/auth/change-password",
+            "/cart/**",
     };
 
     public static final String[] ADMIN_PUT_ENDPOINTS = {
             "/categories/admin/update/**",
-            "/foods/admin/**",
+            "/foods/admin/update/**",
             "/tables/admin/update/**",
     };
 
     public static final String[] PRIVATE_DELETE_ENDPOINTS = {
             "/auth/delete/hard",
+            "/cart/**",
     };
 
     public static final String[] ADMIN_DELETE_ENDPOINTS = {
