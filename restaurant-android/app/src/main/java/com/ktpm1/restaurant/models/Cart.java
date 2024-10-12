@@ -3,7 +3,8 @@ package com.ktpm1.restaurant.models;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -11,11 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CartItem {
+public class Cart {
     Long id;
-    Cart cart;
-    Food food;
-    int quantity;
-    long price;
-    List<FoodOption> options;
+    User user;
+    Set<CartItem> cartItems = new HashSet<>();
+    long totalPrice;
 }

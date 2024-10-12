@@ -1,11 +1,8 @@
 package com.ktpm1.restaurant.adapters;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,26 +10,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.models.CartItem;
+import com.ktpm1.restaurant.models.Food;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import androidx.appcompat.widget.AppCompatImageButton;
+import java.util.Set;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
-    private List<CartItem> cartItems;
-//    private OnCartUpdateListener cartUpdateListener;
+    private List<CartItem> cartItemList;
 
-//    public CartAdapter(List<CartItem> cartItems, Context context, OnCartUpdateListener cartUpdateListener) {
-//        this.cartItems = cartItems;
-//        this.context = context;
-//        this.cartUpdateListener = cartUpdateListener;
-//    }
-
-
-    public CartAdapter(List<CartItem> cartItems) {
-        this.cartItems = cartItems;
+    public CartAdapter(List<CartItem> cartItemList) {
+        this.cartItemList = cartItemList;
     }
 
     @NonNull
@@ -44,25 +36,25 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
-        CartItem item = cartItems.get(position);
-        holder.productName.setText(item.getProductName());
+        CartItem item = cartItemList.get(position);
+        Food food = item.getFood();
+        String fileCode = food.getImageCode();
+        String imageUrl = BuildConfig.BASE_URL + "/files/preview/" + fileCode;
+
+        holder.productName.setText(item.getFood().getName());
         holder.quantity.setText(String.valueOf(item.getQuantity()));
+        Glide.with(holder.itemView).load(imageUrl).into(holder.productImage);
 
         // Tính toán giá dựa trên số lượng
-        int totalPrice = item.getBasePrice() * item.getQuantity();
+        int totalPrice = (int) item.getPrice();
         holder.productPrice.setText(totalPrice + "đ");
 
         // Xử lý sự kiện tăng số lượng
         holder.btnIncrease.setOnClickListener(v -> {
             item.setQuantity(item.getQuantity() + 1);
             holder.quantity.setText(String.valueOf(item.getQuantity()));
-            int updatedPrice = item.getBasePrice() * item.getQuantity();
+            int updatedPrice = (int) item.getPrice() * item.getQuantity();
             holder.productPrice.setText(updatedPrice + "đ");
-
-            notifyItemChanged(position);
-//            if (cartUpdateListener != null) {
-//                cartUpdateListener.onCartUpdated();
-//            }
         });
 
         // Xử lý sự kiện giảm số lượng
@@ -70,48 +62,35 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             if (item.getQuantity() > 1) {
                 item.setQuantity(item.getQuantity() - 1);
                 holder.quantity.setText(String.valueOf(item.getQuantity()));
-                int updatedPrice = item.getBasePrice() * item.getQuantity();
+                int updatedPrice = (int) item.getPrice() * item.getQuantity();
                 holder.productPrice.setText(updatedPrice + "đ");
-
-                notifyItemChanged(position);
-//                if (cartUpdateListener != null) {
-//                    cartUpdateListener.onCartUpdated();
-//                }
             }
         });
     }
 
-    public void setCartItems(List<CartItem> cartItems) {
-        this.cartItems = cartItems;
-        notifyDataSetChanged();
+    public void setCartItems(List<CartItem> cartItemList) {
+        this.cartItemList = cartItemList;
+        notifyDataSetChanged(); // Cập nhật lại danh sách hiển thị
     }
 
     @Override
     public int getItemCount() {
-//        return (cartItems != null) ? cartItems.size() : 0;
-        return cartItems.size();
+        return cartItemList != null ? cartItemList.size() : 0;
     }
 
     public static class CartViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
         TextView productName, productPrice, quantity;
-        ImageButton btnIncrease, btnDecrease; // Thay đổi từ Button sang AppCompatImageButton
+        ImageButton btnIncrease, btnDecrease;
 
-//        @SuppressLint("WrongViewCast")
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
             productImage = itemView.findViewById(R.id.img_product);
             productName = itemView.findViewById(R.id.tv_product_name);
             productPrice = itemView.findViewById(R.id.tv_product_price);
             quantity = itemView.findViewById(R.id.tv_quantity);
-            btnIncrease = itemView.findViewById(R.id.btn_increase); // Đảm bảo rằng nút này là AppCompatImageButton trong XML
-            btnDecrease = itemView.findViewById(R.id.btn_decrease); // Đảm bảo rằng nút này là AppCompatImageButton trong XML
-
+            btnIncrease = itemView.findViewById(R.id.btn_increase);
+            btnDecrease = itemView.findViewById(R.id.btn_decrease);
         }
-    }
-
-    // Interface để cập nhật giỏ hàng từ CartActivity
-    public interface OnCartUpdateListener {
-        void onCartUpdated();
     }
 }

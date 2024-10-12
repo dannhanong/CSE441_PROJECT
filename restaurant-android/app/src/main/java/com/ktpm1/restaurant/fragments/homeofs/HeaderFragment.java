@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
-import com.ktpm1.restaurant.fragments.CartFragment;
 import com.ktpm1.restaurant.models.User;
 
 import retrofit2.Call;

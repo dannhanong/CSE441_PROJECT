@@ -33,7 +33,7 @@
         android:id="@+id/foodSectionTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="15dp"
+        android:paddingBottom="5dp"
         android:layout_marginStart="10dp"
         android:text="Đồ ăn"
         android:textSize="18sp"
@@ -43,7 +43,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_cart"
         android:layout_width="match_parent"
-        android:layout_height="108dp"
+        android:layout_height="200dp"
         android:padding="16dp" />
 
     <!-- TextView "Thêm đồ ăn" để thêm sản phẩm mới -->
@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:text="Thêm đồ ăn"
         android:textColor="@android:color/holo_blue_light"
         android:textSize="16sp"
@@ -118,7 +118,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/extraFeeSectionTitle"
@@ -145,7 +145,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="10dp">
 
         <TextView
             android:layout_width="0dp"
@@ -174,7 +174,7 @@
             android:text="Tổng cộng"
             android:textSize="16sp"
             android:textColor="@color/black"
-            android:paddingBottom="8dp" />
+            android:paddingBottom="5dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -201,7 +201,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingBottom="8dp">
+            android:paddingBottom="4dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -222,7 +222,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingBottom="8dp">
+            android:paddingBottom="4dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -247,7 +247,7 @@
             android:text="Tổng cộng: 102.000đ"
             android:textSize="18sp"
             android:textColor="@color/gray"
-            android:paddingTop="16dp" />
+            android:paddingTop="4dp" />
     </LinearLayout>
 
     <!-- Nút tiếp tục -->

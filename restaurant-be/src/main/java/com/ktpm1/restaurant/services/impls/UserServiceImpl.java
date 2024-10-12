@@ -166,6 +166,13 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Override
+    public void updateVerificationCode(String username, String verificationCode) {
+        User user = userRepository.findByUsername(username);
+        user.setVerificationCode(verificationCode);
+        userRepository.save(user);
+    }
+
     private void enableUser(Long id) {
         User user = userRepository.findById(id).get();
         user.setEnabled(true);

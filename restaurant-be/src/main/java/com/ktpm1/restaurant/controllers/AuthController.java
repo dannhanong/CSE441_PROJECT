@@ -69,7 +69,7 @@ public class AuthController {
 
         User user = new User(signupForm.getName(), signupForm.getUsername(),
                 passwordEncoder.encode(signupForm.getPassword()),
-                signupForm.getEmail());
+                signupForm.getEmail(), signupForm.getPhoneNumber());
         Set<String> strRoles = signupForm.getRoles();
         Set<Role> roles = new HashSet<>();
         if (strRoles == null){
@@ -103,7 +103,7 @@ public class AuthController {
                         .build(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            emailService.sendVerificationEmail(savedUser);
+//            emailService.sendVerificationEmail(savedUser);
             return new ResponseEntity<>(ResponseMessage.builder()
                     .status(HttpStatus.CREATED.value())
                     .message("createSuccess")
@@ -162,8 +162,18 @@ public class AuthController {
                 .build(), HttpStatus.OK);
     }
 
+    @PutMapping("/update-verify-code")
+    public ResponseEntity<ResponseMessage> updateVerificationCode(@RequestParam("username") String username,
+                                                    @RequestParam("code") String code) {
+        userService.updateVerificationCode(username, code);
+        return new ResponseEntity<>(ResponseMessage.builder()
+                .status(HttpStatus.OK.value())
+                .message("update_success")
+                .build(), HttpStatus.OK);
+    }
+
     @GetMapping("/verify")
-    public ResponseEntity<?> verifyUser(@RequestParam("code") String code){
+    public ResponseEntity<ResponseMessage> verifyUser(@RequestParam("code") String code){
         boolean verified = userService.verify(code);
         String message = verified ? "Your account has been verified. You can now login." : "Verification failed. Please contact the administrator.";
         return new ResponseEntity<>(ResponseMessage.builder()

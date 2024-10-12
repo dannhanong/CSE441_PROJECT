@@ -35,6 +35,7 @@ public class Endpoints {
 
     public static final String[] PUBLIC_PUT_ENDPOINTS = {
             "/auth/reset-password",
+            "/auth/update-verify-code",
     };
 
     public static final String[] PRIVATE_PUT_ENDPOINTS = {

@@ -6,6 +6,8 @@ import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "food_options")
 @Getter
@@ -24,5 +26,18 @@ public class FoodOption {
     @JoinColumn(name = "food_id")
     @JsonIgnore
     Food food;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FoodOption that = (FoodOption) o;
+        return id.equals(that.id); // So sánh dựa trên id
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
 

@@ -1,10 +1,13 @@
 package com.ktpm1.restaurant.fragments.homeofs;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,73 +17,68 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.CartAdapter;
+import com.ktpm1.restaurant.apis.CartApi;
+import com.ktpm1.restaurant.configs.ApiClient;
+import com.ktpm1.restaurant.models.Cart;
 import com.ktpm1.restaurant.models.CartItem;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CartFragment extends Fragment {
+
     private RecyclerView recyclerViewCart;
     private CartAdapter cartAdapter;
-    private List<CartItem> cartItems;
-
-    private TextView totalFoodPriceTextView;
-    private TextView grandTotalTextView;
+    private List<CartItem> cartItems;  // Sử dụng List thay vì Set
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
         recyclerViewCart = view.findViewById(R.id.recycler_view_cart);
         recyclerViewCart.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        totalFoodPriceTextView = view.findViewById(R.id.tv_total_food_price);
-        grandTotalTextView = view.findViewById(R.id.tv_grand_total);
-
-        // Khởi tạo danh sách sản phẩm
         cartItems = new ArrayList<>();
-        cartItems.add(new CartItem("Mì tôm", "30000", 3));
-        cartItems.add(new CartItem("Mì tôm", "30000", 3));
-        cartItems.add(new CartItem("Mì tôm", "30000", 3));// Sử dụng giá dưới dạng chuỗi số không có ký tự "đ"
 
-        // Khởi tạo adapter và truyền vào listener để nhận cập nhật giỏ hàng
         cartAdapter = new CartAdapter(cartItems);
-        cartAdapter.setCartItems(cartItems);
         recyclerViewCart.setAdapter(cartAdapter);
 
-        // Cập nhật tổng cộng
-        updateTotalPrice();
+        getCart();
+
         return view;
     }
 
-//    @Override
-//    public void onCartUpdated() {
-//        // Khi giỏ hàng được cập nhật từ CartAdapter, sẽ gọi hàm này để cập nhật tổng tiền
-//        updateTotalPrice();
-//    }
+    private void getCart() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
+        CartApi cartApi = ApiClient.getClient().create(CartApi.class);
+        Call<Cart> call = cartApi.viewCart("Bearer " + token);
+        call.enqueue(new Callback<Cart>() {
+            @Override
+            public void onResponse(Call<Cart> call, Response<Cart> response) {
+                if (response.isSuccessful()) {
+                    Cart cart = response.body();
+                    Set<CartItem> cartItemSet = cart.getCartItems();  // API trả về Set<CartItem>
+                    List<CartItem> cartItemList = new ArrayList<>(cartItemSet);
 
-    private void updateTotalPrice() {
-        int totalFoodPrice = 0;
+                    Toast.makeText(getContext(), "Cart size: " + cartItemList.size(), Toast.LENGTH_SHORT).show();
 
-        for (CartItem item : cartItems) {
-            try {
-                int basePrice = item.getBasePrice(); // Sử dụng getBasePrice() đã được sửa của CartItem
-                totalFoodPrice += basePrice * item.getQuantity();
-            } catch (NumberFormatException e) {
-                e.printStackTrace(); // Ghi lại lỗi nếu gặp phải vấn đề khi chuyển đổi giá trị
+                    cartItems.clear();
+                    cartItems.addAll(cartItemList);  // Cập nhật List với các phần tử từ API
+                    cartAdapter.setCartItems(cartItems);  // Cập nhật adapter
+                }
             }
-        }
 
-        // Cập nhật lại tổng tiền trên giao diện
-        totalFoodPriceTextView.setText(totalFoodPrice + "đ");
-
-        // Giá trị phụ phí
-        int flowerPrice = 12000;  // Ví dụ giá trị của phụ phí (lọ hoa)
-        int totalPrice = totalFoodPrice + flowerPrice;
-
-        // Cập nhật tổng cộng
-        grandTotalTextView.setText("Tổng cộng: " + totalPrice + "đ");
+            @Override
+            public void onFailure(Call<Cart> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 }

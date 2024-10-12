@@ -22,4 +22,5 @@ public interface UserService extends UserDetailsService {
     boolean isEnableUser(String username);
     boolean verify(String verificationCode);
     ResponseMessage updateProfile(UpdateProfile updateProfile, String username);
+    void updateVerificationCode(String username, String verificationCode);
 }
