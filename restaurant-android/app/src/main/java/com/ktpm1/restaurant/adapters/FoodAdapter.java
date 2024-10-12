@@ -35,7 +35,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         Food food = foodList.get(position);
         String fileCode = food.getImageCode();
         String imageUrl = BuildConfig.BASE_URL + "/files/preview/" + fileCode;
-
+//        String imageUrl = "http://localhost:8080/files/preview/" + fileCode;
         holder.tvFoodName.setText(food.getName());
         holder.tvFoodPrice.setText(food.getPrice() + " VNĐ");
         Glide.with(holder.itemView).load(imageUrl).into(holder.imgFood);

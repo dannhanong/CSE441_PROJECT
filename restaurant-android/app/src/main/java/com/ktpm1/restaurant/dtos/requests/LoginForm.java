@@ -10,4 +10,5 @@ import lombok.*;
 public class LoginForm {
     private String username;
     private String password;
+//    debounce
 }

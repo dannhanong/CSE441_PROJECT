@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,19 +22,23 @@ import androidx.appcompat.widget.AppCompatImageButton;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
     private List<CartItem> cartItems;
-    private Context context;
-    private OnCartUpdateListener cartUpdateListener;
+//    private OnCartUpdateListener cartUpdateListener;
 
-    public CartAdapter(List<CartItem> cartItems, Context context, OnCartUpdateListener cartUpdateListener) {
+//    public CartAdapter(List<CartItem> cartItems, Context context, OnCartUpdateListener cartUpdateListener) {
+//        this.cartItems = cartItems;
+//        this.context = context;
+//        this.cartUpdateListener = cartUpdateListener;
+//    }
+
+
+    public CartAdapter(List<CartItem> cartItems) {
         this.cartItems = cartItems;
-        this.context = context;
-        this.cartUpdateListener = cartUpdateListener;
     }
 
     @NonNull
     @Override
     public CartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_cart, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cart, parent, false);
         return new CartViewHolder(view);
     }
 
@@ -55,9 +60,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             holder.productPrice.setText(updatedPrice + "đ");
 
             notifyItemChanged(position);
-            if (cartUpdateListener != null) {
-                cartUpdateListener.onCartUpdated();
-            }
+//            if (cartUpdateListener != null) {
+//                cartUpdateListener.onCartUpdated();
+//            }
         });
 
         // Xử lý sự kiện giảm số lượng
@@ -69,25 +74,30 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 holder.productPrice.setText(updatedPrice + "đ");
 
                 notifyItemChanged(position);
-                if (cartUpdateListener != null) {
-                    cartUpdateListener.onCartUpdated();
-                }
+//                if (cartUpdateListener != null) {
+//                    cartUpdateListener.onCartUpdated();
+//                }
             }
         });
     }
 
+    public void setCartItems(List<CartItem> cartItems) {
+        this.cartItems = cartItems;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
-        return (cartItems != null) ? cartItems.size() : 0;
+//        return (cartItems != null) ? cartItems.size() : 0;
+        return cartItems.size();
     }
 
     public static class CartViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
         TextView productName, productPrice, quantity;
-        AppCompatImageButton btnIncrease, btnDecrease; // Thay đổi từ Button sang AppCompatImageButton
+        ImageButton btnIncrease, btnDecrease; // Thay đổi từ Button sang AppCompatImageButton
 
-
-        @SuppressLint("WrongViewCast")
+//        @SuppressLint("WrongViewCast")
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
             productImage = itemView.findViewById(R.id.img_product);

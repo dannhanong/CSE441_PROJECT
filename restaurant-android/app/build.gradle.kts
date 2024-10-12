@@ -1,5 +1,7 @@
 plugins {
-    alias(libs.plugins.android.application)
+//    alias(libs.plugins.android.application)
+    id("com.android.application")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -15,7 +17,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"http://192.168.1.16:8080\"")
+        buildConfigField("String", "BASE_URL", "\"http://192.168.1.2:8080\"")
     }
 
     // Bật tính năng BuildConfig
@@ -45,6 +47,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.firebase.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -58,4 +61,6 @@ dependencies {
     implementation ("com.google.android.material:material:1.9.0")
     implementation ("me.relex:circleindicator:2.1.6")
     implementation("me.relex:circleindicator:2.1.6")
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }

@@ -19,8 +19,7 @@ import com.ktpm1.restaurant.models.CartItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CartFragment extends Fragment implements CartAdapter.OnCartUpdateListener {
-
+public class CartFragment extends Fragment {
     private RecyclerView recyclerViewCart;
     private CartAdapter cartAdapter;
     private List<CartItem> cartItems;
@@ -42,10 +41,13 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartUpdateLi
 
         // Khởi tạo danh sách sản phẩm
         cartItems = new ArrayList<>();
-        cartItems.add(new CartItem("Mì tôm", "30000", 3)); // Sử dụng giá dưới dạng chuỗi số không có ký tự "đ"
+        cartItems.add(new CartItem("Mì tôm", "30000", 3));
+        cartItems.add(new CartItem("Mì tôm", "30000", 3));
+        cartItems.add(new CartItem("Mì tôm", "30000", 3));// Sử dụng giá dưới dạng chuỗi số không có ký tự "đ"
 
         // Khởi tạo adapter và truyền vào listener để nhận cập nhật giỏ hàng
-        cartAdapter = new CartAdapter(cartItems, getContext(), this);
+        cartAdapter = new CartAdapter(cartItems);
+        cartAdapter.setCartItems(cartItems);
         recyclerViewCart.setAdapter(cartAdapter);
 
         // Cập nhật tổng cộng
@@ -53,11 +55,11 @@ public class CartFragment extends Fragment implements CartAdapter.OnCartUpdateLi
         return view;
     }
 
-    @Override
-    public void onCartUpdated() {
-        // Khi giỏ hàng được cập nhật từ CartAdapter, sẽ gọi hàm này để cập nhật tổng tiền
-        updateTotalPrice();
-    }
+//    @Override
+//    public void onCartUpdated() {
+//        // Khi giỏ hàng được cập nhật từ CartAdapter, sẽ gọi hàm này để cập nhật tổng tiền
+//        updateTotalPrice();
+//    }
 
     private void updateTotalPrice() {
         int totalFoodPrice = 0;
