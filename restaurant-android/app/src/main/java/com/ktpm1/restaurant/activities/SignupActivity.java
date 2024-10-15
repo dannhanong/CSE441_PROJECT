@@ -25,6 +25,7 @@ import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.dtos.requests.RegisterRequest;
 import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
+import com.ktpm1.restaurant.models.User;
 
 import java.util.ArrayList;
 
@@ -36,7 +37,7 @@ public class SignupActivity extends AppCompatActivity {
     private EditText fullNameInput, usernameInput, emailInput, phoneInput, passwordInput, confirmPasswordInput;
     private Button registerButton;
     private FirebaseAuth mAuth;
-    private String otp = "151024", phoneNumberToVerify;
+    private String otp = "", phoneNumberToVerify="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,19 +110,17 @@ public class SignupActivity extends AppCompatActivity {
             RegisterRequest registerRequest = new RegisterRequest(fullName, username, password, confirmPassword, email, phoneNumber);
 
             AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
-            Call<ResponseMessage> call = authApi.signup(registerRequest);
+            Call<User> call = authApi.signup(registerRequest);
 
-            call.enqueue(new Callback<ResponseMessage>() {
+            call.enqueue(new Callback<User>() {
                 @Override
-                public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
+                public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful()) {
-                        ResponseMessage responseMessage = response.body();
-                        Toast.makeText(SignupActivity.this, responseMessage.getMessage(), Toast.LENGTH_SHORT).show();
-
+                        User user = response.body();
                         phoneNumberToVerify = phoneNumber;
-
+                        otp = user.getVerificationCode();
                         if (ContextCompat.checkSelfPermission(SignupActivity.this, android.Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
-                            sendOtp(); // Gửi OTP trước khi chuyển màn hình
+                            sendOtp();
                             Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
@@ -134,7 +133,7 @@ public class SignupActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<ResponseMessage> call, Throwable throwable) {
+                public void onFailure(Call<User> call, Throwable throwable) {
                     Toast.makeText(SignupActivity.this, "Đăng ký thất bại!", Toast.LENGTH_SHORT).show();
                 }
             });

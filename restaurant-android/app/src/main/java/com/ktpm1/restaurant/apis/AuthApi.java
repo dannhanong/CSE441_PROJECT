@@ -19,7 +19,7 @@ public interface AuthApi {
     Call<LoginResponse> login(@Body LoginForm loginForm);
 
     @POST("auth/signup")
-    Call<ResponseMessage> signup(@Body RegisterRequest registerRequest);
+    Call<User> signup(@Body RegisterRequest registerRequest);
 
     @GET("/auth/get/profile")
     Call<User> getProfile(@Header("Authorization") String token);

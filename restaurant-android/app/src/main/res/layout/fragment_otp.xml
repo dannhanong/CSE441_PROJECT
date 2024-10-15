@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="150dp"
+        android:padding="16dp">
+
+
+        <!-- EditText để nhập OTP -->
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="16dp">
+
+            <!-- 6 ô để nhập mã OTP, mỗi ô chỉ chứa 1 ký tự -->
+            <EditText
+                android:id="@+id/otp_digit_1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:inputType="number"
+                android:maxLength="1" />
+
+            <EditText
+                android:id="@+id/otp_digit_2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:inputType="number"
+                android:maxLength="1" />
+
+            <EditText
+                android:id="@+id/otp_digit_3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:inputType="number"
+                android:maxLength="1" />
+
+            <EditText
+                android:id="@+id/otp_digit_4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:inputType="number"
+                android:maxLength="1" />
+
+            <EditText
+                android:id="@+id/otp_digit_5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:inputType="number"
+                android:maxLength="1" />
+
+            <EditText
+                android:id="@+id/otp_digit_6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:inputType="number"
+                android:maxLength="1" />
+
+        </LinearLayout>
+
+        <!-- Button để xác thực OTP -->
+        <Button
+            android:id="@+id/buttonVerifyOtp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Xác thực OTP"
+            android:layout_marginTop="20dp"/>
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
