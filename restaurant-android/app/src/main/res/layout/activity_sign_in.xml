@@ -34,7 +34,7 @@
       app:layout_constraintVertical_bias="0.063" />
 
   <EditText
-      android:id="@+id/username"
+      android:id="@+id/tv_username"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="196dp"
@@ -49,7 +49,7 @@
       app:layout_constraintTop_toTopOf="parent" />
 
   <EditText
-      android:id="@+id/email"
+      android:id="@+id/tv_email"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="300dp"
@@ -158,7 +158,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="Tài khoản"
-      app:layout_constraintBottom_toTopOf="@+id/username"
+      app:layout_constraintBottom_toTopOf="@+id/tv_username"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toStartOf="parent"
@@ -170,7 +170,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="Email"
-      app:layout_constraintBottom_toTopOf="@+id/email"
+      app:layout_constraintBottom_toTopOf="@+id/tv_email"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toStartOf="parent"

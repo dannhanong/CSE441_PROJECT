@@ -3,12 +3,10 @@ package com.ktpm1.restaurant.activities;
 
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.telephony.SmsManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,7 +22,6 @@ import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.dtos.requests.RegisterRequest;
-import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
 import com.ktpm1.restaurant.models.User;
 
 import java.util.ArrayList;
@@ -53,8 +50,8 @@ public class SignupActivity extends AppCompatActivity {
 
         // Ánh xạ các thành phần trong giao diện
         fullNameInput = findViewById(R.id.full_name);
-        usernameInput = findViewById(R.id.username);
-        emailInput = findViewById(R.id.email);
+        usernameInput = findViewById(R.id.tv_username);
+        emailInput = findViewById(R.id.tv_email);
         phoneInput = findViewById(R.id.phone);
         passwordInput = findViewById(R.id.password);
         confirmPasswordInput = findViewById(R.id.confirm_password);
@@ -121,7 +118,7 @@ public class SignupActivity extends AppCompatActivity {
                         otp = user.getVerificationCode();
                         if (ContextCompat.checkSelfPermission(SignupActivity.this, android.Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
                             sendOtp();
-                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                            Intent intent = new Intent(SignupActivity.this, OtpActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
