@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <ImageView
+        android:id="@+id/chef_image"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/chef_icon"
+        android:layout_gravity="center"
+        android:contentDescription="Chef Logo" />
+
+    <Button
+        android:id="@+id/register_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Đăng ký"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/register_button_bg"
+        android:backgroundTint="#4285F4"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Đăng nhập"
+        android:textColor="#4285F4"
+        android:backgroundTint="@android:color/transparent"
+        android:background="@drawable/btn_border"
+        android:layout_marginBottom="16dp" />
+</LinearLayout>
