@@ -17,7 +17,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"http://192.168.1.2:8080\"")
+        buildConfigField("String", "BASE_URL", "\"http://192.168.1.7:8080\"")
     }
 
     // Bật tính năng BuildConfig
@@ -63,4 +63,5 @@ dependencies {
     implementation("me.relex:circleindicator:2.1.6")
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
