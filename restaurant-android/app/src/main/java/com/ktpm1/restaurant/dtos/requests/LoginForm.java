@@ -1,4 +1,4 @@
-package com.ktpm1.restaurant.dtos;
+package com.ktpm1.restaurant.dtos.requests;
 
 import lombok.*;
 
@@ -10,4 +10,5 @@ import lombok.*;
 public class LoginForm {
     private String username;
     private String password;
+//    debounce
 }

@@ -2,6 +2,7 @@ package com.ktpm1.restaurant.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -28,4 +29,7 @@ public class Food {
     String imageCode;
     List<String> imageList;
     SessionTime sessionTime;
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonIgnore
+    List<FoodOption> options;
 }

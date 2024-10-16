@@ -2,6 +2,7 @@ package com.ktpm1.restaurant.controllers;
 
 import com.ktpm1.restaurant.dtos.request.LoginForm;
 import com.ktpm1.restaurant.dtos.request.SignupForm;
+import com.ktpm1.restaurant.dtos.request.UpdateProfile;
 import com.ktpm1.restaurant.dtos.response.LoginResponse;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
 import com.ktpm1.restaurant.models.Role;
@@ -68,7 +69,7 @@ public class AuthController {
 
         User user = new User(signupForm.getName(), signupForm.getUsername(),
                 passwordEncoder.encode(signupForm.getPassword()),
-                signupForm.getEmail());
+                signupForm.getEmail(), signupForm.getPhoneNumber());
         Set<String> strRoles = signupForm.getRoles();
         Set<Role> roles = new HashSet<>();
         if (strRoles == null){
@@ -102,7 +103,7 @@ public class AuthController {
                         .build(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            emailService.sendVerificationEmail(savedUser);
+//            emailService.sendVerificationEmail(savedUser);
             return new ResponseEntity<>(ResponseMessage.builder()
                     .status(HttpStatus.CREATED.value())
                     .message("createSuccess")
@@ -161,8 +162,18 @@ public class AuthController {
                 .build(), HttpStatus.OK);
     }
 
+    @PutMapping("/update-verify-code")
+    public ResponseEntity<ResponseMessage> updateVerificationCode(@RequestParam("username") String username,
+                                                    @RequestParam("code") String code) {
+        userService.updateVerificationCode(username, code);
+        return new ResponseEntity<>(ResponseMessage.builder()
+                .status(HttpStatus.OK.value())
+                .message("update_success")
+                .build(), HttpStatus.OK);
+    }
+
     @GetMapping("/verify")
-    public ResponseEntity<?> verifyUser(@RequestParam("code") String code){
+    public ResponseEntity<ResponseMessage> verifyUser(@RequestParam("code") String code){
         boolean verified = userService.verify(code);
         String message = verified ? "Your account has been verified. You can now login." : "Verification failed. Please contact the administrator.";
         return new ResponseEntity<>(ResponseMessage.builder()
@@ -177,6 +188,14 @@ public class AuthController {
         String username = jwtService.extractUsername(token);
         User user = userService.findByUsername(username);
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PutMapping("/update/profile")
+    public ResponseEntity<ResponseMessage> updateProfile(@RequestBody UpdateProfile updateProfile,
+                                                         HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        String username = jwtService.extractUsername(token);
+        return new ResponseEntity<>(userService.updateProfile(updateProfile, username), HttpStatus.OK);
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

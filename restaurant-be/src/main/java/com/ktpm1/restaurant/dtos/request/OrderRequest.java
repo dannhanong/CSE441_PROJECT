@@ -1,11 +1,10 @@
 package com.ktpm1.restaurant.dtos.request;
 
-import com.ktpm1.restaurant.models.OrderStatus;
-import jakarta.persistence.Entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,6 +13,5 @@ import java.time.Instant;
 @Builder
 public class OrderRequest {
     Long tableId;
-    Instant orderTime;
-    Instant endTime;
+    LocalDateTime orderTime;
 }

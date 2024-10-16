@@ -1,8 +1,10 @@
 package com.ktpm1.restaurant.fragments.homeofs;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +16,8 @@ import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.FoodAdapter;
 import com.ktpm1.restaurant.apis.FoodApi;
 import com.ktpm1.restaurant.configs.ApiClient;
+import com.ktpm1.restaurant.fragments.FoodDetailFragment;
+import com.ktpm1.restaurant.listeners.RecyclerTouchListener;
 import com.ktpm1.restaurant.models.Food;
 
 import java.util.ArrayList;
@@ -27,9 +31,25 @@ public class SuggestionsFragment extends Fragment {
     private RecyclerView recyclerView;
     private FoodAdapter foodAdapter;
     private List<Food> foodList = new ArrayList<>();
+    private OnFoodSelectedListener callback;
 
     public SuggestionsFragment() {
         // Required empty public constructor
+    }
+
+    public interface OnFoodSelectedListener {
+        void onFoodSelected(Long foodId);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFoodSelectedListener) {
+            callback = (OnFoodSelectedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFoodSelectedListener");
+        }
     }
 
     @Override
@@ -45,13 +65,26 @@ public class SuggestionsFragment extends Fragment {
 
         fetchFoodList();
 
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Food selectedFood = foodList.get(position);
+                callback.onFoodSelected(selectedFood.getId()); // Gọi hàm callback khi món ăn được chọn
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                // Xử lý sự kiện long click nếu cần
+            }
+        }));
+
         return view;
     }
 
     private void fetchFoodList() {
         FoodApi foodApi = ApiClient.getClient().create(FoodApi.class);
 
-        Call<List<Food>> call = foodApi.getAllFoodsBySession();
+        Call<List<Food>> call = foodApi.getAllFoods("");
         call.enqueue(new Callback<List<Food>>() {
             @Override
             public void onResponse(Call<List<Food>> call, Response<List<Food>> response) {

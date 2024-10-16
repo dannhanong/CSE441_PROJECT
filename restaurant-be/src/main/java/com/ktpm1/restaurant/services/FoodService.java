@@ -1,6 +1,7 @@
 package com.ktpm1.restaurant.services;
 
 import com.ktpm1.restaurant.dtos.request.FoodRequest;
+import com.ktpm1.restaurant.dtos.response.FoodDetailAndRelated;
 import com.ktpm1.restaurant.models.Food;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,4 +16,7 @@ public interface FoodService {
     Page<Food> getAllFoods(Pageable pageable, String keyword);
     List<Food> getAllFoods(String keyword);
     List<Food> getAllFoodsBySessionTime();
+    FoodDetailAndRelated getFoodDetailAndRelated(Long id, String username);
+    FoodDetailAndRelated getFoodDetailAndRelated(Long id);
+    Food getFoodById(Long id);
 }

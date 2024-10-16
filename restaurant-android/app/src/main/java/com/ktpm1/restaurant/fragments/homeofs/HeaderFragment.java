@@ -6,15 +6,18 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
+import com.ktpm1.restaurant.fragments.CartFragment;
 import com.ktpm1.restaurant.models.User;
 
 import retrofit2.Call;
@@ -23,6 +26,7 @@ import retrofit2.Response;
 
 public class HeaderFragment extends Fragment {
     private TextView textViewUserName;
+    private ImageView imgCart;
 
     public HeaderFragment() {
     }
@@ -33,6 +37,19 @@ public class HeaderFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_header, container, false);
         Bundle bundle = getArguments();
 //        String fullName = bundle != null ? bundle.getString("fullName") : "User";
+
+        imgCart = view.findViewById(R.id.imgCart);
+
+        imgCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = new CartFragment();
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
 
         textViewUserName = view.findViewById(R.id.textViewUserName);
         getUserInfo();

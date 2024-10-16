@@ -6,12 +6,13 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
-import com.ktpm1.restaurant.dtos.LoginForm;
+import com.ktpm1.restaurant.dtos.requests.LoginForm;
 import com.ktpm1.restaurant.dtos.responses.LoginResponse;
 import com.ktpm1.restaurant.models.User;
 
@@ -23,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername, etPassword;
     private Button btnLogin;
+    private TextView tvSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        tvSignUp = findViewById(R.id.tvSignUp);
 
         btnLogin.setOnClickListener(view -> {
             String username = etUsername.getText().toString();
@@ -39,6 +42,11 @@ public class LoginActivity extends AppCompatActivity {
 
             LoginForm loginForm = new LoginForm(username, password);
             login(loginForm);
+        });
+
+        tvSignUp.setOnClickListener(view -> {
+            Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+            startActivity(intent);
         });
     }
 

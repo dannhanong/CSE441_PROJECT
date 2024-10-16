@@ -1,10 +1,12 @@
 package com.ktpm1.restaurant.controllers;
 
 import com.ktpm1.restaurant.dtos.request.OrderRequest;
+import com.ktpm1.restaurant.dtos.response.VNPayMessage;
 import com.ktpm1.restaurant.models.Order;
 import com.ktpm1.restaurant.models.Table;
 import com.ktpm1.restaurant.security.jwt.JwtService;
 import com.ktpm1.restaurant.services.OrderService;
+import com.ktpm1.restaurant.services.impls.VNPayService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,8 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private VNPayService vnPayService;
 
     @GetMapping("/admin/all")
     public ResponseEntity<Page<Order>> getAllOrders(@RequestParam(defaultValue = "0") int page,
@@ -43,10 +47,16 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Order> createOrder(@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
+    public ResponseEntity<VNPayMessage> createOrder(@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
-        return ResponseEntity.ok(orderService.createOrder(orderRequest, username));
+
+        long totalPayment = orderService.createOrder(orderRequest, username).getOrder().getTotalPrice();
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        String vnpayUrl = vnPayService.createOrder((int) totalPayment, "Thanh toán đơn đặt món", baseUrl);
+
+        VNPayMessage VNPayMessage = new VNPayMessage("payment", vnpayUrl);
+        return ResponseEntity.ok(VNPayMessage);
     }
 
     @GetMapping("/my-orders")

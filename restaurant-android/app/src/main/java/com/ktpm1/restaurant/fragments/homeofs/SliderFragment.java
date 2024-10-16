@@ -22,6 +22,8 @@ import com.ktpm1.restaurant.adapters.SliderAdapter;
 import java.util.Arrays;
 import java.util.List;
 
+import me.relex.circleindicator.CircleIndicator3;
+
 public class SliderFragment extends Fragment {
 
     private ViewPager2 viewPager;
@@ -52,9 +54,13 @@ public class SliderFragment extends Fragment {
         recyclerView.setPadding(80, 0, 80, 0);
         recyclerView.setClipToPadding(false);
 
-        TabLayout tabLayout = view.findViewById(R.id.tabLayout);
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-        }).attach();
+        CircleIndicator3 tabLayout = view.findViewById(R.id.tabLayout);
+//        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+//        }).attach();
+
+        tabLayout.setViewPager(viewPager);
+        sliderAdapter.registerAdapterDataObserver(tabLayout.getAdapterDataObserver());
+        tabLayout.createIndicators(imageList.size(), 0);
 
         autoSlide();
 

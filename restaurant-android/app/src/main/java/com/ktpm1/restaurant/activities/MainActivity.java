@@ -11,15 +11,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ktpm1.restaurant.R;
+import com.ktpm1.restaurant.fragments.FoodDetailFragment;
 import com.ktpm1.restaurant.fragments.HomeFragment;
 import com.ktpm1.restaurant.fragments.ProfileFragment;
 import com.ktpm1.restaurant.fragments.RecentFragment;
 import com.ktpm1.restaurant.fragments.SearchFragment;
+import com.ktpm1.restaurant.fragments.homeofs.SuggestionsFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SuggestionsFragment.OnFoodSelectedListener{
     private BottomNavigationView bottomNavigationView;
 
     @Override
@@ -69,5 +72,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onFoodSelected(Long foodId) {
+        // Thay thế bằng FoodDetailFragment khi món ăn được chọn
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, new FoodDetailFragment(foodId));
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

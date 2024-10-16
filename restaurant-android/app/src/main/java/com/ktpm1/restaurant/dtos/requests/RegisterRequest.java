@@ -1,4 +1,4 @@
-package com.ktpm1.restaurant.dtos;
+package com.ktpm1.restaurant.dtos.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,5 +17,5 @@ public class RegisterRequest {
     private String password;
     private String rePassword;
     private String email;
-    private Set<String> roles;
+    private String phoneNumber;
 }
