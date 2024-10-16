@@ -1,7 +1,5 @@
 package com.ktpm1.restaurant.activities;
 
-
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -50,8 +48,8 @@ public class SignupActivity extends AppCompatActivity {
 
         // Ánh xạ các thành phần trong giao diện
         fullNameInput = findViewById(R.id.full_name);
-        usernameInput = findViewById(R.id.tv_username);
-        emailInput = findViewById(R.id.tv_email);
+        usernameInput = findViewById(R.id.username);
+        emailInput = findViewById(R.id.email);
         phoneInput = findViewById(R.id.phone);
         passwordInput = findViewById(R.id.password);
         confirmPasswordInput = findViewById(R.id.confirm_password);
@@ -60,12 +58,9 @@ public class SignupActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         // Xử lý sự kiện nút đăng ký
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (validateInputs()) {
-                    register();
-                }
+        registerButton.setOnClickListener(v -> {
+            if (validateInputs()) {
+                register();
             }
         });
     }
