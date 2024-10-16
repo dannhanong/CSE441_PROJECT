@@ -28,7 +28,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_profile, container, false);
-
+        TextView editProfileText = view.findViewById(R.id.txt_edit);
         ImageView profileImage = view.findViewById(R.id.profileImage);
         TextView username = view.findViewById(R.id.username);
         TextView email = view.findViewById(R.id.email);
@@ -39,7 +39,21 @@ public class ProfileFragment extends Fragment {
         editProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Chỉnh sửa profile", Toast.LENGTH_SHORT).show();
+                EditProfileFragment editProfileFragment = new EditProfileFragment();
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, editProfileFragment) // Change 'fragment_container' to your actual container ID
+                        .addToBackStack(null) // Add to back stack
+                        .commit();
+            }
+        });
+        editProfileText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditProfileFragment editProfileFragment = new EditProfileFragment();
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, editProfileFragment) // Change 'fragment_container' to your actual container ID
+                        .addToBackStack(null) // Add to back stack
+                        .commit();
             }
         });
 
@@ -74,7 +88,11 @@ public class ProfileFragment extends Fragment {
                         Toast.makeText(getActivity(), "Giỏ hàng của tôi", Toast.LENGTH_SHORT).show();
                         break;
                     case 2:
-                        Toast.makeText(getActivity(), "Đổi mật khẩu", Toast.LENGTH_SHORT).show();
+                        ChangePasswordFragment changePasswordFragment = new ChangePasswordFragment();
+                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, changePasswordFragment) // Change 'fragment_container' to your actual container ID
+                                .addToBackStack(null)
+                                .commit();
                         break;
                     case 3:
                         Toast.makeText(getActivity(), "Trợ giúp & Báo cáo", Toast.LENGTH_SHORT).show();
