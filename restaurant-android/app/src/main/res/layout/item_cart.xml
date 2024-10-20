@@ -41,7 +41,6 @@
                 android:text="30.000đ"
                 android:textColor="@color/gray"
                 android:textSize="14sp" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -49,7 +48,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal">
-
 
             <ImageButton
                 android:id="@+id/btn_decrease"
@@ -75,10 +73,16 @@
 
     </LinearLayout>
 
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#E0E0E0" />
+
+    <LinearLayout
+        android:id="@+id/ll_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    </LinearLayout>
 
 </LinearLayout>

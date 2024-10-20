@@ -39,20 +39,28 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/tv_empty_cart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Giỏ hàng trống"
+        android:textSize="18sp"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_cart"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="520dp"
         android:padding="16dp" />
 
     <!-- TextView "Thêm đồ ăn" để thêm sản phẩm mới -->
     <TextView
-        android:id="@+id/addFoodTextView"
+        android:id="@+id/tv_addMoreItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="2dp"
         android:text="Thêm đồ ăn"
         android:textColor="@android:color/holo_blue_light"
         android:textSize="16sp"
@@ -61,201 +69,77 @@
 
     <!-- Chỗ ngồi -->
 
-    <TextView
-        android:id="@+id/seatSectionTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:text="Chỗ ngồi"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+<!--    <TextView-->
+<!--        android:id="@+id/seatSectionTitle"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        android:text="Chỗ ngồi"-->
+<!--        android:textSize="18sp"-->
+<!--        android:textStyle="bold" />-->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="16dp">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:gravity="center_vertical"-->
+<!--        android:padding="16dp">-->
 
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@drawable/seat_image" />
+<!--        <ImageView-->
+<!--            android:layout_width="60dp"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:src="@drawable/seat_image" />-->
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
+<!--        <LinearLayout-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:orientation="vertical"-->
+<!--            android:layout_marginStart="16dp">-->
 
-            <TextView
-                android:id="@+id/tv_seat_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bàn làm việc"
-                android:textSize="16sp" />
+<!--            <TextView-->
+<!--                android:id="@+id/tv_seat_name"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Bàn làm việc"-->
+<!--                android:textSize="16sp" />-->
 
-            <TextView
-                android:id="@+id/tv_seat_details"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1 bàn 1 ghế"
-                android:textSize="14sp"
-                android:textColor="@color/black" />
-        </LinearLayout>
+<!--            <TextView-->
+<!--                android:id="@+id/tv_seat_details"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="1 bàn 1 ghế"-->
+<!--                android:textSize="14sp"-->
+<!--                android:textColor="@color/black" />-->
+<!--        </LinearLayout>-->
 
-        <!-- Nút xóa chỗ ngồi -->
-        <ImageView
-            android:id="@+id/btn_delete_seat"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_delete" />
-    </LinearLayout>
-
-    <!-- Phụ phí -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp">
-
-        <TextView
-            android:id="@+id/extraFeeSectionTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Phụ phí"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp" />
-
-        <TextView
-            android:id="@+id/addExtraFeeTextView3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Thêm"
-            android:textAlignment="viewEnd"
-            android:textColor="@android:color/holo_blue_light" />
-    </LinearLayout>
-
-    <!-- Danh sách phụ phí -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Phí VAT"
-            android:textSize="16sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="12.000đ"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-    <!-- Tổng cộng -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Tổng cộng"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:paddingBottom="5dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="8dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Đồ ăn"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_total_food_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="90.000đ"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="4dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Bàn"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_total_seat_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0đ"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="4dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Phí VAT"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_total_flower_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="12.000đ"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <!-- Tổng tiền cuối cùng -->
-        <TextView
-            android:id="@+id/tv_grand_total"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Tổng cộng: 102.000đ"
-            android:textSize="18sp"
-            android:textColor="@color/gray"
-            android:paddingTop="4dp" />
-    </LinearLayout>
+<!--        &lt;!&ndash; Nút xóa chỗ ngồi &ndash;&gt;-->
+<!--        <ImageView-->
+<!--            android:id="@+id/btn_delete_seat"-->
+<!--            android:layout_width="40dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:src="@drawable/ic_delete" />-->
+<!--    </LinearLayout>-->
 
     <!-- Nút tiếp tục -->
-    <Button
-        android:id="@+id/btn_continue"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tiếp tục"
-        android:backgroundTint="@color/blue" />
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/btn_clear"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#4BAF50"
+            android:text="Làm trống giỏ" />
+
+        <Button
+            android:id="@+id/btn_continue"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Tiếp tục"
+            android:backgroundTint="@color/blue" />
+    </LinearLayout>
 </LinearLayout>

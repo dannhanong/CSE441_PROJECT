@@ -111,7 +111,7 @@ public class SignupActivity extends AppCompatActivity {
             Set<String> roles = new HashSet<>();
             roles.add("USER");
 
-            RegisterRequest registerRequest = new RegisterRequest(fullName, username, password, confirmPassword, email, phoneNumber, roles);
+            RegisterRequest registerRequest = new RegisterRequest(fullName, username, password, confirmPassword, email, phoneNumber);
 
             AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
             Call<ResponseMessage> call = authApi.signup(registerRequest);

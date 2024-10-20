@@ -30,7 +30,7 @@ import retrofit2.Response;
 
 public class FoodDetailFragment extends Fragment {
     private ViewPager2 viewPagerImages;
-    private TextView tvDishName, tvDishDescription;
+    private TextView tvDishName, tvDishDescription, tvPageIndicator, tvFoodPrice;
     private Button btnAddToCart;
     private RecyclerView recyclerViewRelatedDishes;
     private FoodDetailAndRelated foodDetailAndRelated;
@@ -49,8 +49,10 @@ public class FoodDetailFragment extends Fragment {
         viewPagerImages = view.findViewById(R.id.viewPagerImages);
         tvDishName = view.findViewById(R.id.tvDishName);
         tvDishDescription = view.findViewById(R.id.tvDishDescription);
+        tvPageIndicator = view.findViewById(R.id.tvPageIndicator);
         btnAddToCart = view.findViewById(R.id.btnAddToCart);
         recyclerViewRelatedDishes = view.findViewById(R.id.recyclerViewRelatedDishes);
+        tvFoodPrice = view.findViewById(R.id.tv_food_price);
 
         fetchFoodDetails();
 
@@ -91,12 +93,24 @@ public class FoodDetailFragment extends Fragment {
 
     private void displayFoodDetails(Food food) {
         tvDishName.setText(food.getName());
+        tvFoodPrice.setText(String.format("%,dđ", food.getPrice()));
         tvDishDescription.setText(food.getDescription());
 
         // Tải ảnh vào ViewPager2, giả sử bạn có danh sách URL hình ảnh trong food.getImages()
         List<String> fileCodes = food.getImageList();
         ImagePagerAdapter adapter = new ImagePagerAdapter(fileCodes);
         viewPagerImages.setAdapter(adapter);
+
+        tvPageIndicator.setText("1/" + fileCodes.size());
+
+        viewPagerImages.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                // Cập nhật chỉ số trang hiện tại khi người dùng thay đổi trang
+                tvPageIndicator.setText((position + 1) + "/" + fileCodes.size());
+            }
+        });
     }
 
     private void setupRelatedDishesRecyclerView(List<Food> relatedDishes) {

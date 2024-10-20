@@ -4,12 +4,18 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextWatcher;
+import android.text.style.TabStopSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,7 +23,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.CartApi;
 import com.ktpm1.restaurant.apis.FoodApi;
@@ -45,6 +53,7 @@ public class FoodOptionsBottomSheet extends BottomSheetDialogFragment {
     private TextView tvFoodPrice;
     LinearLayout linearLayout;
     private int price;
+    private ImageView imgFood;
     private List<Long> foodOptionIds = new ArrayList<>();
 
     // Constructor để nhận món ăn đã chọn
@@ -56,14 +65,7 @@ public class FoodOptionsBottomSheet extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_food_options, container, false);
-
-        btnAddToCart = view.findViewById(R.id.addToCartButton);
-        btnEncrease = view.findViewById(R.id.quantity_increase);
-        btnDecrease = view.findViewById(R.id.quantity_decrease);
-        tvquantity = view.findViewById(R.id.quantity_value);
-        tvFoodName = view.findViewById(R.id.food_name);
-        tvFoodPrice = view.findViewById(R.id.food_price);
-        linearLayout = view.findViewById(R.id.extra_options_list);
+        init(view);
 
         fetchFoodDetail();
         tvFoodPrice.setText(String.valueOf(price));
@@ -119,6 +121,9 @@ public class FoodOptionsBottomSheet extends BottomSheetDialogFragment {
                     Food food = response.body();
                     tvFoodName.setText(food.getName());
                     tvFoodPrice.setText(String.valueOf(food.getPrice()));
+                    String fileCode = food.getImageCode();
+                    String imageUrl = BuildConfig.BASE_URL + "/files/preview/" + fileCode;
+                    Glide.with(getContext()).load(imageUrl).into(imgFood);
                     price = food.getPrice();
                 }
             }
@@ -166,22 +171,30 @@ public class FoodOptionsBottomSheet extends BottomSheetDialogFragment {
         call.enqueue(new Callback<List<FoodOption>>() {
             @Override
             public void onResponse(Call<List<FoodOption>> call, Response<List<FoodOption>> response) {
+                List<FoodOption> foodOptionSelected = new ArrayList<>();
                 if (response.isSuccessful()) {
                     List<FoodOption> foodOptions = response.body();
                     for (FoodOption foodOption : foodOptions) {
                         CheckBox checkBox = new CheckBox(getContext());
                         checkBox.setButtonTintList(getResources().getColorStateList(R.color.blue_bg));
-                        checkBox.setText(foodOption.getName() + " - " + foodOption.getPrice() + "đ");
+//                        checkBox.setText(foodOption.getName() + " - " + foodOption.getPrice() + "đ");
+                        setupCheckBox(checkBox, foodOption);
                         linearLayout.addView(checkBox);
 
                         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                             if (isChecked) {
                                 foodOptionIds.add(foodOption.getId());
+                                foodOptionSelected.add(foodOption);
+                                checkBoxChange(foodOptionSelected, price);
                             } else {
                                 foodOptionIds.remove(foodOption.getId());
+                                foodOptionSelected.remove(foodOption);
+                                checkBoxChange(foodOptionSelected, price);
                             }
                         });
                     }
+
+                    quantityChange(foodOptionSelected, price);
                 }
             }
 
@@ -190,5 +203,63 @@ public class FoodOptionsBottomSheet extends BottomSheetDialogFragment {
                 throwable.printStackTrace();
             }
         });
+    }
+
+    private void quantityChange(List<FoodOption> foodOptions, int foodPrice) {
+        tvquantity.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    int totalPrice = foodPrice * Integer.parseInt(tvquantity.getText().toString()) + foodOptions.stream().mapToInt(FoodOption::getPrice).sum() * Integer.parseInt(tvquantity.getText().toString());
+                    btnAddToCart.setText("Thêm vào giỏ hàng" + " - " + totalPrice + "đ");
+                } catch (NumberFormatException e) {
+                    // Xử lý nếu giá trị trong tvquantity hoặc tvFoodPrice không phải là số
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void checkBoxChange(List<FoodOption> foodOptions, int foodPrice) {
+        int quantity = Integer.parseInt(tvquantity.getText().toString());
+        int totalPrice = foodPrice * quantity
+                + foodOptions.stream().mapToInt(FoodOption::getPrice).sum() * quantity;
+        btnAddToCart.setText("Thêm vào giỏ hàng" + " - " + totalPrice + "đ");
+    }
+
+    public void setupCheckBox(CheckBox checkBox, FoodOption foodOption) {
+        String foodName = foodOption.getName();
+        String foodPrice = foodOption.getPrice() + "đ";
+
+        int maxNameLength = 30;
+        int numSpaces = maxNameLength - foodName.length();
+        if (numSpaces < 0) numSpaces = 0;
+
+        // Tạo chuỗi khoảng trắng
+        String spaces = new String(new char[numSpaces]).replace('\0', ' ');
+
+        // Tạo SpannableString với tên món ăn + khoảng trắng + giá
+        SpannableString spannableString = new SpannableString(foodName + spaces + foodPrice);
+
+        checkBox.setText(spannableString);
+    }
+
+    public void init(View view) {
+        btnAddToCart = view.findViewById(R.id.addToCartButton);
+        btnEncrease = view.findViewById(R.id.quantity_increase);
+        btnDecrease = view.findViewById(R.id.quantity_decrease);
+        tvquantity = view.findViewById(R.id.quantity_value);
+        tvFoodName = view.findViewById(R.id.food_name);
+        tvFoodPrice = view.findViewById(R.id.food_price);
+        linearLayout = view.findViewById(R.id.extra_options_list);
+        imgFood = view.findViewById(R.id.img_food_image);
     }
 }

@@ -1,10 +1,16 @@
 package com.ktpm1.restaurant.adapters;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,18 +19,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
+import com.ktpm1.restaurant.apis.CartApi;
+import com.ktpm1.restaurant.configs.ApiClient;
+import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
 import com.ktpm1.restaurant.models.CartItem;
 import com.ktpm1.restaurant.models.Food;
+import com.ktpm1.restaurant.models.FoodOption;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
     private List<CartItem> cartItemList;
+    private Context context;
 
-    public CartAdapter(List<CartItem> cartItemList) {
+    public CartAdapter(List<CartItem> cartItemList, Context context) {
         this.cartItemList = cartItemList;
+        this.context = context;
     }
 
     @NonNull
@@ -49,21 +63,50 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         int totalPrice = (int) item.getPrice();
         holder.productPrice.setText(totalPrice + "đ");
 
+        if (item.getOptions() != null && !item.getOptions().isEmpty()) {
+            holder.llOptions.setVisibility(View.VISIBLE);
+            for (int i = 0; i < item.getOptions().size(); i++) {
+                FoodOption option = item.getOptions().get(i);
+                TextView optionView = new TextView(holder.itemView.getContext());
+                if (i == item.getOptions().size() - 1) {
+                    optionView.setText(option.getName());
+                } else {
+                    optionView.setText(option.getName() + ", ");
+                }
+                optionView.setTextSize(14);
+                holder.llOptions.addView(optionView);
+            }
+        }else {
+            TextView noOptionView = new TextView(holder.itemView.getContext());
+            noOptionView.setText("Không có tùy chọn");
+            noOptionView.setTextSize(14);
+            holder.llOptions.addView(noOptionView);
+        }
+
         // Xử lý sự kiện tăng số lượng
         holder.btnIncrease.setOnClickListener(v -> {
-            item.setQuantity(item.getQuantity() + 1);
-            holder.quantity.setText(String.valueOf(item.getQuantity()));
-            int updatedPrice = (int) item.getPrice() * item.getQuantity();
+            int currentQuantity = Integer.parseInt(holder.quantity.getText().toString());
+            holder.quantity.setText(String.valueOf(currentQuantity + 1));
+            int updatedPrice = (int) food.getPrice() * (currentQuantity + 1) + item.getOptions().stream().mapToInt(FoodOption::getPrice).sum() * (currentQuantity + 1);
             holder.productPrice.setText(updatedPrice + "đ");
         });
 
         // Xử lý sự kiện giảm số lượng
         holder.btnDecrease.setOnClickListener(v -> {
-            if (item.getQuantity() > 1) {
-                item.setQuantity(item.getQuantity() - 1);
-                holder.quantity.setText(String.valueOf(item.getQuantity()));
-                int updatedPrice = (int) item.getPrice() * item.getQuantity();
+            int currentQuantity = Integer.parseInt(holder.quantity.getText().toString());
+            if (currentQuantity > 1) {
+                holder.quantity.setText(String.valueOf(currentQuantity - 1));
+                int updatedPrice = (int) food.getPrice() * (currentQuantity - 1) + item.getOptions().stream().mapToInt(FoodOption::getPrice).sum() * (currentQuantity - 1);
                 holder.productPrice.setText(updatedPrice + "đ");
+            } else {
+                new AlertDialog.Builder(holder.itemView.getContext())
+                        .setTitle("Xác nhận xóa món")
+                        .setMessage("Bạn có chắc chắn muốn xóa món ăn này khỏi giỏ hàng không?")
+                        .setPositiveButton("Xóa", (dialog, which) -> {
+                            removeItem(position);
+                        })
+                        .setNegativeButton("Hủy", null)
+                        .show();
             }
         });
     }
@@ -82,6 +125,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         ImageView productImage;
         TextView productName, productPrice, quantity;
         ImageButton btnIncrease, btnDecrease;
+        LinearLayout llOptions;
 
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -91,6 +135,31 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             quantity = itemView.findViewById(R.id.tv_quantity);
             btnIncrease = itemView.findViewById(R.id.btn_increase);
             btnDecrease = itemView.findViewById(R.id.btn_decrease);
+            llOptions = itemView.findViewById(R.id.ll_options);
         }
+    }
+
+    public void removeItem(int position) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
+
+        CartApi cartApi = ApiClient.getClient().create(CartApi.class);
+        Call<ResponseMessage> call = cartApi.removeFromCart("Bearer " + token, cartItemList.get(position).getId());
+        call.enqueue(new Callback<ResponseMessage>() {
+            @Override
+            public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
+                if (response.isSuccessful()) {
+                    cartItemList.remove(position);
+                    notifyItemRemoved(position);
+                } else {
+                    // Xử lý khi không xóa được
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseMessage> call, Throwable t) {
+                // Xử lý khi lỗi
+            }
+        });
     }
 }
