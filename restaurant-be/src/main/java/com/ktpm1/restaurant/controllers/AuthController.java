@@ -46,7 +46,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     @Transactional
-    public ResponseEntity<ResponseMessage> signup(@RequestBody SignupForm signupForm) {
+    public ResponseEntity<?> signup(@RequestBody SignupForm signupForm) {
         if(userService.existsByUsername(signupForm.getUsername())){
             return new ResponseEntity<>(ResponseMessage.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
@@ -104,10 +104,11 @@ public class AuthController {
             }
 
 //            emailService.sendVerificationEmail(savedUser);
-            return new ResponseEntity<>(ResponseMessage.builder()
-                    .status(HttpStatus.CREATED.value())
-                    .message("createSuccess")
-                    .build(), HttpStatus.CREATED);
+//            return new ResponseEntity<>(ResponseMessage.builder()
+//                    .status(HttpStatus.CREATED.value())
+//                    .message("createSuccess")
+//                    .build(), HttpStatus.CREATED);
+            return ResponseEntity.ok(savedUser);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(ResponseMessage.builder()

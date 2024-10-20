@@ -5,10 +5,7 @@ import com.ktpm1.restaurant.dtos.request.OrderRequest;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
 import com.ktpm1.restaurant.dtos.response.VNPayMessage;
 import com.ktpm1.restaurant.models.*;
-import com.ktpm1.restaurant.repositories.CartRepository;
-import com.ktpm1.restaurant.repositories.OrderRepository;
-import com.ktpm1.restaurant.repositories.TableRepository;
-import com.ktpm1.restaurant.repositories.UserRepository;
+import com.ktpm1.restaurant.repositories.*;
 import com.ktpm1.restaurant.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +14,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -34,11 +32,16 @@ public class OrderServiceImpl implements OrderService {
     private TableRepository tableRepository;
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
+    @Autowired
+    private BookingTableRepository bookingTableRepository;
+    @Autowired
+    private HistoryBookingTableRepository historyBookingTableRepository;
 
     @Override
-    public EventCreateOrder createOrder(OrderRequest orderRequest, String username) {
+    public EventCreateOrder createOrder(String username) {
         User user = userRepository.findByUsername(username);
         Cart cart = cartRepository.findByUser(user);
+        List<BookingTable> bookingTables = bookingTableRepository.findByUser(user);
 
         if (cart == null || cart.getCartItems().isEmpty()) {
             return null;
@@ -51,11 +54,59 @@ public class OrderServiceImpl implements OrderService {
 //                .orderTime(orderRequest.getOrderTime())
 //                .totalPrice(cart.getTotalPrice())
 //                .build();
+
+        List<Order> orders = new ArrayList<>();
+
+        for (BookingTable bookingTable : bookingTables) {
+            Order order = new Order();
+            order.setUser(user);
+            order.setStatus(OrderStatus.CREATED);
+            order.setTable(bookingTable.getTable());
+            order.setOrderTime(LocalDateTime.now());
+            order.setTotalPrice(cart.getTotalPrice());
+
+            historyBookingTableRepository.save(HistoryBookingTable.builder()
+                    .id(bookingTable.getId())
+                    .table(bookingTable.getTable())
+                    .user(bookingTable.getUser())
+                    .bookingTime(bookingTable.getBookingTime())
+                    .startTime(bookingTable.getStartTime())
+                    .endTime(bookingTable.getEndTime())
+                    .paid(bookingTable.isPaid())
+                    .updatedAvailableStart(false)
+                    .updatedAvailableEnd(false)
+                    .build());
+
+            for (CartItem cartItem : cart.getCartItems()) {
+                OrderItem orderItem = OrderItem.builder()
+                        .food(cartItem.getFood())
+                        .quantity(cartItem.getQuantity())
+                        .itemPrice(cartItem.getPrice())
+                        .build();
+                order.getOrderItems().add(orderItem);
+            }
+//            kafkaTemplate.send("create-order", EventCreateOrder.builder().order(order).cart(cart).build());
+//            oderRepository.save(order);
+//            cartRepository.delete(cart);
+            orders.add(order);
+        }
+        bookingTableRepository.deleteAll(bookingTables);
+        return EventCreateOrder.builder().orders(orders).cart(cart).build();
+    }
+
+    @Override
+    public Order createOrderFoodOnly(String username) {
+        User user = userRepository.findByUsername(username);
+        Cart cart = cartRepository.findByUser(user);
+
+        if (cart == null || cart.getCartItems().isEmpty()) {
+            return null;
+        }
+
         Order order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.CREATED);
-        order.setTable(tableRepository.findById(orderRequest.getTableId()).orElse(null));
-        order.setOrderTime(orderRequest.getOrderTime());
+        order.setOrderTime(LocalDateTime.now());
         order.setTotalPrice(cart.getTotalPrice());
 
         for (CartItem cartItem : cart.getCartItems()) {
@@ -67,10 +118,50 @@ public class OrderServiceImpl implements OrderService {
             order.getOrderItems().add(orderItem);
         }
 
-//        kafkaTemplate.send("create-order", EventCreateOrder.builder().order(order).cart(cart).build());
+        oderRepository.save(order);
+        cartRepository.delete(cart);
+        return order;
+    }
+
+    @Override
+    public List<Order> createOrderTableOnly(String username) {
+//        User user = userRepository.findByUsername(username);
+//        Order order = new Order();
+//        order.setUser(user);
+//        order.setStatus(OrderStatus.CREATED);
+//        order.setOrderTime(LocalDateTime.now());
+//        order.setTotalPrice(0);
 //        oderRepository.save(order);
-//        cartRepository.delete(cart);
-        return EventCreateOrder.builder().order(order).cart(cart).build();
+//        return order;
+        User user = userRepository.findByUsername(username);
+        List<BookingTable> bookingTables = bookingTableRepository.findByUser(user);
+
+        List<Order> orders = new ArrayList<>();
+        for (BookingTable bookingTable : bookingTables) {
+            Order order = new Order();
+            order.setUser(user);
+            order.setStatus(OrderStatus.CREATED);
+            order.setTable(bookingTable.getTable());
+            order.setOrderTime(LocalDateTime.now());
+            order.setTotalPrice(0);
+
+            historyBookingTableRepository.save(HistoryBookingTable.builder()
+                    .id(bookingTable.getId())
+                    .table(bookingTable.getTable())
+                    .user(bookingTable.getUser())
+                    .bookingTime(bookingTable.getBookingTime())
+                    .startTime(bookingTable.getStartTime())
+                    .endTime(bookingTable.getEndTime())
+                    .paid(bookingTable.isPaid())
+                    .updatedAvailableStart(false)
+                    .updatedAvailableEnd(false)
+                    .build());
+
+            Order newOrder = oderRepository.save(order);
+            orders.add(newOrder);
+        }
+        bookingTableRepository.deleteAll(bookingTables);
+        return orders;
     }
 
     @Override
@@ -139,6 +230,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Table> getAllTables() {
         return tableRepository.findAll();
+    }
+
+    @Override
+    public void updateOrderPaid(Long id) {
+        oderRepository.findById(id)
+                .ifPresent(order -> {
+                    order.setPaid(true);
+                    oderRepository.save(order);
+                });
     }
 
 }

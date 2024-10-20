@@ -13,7 +13,9 @@ import java.time.Instant;
 import java.util.List;
 
 public interface OrderService {
-    EventCreateOrder createOrder(OrderRequest orderRequest, String username);
+    EventCreateOrder createOrder(String username);
+    Order createOrderFoodOnly(String username);
+    List<Order> createOrderTableOnly(String username);
     Order getOrderById(Long id);
     Page<Order> getAllOrder(Pageable pageable, Instant start, Instant end);
     Page<Order> getMyOrder(Pageable pageable, String username);
@@ -21,4 +23,5 @@ public interface OrderService {
     ResponseMessage deleteOrder(Long id);
     List<Table> getAvailableTables(Instant start, Instant end);
     List<Table> getAllTables();
+    void updateOrderPaid(Long id);
 }

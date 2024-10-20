@@ -1,18 +1,23 @@
 package com.ktpm1.restaurant.services.impls;
 
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
+import com.ktpm1.restaurant.models.Catalog;
 import com.ktpm1.restaurant.models.Table;
+import com.ktpm1.restaurant.repositories.CatalogRepository;
 import com.ktpm1.restaurant.repositories.TableRepository;
 import com.ktpm1.restaurant.services.TableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class TableServiceImpl implements TableService {
     @Autowired
     private TableRepository tableRepository;
+    @Autowired
+    private CatalogRepository catalogRepository;
 
     @Override
     public Table createTable(Table table) {
@@ -60,5 +65,11 @@ public class TableServiceImpl implements TableService {
                     return tableRepository.save(t);
                 })
                 .orElse(null);
+    }
+
+    @Override
+    public List<Table> getTableByCatalog(Long catalogId) {
+        Catalog catalog = catalogRepository.findById(catalogId).orElse(null);
+        return tableRepository.findByCatalog(catalog);
     }
 }

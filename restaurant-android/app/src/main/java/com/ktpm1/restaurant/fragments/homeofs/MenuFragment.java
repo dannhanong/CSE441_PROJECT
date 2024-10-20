@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.MenuAdapter;
+import com.ktpm1.restaurant.fragments.CatalogFragment;
 import com.ktpm1.restaurant.fragments.PaymentFragment;
 import com.ktpm1.restaurant.models.MenuItem;
 
@@ -46,8 +47,7 @@ public class MenuFragment extends Fragment {
 //                    openFragment(new FoodFragment());
                     break;
                 case 1:
-                    // Điều hướng đến Fragment Bàn
-//                    openFragment(new TableFragment());
+                    openFragment(new CatalogFragment());
                     break;
                 case 2:
                     // Điều hướng đến Fragment Thanh toán

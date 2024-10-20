@@ -29,25 +29,25 @@ public class InitDatabase {
         };
     }
 
-    @Bean
-    CommandLineRunner initTable(TableRepository tableRepository) {
-        return args -> {
-            if (tableRepository.count() == 0) {
-                tableRepository.saveAll(
-                        List.of(
-                                Table.builder().tableNumber("Bàn 1").capacity(6).available(true).build(),
-                                Table.builder().tableNumber("Bàn 2").capacity(6).available(true).build(),
-                                Table.builder().tableNumber("Bàn 3").capacity(6).available(true).build(),
-                                Table.builder().tableNumber("Bàn 4").capacity(6).available(true).build(),
-                                Table.builder().tableNumber("Bàn 5").capacity(6).available(true).build(),
-                                Table.builder().tableNumber("Bàn 6").capacity(6).available(true).build(),
-                                Table.builder().tableNumber("Bàn 7").capacity(6).available(true).build(),
-                                Table.builder().tableNumber("Bàn 8").capacity(6).available(true).build(),
-                                Table.builder().tableNumber("Bàn 9").capacity(6).available(true).build(),
-                                Table.builder().tableNumber("Bàn 10").capacity(6).available(true).build()
-                        )
-                );
-            }
-        };
-    }
+//    @Bean
+//    CommandLineRunner initTable(TableRepository tableRepository) {
+//        return args -> {
+//            if (tableRepository.count() == 0) {
+//                tableRepository.saveAll(
+//                        List.of(
+//                                Table.builder().tableNumber("Bàn 1").capacity(6).available(true).build(),
+//                                Table.builder().tableNumber("Bàn 2").capacity(6).available(true).build(),
+//                                Table.builder().tableNumber("Bàn 3").capacity(6).available(true).build(),
+//                                Table.builder().tableNumber("Bàn 4").capacity(6).available(true).build(),
+//                                Table.builder().tableNumber("Bàn 5").capacity(6).available(true).build(),
+//                                Table.builder().tableNumber("Bàn 6").capacity(6).available(true).build(),
+//                                Table.builder().tableNumber("Bàn 7").capacity(6).available(true).build(),
+//                                Table.builder().tableNumber("Bàn 8").capacity(6).available(true).build(),
+//                                Table.builder().tableNumber("Bàn 9").capacity(6).available(true).build(),
+//                                Table.builder().tableNumber("Bàn 10").capacity(6).available(true).build()
+//                        )
+//                );
+//            }
+//        };
+//    }
 }

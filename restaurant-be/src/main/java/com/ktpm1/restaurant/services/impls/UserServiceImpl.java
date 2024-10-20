@@ -11,6 +11,7 @@ import com.ktpm1.restaurant.services.EmailService;
 import com.ktpm1.restaurant.services.FileUploadService;
 import com.ktpm1.restaurant.services.RoleService;
 import com.ktpm1.restaurant.services.UserService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -195,6 +196,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private String generateVerificationCode() {
-        return UUID.randomUUID().toString();
+//        return UUID.randomUUID().toString();
+        return RandomStringUtils.randomNumeric(6);
     }
 }

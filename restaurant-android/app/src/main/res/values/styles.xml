@@ -3,4 +3,9 @@
     <style name="BottomNavigationTextAppearance" parent="@android:style/TextAppearance">
         <item name="android:textSize">16sp</item>
     </style>
+
+    <style name="CustomToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textSize">20sp</item>  <!-- Kích thước title 20sp -->
+        <item name="android:textColor">@color/black</item>  <!-- Màu đen cho title -->
+    </style>
 </resources>

@@ -37,4 +37,4 @@ thymeleaf:
 
 jwt:
   secret: laptrinhandroid/nhahang555/63ktpm1/daihocthuyloi/2024
-  expiration: 3600000
+  expiration: 604800000

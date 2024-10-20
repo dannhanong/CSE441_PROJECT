@@ -17,10 +17,14 @@ import java.util.Objects;
 public class Table {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     String tableNumber;
     int capacity;
     boolean available = true;
+
+    @ManyToOne
+    @JoinColumn(name = "catalog_id")
+    Catalog catalog;
 
     @Override
     public boolean equals(Object o) {

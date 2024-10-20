@@ -31,7 +31,9 @@ public class Order {
     LocalDateTime orderTime;
     long totalPrice;
     OrderStatus status;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     Set<OrderItem> orderItems = new HashSet<>();
+    boolean paid = false;
+    LocalDateTime createdAt = LocalDateTime.now();
 }
 

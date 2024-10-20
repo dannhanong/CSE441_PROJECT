@@ -27,23 +27,30 @@ public class CartController {
 
     @GetMapping("/view")
     public Cart viewCart(HttpServletRequest request) {
-        String token = getTokenFromRequest(request);
-        String user = jwtService.extractUsername(token);
-        return cartService.getCartByUser(user);
+        try {
+            String token = getTokenFromRequest(request);
+            String username = jwtService.extractUsername(token);
+            return cartService.getCartByUser(username);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<ResponseMessage> updateCart(HttpServletRequest request, @RequestBody CartRequest cartRequest) {
+    @PutMapping("/update/{cartItemId}/{quantity}")
+    public ResponseEntity<ResponseMessage> updateCart(HttpServletRequest request, @PathVariable Long cartItemId, @PathVariable int quantity) {
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
-        return ResponseEntity.ok(cartService.updateCart(username, cartRequest));
+        if (quantity <= 0) {
+            return ResponseEntity.ok(cartService.removeFromCart(username, cartItemId));
+        }
+        return ResponseEntity.ok(cartService.updateCart(username, cartItemId, quantity));
     }
 
-    @DeleteMapping("/remove/{foodId}")
-    public ResponseEntity<ResponseMessage> removeFromCart(HttpServletRequest request, @PathVariable Long foodId) {
+    @DeleteMapping("/remove/{cartItemId}")
+    public ResponseEntity<ResponseMessage> removeFromCart(HttpServletRequest request, @PathVariable Long cartItemId) {
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
-        return ResponseEntity.ok(cartService.removeFromCart(username, foodId));
+        return ResponseEntity.ok(cartService.removeFromCart(username, cartItemId));
     }
 
     @DeleteMapping("/clear")
