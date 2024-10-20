@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="BottomNavigationTextAppearance" parent="@android:style/TextAppearance">
         <item name="android:textSize">16sp</item>
     </style>
@@ -8,4 +8,5 @@
         <item name="android:textSize">20sp</item>  <!-- Kích thước title 20sp -->
         <item name="android:textColor">@color/black</item>  <!-- Màu đen cho title -->
     </style>
+
 </resources>
