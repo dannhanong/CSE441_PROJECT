@@ -12,11 +12,12 @@
         android:id="@+id/chef_image"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:src="@drawable/chef_icon"
         android:layout_gravity="center"
-        android:contentDescription="Chef Logo" />
+        android:contentDescription="Chef Logo"
+        android:src="@drawable/chef_icon" />
 
     <Button
+        android:backgroundTint="@color/blue_bg"
         android:id="@+id/register_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +25,6 @@
         android:text="Đăng ký"
         android:textColor="#FFFFFF"
         android:background="@drawable/register_button_bg"
-        android:backgroundTint="#4285F4"
         android:layout_marginBottom="16dp" />
 
     <Button

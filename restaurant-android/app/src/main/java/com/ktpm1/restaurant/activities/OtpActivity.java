@@ -14,7 +14,7 @@ public class OtpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_otp);
+        setContentView(R.layout.activity_otp);
 
         EditText otpDigit1 = findViewById(R.id.otp_digit_1);
         EditText otpDigit2 = findViewById(R.id.otp_digit_2);
