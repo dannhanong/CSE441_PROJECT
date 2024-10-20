@@ -5,7 +5,6 @@ import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -22,7 +21,7 @@ public class OtpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_otp);
+        setContentView(R.layout.activity_otp);
 
         EditText otpDigit1 = findViewById(R.id.otp_digit_1);
         EditText otpDigit2 = findViewById(R.id.otp_digit_2);
