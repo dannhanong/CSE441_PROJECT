@@ -19,7 +19,7 @@ public class OnBoardPage extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
 
         registerButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OnBoardPage.this, SignIn.class);
+            Intent intent = new Intent(OnBoardPage.this, SignupActivity.class);
             startActivity(intent);
         });
 

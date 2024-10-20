@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,7 +39,7 @@ public class SignupActivity extends AppCompatActivity {
     private EditText fullNameInput, usernameInput, emailInput, phoneInput, passwordInput, confirmPasswordInput;
     private Button registerButton;
     private FirebaseAuth mAuth;
-
+    private TextView loginLink;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +51,6 @@ public class SignupActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Ánh xạ các thành phần trong giao diện
         fullNameInput = findViewById(R.id.full_name);
         usernameInput = findViewById(R.id.username);
         emailInput = findViewById(R.id.email);
@@ -58,10 +58,12 @@ public class SignupActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.password);
         confirmPasswordInput = findViewById(R.id.confirm_password);
         registerButton = findViewById(R.id.register_button);
-
+        loginLink = findViewById(R.id.login_link);
         mAuth = FirebaseAuth.getInstance();
-
-        // Xử lý sự kiện nút đăng ký
+        loginLink.setOnClickListener(view -> {
+            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+            startActivity(intent);
+        });
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,9 +108,8 @@ public class SignupActivity extends AppCompatActivity {
         String confirmPassword = confirmPasswordInput.getText().toString();
 
         if (password.equals(confirmPassword)) {
-            // Tạo Set cho vai trò
             Set<String> roles = new HashSet<>();
-            roles.add("USER"); // Thêm vai trò mặc định là "USER"
+            roles.add("USER");
 
             RegisterRequest registerRequest = new RegisterRequest(fullName, username, password, confirmPassword, email, phoneNumber, roles);
 
