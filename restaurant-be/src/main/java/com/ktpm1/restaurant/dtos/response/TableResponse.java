@@ -1,5 +1,6 @@
-package com.ktpm1.restaurant.models;
+package com.ktpm1.restaurant.dtos.response;
 
+import com.ktpm1.restaurant.models.Catalog;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,12 +10,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class Table {
+public class TableResponse {
     Long id;
     String tableNumber;
     int capacity;
     boolean available;
     Catalog catalog;
-    boolean selected = false;
 }
-

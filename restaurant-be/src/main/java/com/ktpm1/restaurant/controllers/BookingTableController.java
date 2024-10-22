@@ -3,6 +3,7 @@ package com.ktpm1.restaurant.controllers;
 import com.ktpm1.restaurant.dtos.request.BookingTableRequest;
 import com.ktpm1.restaurant.dtos.request.BookingTableUpdateRequest;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
+import com.ktpm1.restaurant.dtos.response.TableResponse;
 import com.ktpm1.restaurant.models.BookingTable;
 import com.ktpm1.restaurant.models.Table;
 import com.ktpm1.restaurant.security.jwt.JwtService;
@@ -41,9 +42,9 @@ public class BookingTableController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<List<Table>> showStatusTableByAvailable(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-                                                        @RequestParam(defaultValue = "0") int additionalTime,
-                                                        @RequestParam Long catalogId) {
+    public ResponseEntity<List<TableResponse>> showStatusTable(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+                                                               @RequestParam(defaultValue = "0") int additionalTime,
+                                                               @RequestParam Long catalogId) {
         return ResponseEntity.ok(bookingTableService.showStatusTableByAvailable(start, additionalTime, catalogId));
     }
 

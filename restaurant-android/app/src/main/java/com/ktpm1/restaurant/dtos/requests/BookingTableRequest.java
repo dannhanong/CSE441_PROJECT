@@ -1,6 +1,5 @@
-package com.ktpm1.restaurant.dtos.request;
+package com.ktpm1.restaurant.dtos.requests;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,7 +14,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingTableRequest {
     List<Long> tableIds;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime startTime;
+    String startTime;
     int additionalTime = 0;
 }

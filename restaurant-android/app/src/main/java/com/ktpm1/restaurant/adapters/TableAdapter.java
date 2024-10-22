@@ -2,6 +2,7 @@ package com.ktpm1.restaurant.adapters;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +13,34 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ktpm1.restaurant.R;
-import com.ktpm1.restaurant.models.Table;
+import com.ktpm1.restaurant.dtos.responses.TableResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHolder> {
 
-    private List<Table> tableList;
+    private List<TableResponse> tableList;
+    private List<Long> selectedTableIds = new ArrayList<>();
+    private OnTableSelectionChangedListener listener;
 
-    public TableAdapter(List<Table> tableList) {
+    public interface OnTableSelectionChangedListener {
+        void onTableSelectionChanged(List<Long> selectedTableIds);
+    }
+
+    public TableAdapter(List<TableResponse> tableList) {
         this.tableList = tableList;
     }
+
+    public TableAdapter(List<TableResponse> tableList, OnTableSelectionChangedListener listener) {
+        this.tableList = tableList;
+        this.listener = listener;
+    }
+
+    public List<Long> getSelectedTableIds() {
+        return new ArrayList<>(selectedTableIds);
+    }
+
 
     @NonNull
     @Override
@@ -33,19 +51,39 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
 
     @Override
     public void onBindViewHolder(@NonNull TableViewHolder holder, int position) {
-        Table table = tableList.get(position);
+        TableResponse table = tableList.get(position);
         holder.tableButton.setText(table.getTableNumber());
         if (!table.isAvailable()) {
-            // Bàn không có sẵn, thay đổi giao diện
             holder.tableButton.setAlpha(0.7f);
             holder.tableButton.setTextColor(Color.GRAY);
             holder.tvTableStatus.setTextColor(Color.GRAY);
             holder.tableButton.setEnabled(false);
         }
         holder.tvTableStatus.setText(table.isAvailable() ? "Trống" : "Đã đặt");
-//        holder.tableButton.setOnClickListener(v -> {
-//            if (table.isAvailable()) {}
-//        });
+        holder.tableButton.setOnClickListener(v -> {
+            if (table.isSelected()) {
+                table.setSelected(false);
+                holder.tableButton.setAlpha(1f);
+                holder.tableButton.setTextColor(Color.BLACK);
+                holder.tvTableStatus.setTextColor(Color.BLACK);
+                holder.tvTableStatus.setText(table.isAvailable() ? "Trống" : "Đã đặt");
+                holder.tableButton.setEnabled(table.isAvailable());
+                selectedTableIds.remove(table.getId());
+            } else {
+                table.setSelected(true);
+                holder.tableButton.setAlpha(0.7f);
+                holder.tableButton.setTextColor(Color.BLUE);
+                holder.tvTableStatus.setTextColor(Color.BLUE);
+                holder.tvTableStatus.setText("Đã chọn");
+                selectedTableIds.add(table.getId());
+            }
+
+            selectedTableIds = getSelectedTableIds();
+
+            if (listener != null) {
+                listener.onTableSelectionChanged(selectedTableIds);
+            }
+        });
     }
 
     @Override

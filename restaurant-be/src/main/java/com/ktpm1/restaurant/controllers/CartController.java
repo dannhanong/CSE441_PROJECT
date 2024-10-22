@@ -26,7 +26,7 @@ public class CartController {
     }
 
     @GetMapping("/view")
-    public Cart viewCart(HttpServletRequest request) {
+    public Cart getMyCart(HttpServletRequest request) {
         try {
             String token = getTokenFromRequest(request);
             String username = jwtService.extractUsername(token);

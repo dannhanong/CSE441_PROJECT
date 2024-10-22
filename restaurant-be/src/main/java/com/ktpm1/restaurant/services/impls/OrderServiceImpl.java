@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
 //            cartRepository.delete(cart);
             orders.add(order);
         }
-        bookingTableRepository.deleteAll(bookingTables);
+//        bookingTableRepository.deleteAll(bookingTables);
         return EventCreateOrder.builder().orders(orders).cart(cart).build();
     }
 
@@ -160,7 +160,7 @@ public class OrderServiceImpl implements OrderService {
             Order newOrder = oderRepository.save(order);
             orders.add(newOrder);
         }
-        bookingTableRepository.deleteAll(bookingTables);
+//        bookingTableRepository.deleteAll(bookingTables);
         return orders;
     }
 

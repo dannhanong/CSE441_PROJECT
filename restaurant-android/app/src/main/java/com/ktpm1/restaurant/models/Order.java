@@ -4,20 +4,24 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingTable {
+@Builder
+public class Order {
     Long id;
     User user;
     Table table;
-    LocalDateTime bookingTime;
-    LocalDateTime startTime;
-    LocalDateTime endTime;
-    boolean paid;
-    boolean updated;
+    LocalDateTime orderTime;
+    long totalPrice;
+    OrderStatus status;
+    Set<OrderItem> orderItems = new HashSet<>();
+    boolean paid = false;
+    LocalDateTime createdAt;
 }
+

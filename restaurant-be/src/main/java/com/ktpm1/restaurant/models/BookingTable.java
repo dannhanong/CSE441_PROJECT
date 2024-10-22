@@ -1,5 +1,6 @@
 package com.ktpm1.restaurant.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -21,7 +22,7 @@ public class BookingTable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     User user;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "table_id", nullable = false)
@@ -29,6 +30,7 @@ public class BookingTable {
     @Column(nullable = false)
     LocalDateTime bookingTime = LocalDateTime.now();
     @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime startTime;
     @Column(nullable = false)
     LocalDateTime endTime;

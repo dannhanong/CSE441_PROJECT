@@ -9,12 +9,12 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class Table {
+public class OrderItem {
     Long id;
-    String tableNumber;
-    int capacity;
-    boolean available;
-    Catalog catalog;
-    boolean selected = false;
+
+    Order order;
+    Food food;
+    int quantity;
+    long itemPrice;
 }
 

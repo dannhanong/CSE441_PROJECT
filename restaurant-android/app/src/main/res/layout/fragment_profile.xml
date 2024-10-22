@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".fragments.ProfileFragment">
 
     <!-- User Profile Image -->
@@ -20,7 +21,7 @@
 
     <!-- Username -->
     <TextView
-        android:id="@+id/tv_username"
+        android:id="@+id/tv_name_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Lê Văn Khải"
@@ -32,14 +33,14 @@
 
     <!-- Email -->
     <TextView
-        android:id="@+id/tv_email"
+        android:id="@+id/tv_email_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="khai@gmail.com"
         android:textSize="14sp"
         android:layout_marginStart="16dp"
         app:layout_constraintStart_toEndOf="@id/profileImage"
-        app:layout_constraintTop_toBottomOf="@id/tv_username" />
+        app:layout_constraintTop_toBottomOf="@id/tv_name_profile" />
 
 
     <ImageButton
@@ -51,8 +52,8 @@
         android:src="@drawable/ic_edit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.346"
-        app:layout_constraintStart_toEndOf="@id/tv_email"
-        app:layout_constraintTop_toTopOf="@id/tv_username"
+        app:layout_constraintStart_toEndOf="@id/tv_email_profile"
+        app:layout_constraintTop_toTopOf="@id/tv_name_profile"
         tools:ignore="TouchTargetSizeCheck" />
 
     <!-- Logout Button -->
@@ -61,7 +62,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
-        android:padding="14dp"
+        android:padding="20dp"
         app:layout_constraintBottom_toTopOf="@+id/logout_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -71,8 +72,9 @@
 
     <Button
         android:id="@+id/logout_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/blue_bg"
         android:text="Đăng xuất"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -80,14 +82,14 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/txt_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="14dp"
         android:text="Chỉnh sửa"
         app:layout_constraintStart_toEndOf="@+id/editProfileButton"
-        app:layout_constraintTop_toTopOf="@id/tv_username" />
+        app:layout_constraintTop_toTopOf="@id/tv_name_profile" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,8 +2,8 @@ package com.ktpm1.restaurant.services.impls;
 
 import com.ktpm1.restaurant.dtos.request.BookingTableRequest;
 import com.ktpm1.restaurant.dtos.request.BookingTableUpdateRequest;
-import com.ktpm1.restaurant.dtos.response.AllTableStatus;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
+import com.ktpm1.restaurant.dtos.response.TableResponse;
 import com.ktpm1.restaurant.models.BookingTable;
 import com.ktpm1.restaurant.models.Catalog;
 import com.ktpm1.restaurant.models.Table;
@@ -68,12 +68,42 @@ public class BookingTableServiceImpl implements BookingTableService {
     }
 
     @Override
+    public ResponseMessage createBookingTableByEmployeeRole(BookingTableRequest bookingTableRequest) {
+        List<Long> tableIds = bookingTableRequest.getTableIds();
+
+        for (Long tableId : tableIds) {
+            if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
+                throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
+            } else {
+                Table table = tableRepository.findById(tableId).orElse(null);
+                BookingTable bookingTable = new BookingTable();
+                bookingTable.setUser(null);
+                bookingTable.setTable(table);
+                bookingTable.setBookingTime(LocalDateTime.now());
+                bookingTable.setStartTime(bookingTableRequest.getStartTime());
+                LocalDateTime endTime = LocalDateTime.of(bookingTableRequest.getStartTime().toLocalDate(),
+                        LocalTime.of(bookingTableRequest.getStartTime().getHour() + 2 + bookingTableRequest.getAdditionalTime(),
+                                bookingTableRequest.getStartTime().getMinute()));
+                bookingTable.setEndTime(endTime);
+
+                if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
+                    throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
+                }
+
+                bookingTableRepository.save(bookingTable);
+            }
+        }
+
+        return new ResponseMessage(200, "Đặt bàn thành công.");
+    }
+
+    @Override
     public boolean isTableAvailable(Long tableId, LocalDateTime startTime, int additionalTime) {
         LocalDateTime endTime = LocalDateTime.of(startTime.toLocalDate(), LocalTime.of(startTime.getHour() + 2 + additionalTime, startTime.getMinute()));
         Table table = tableRepository.findById(tableId).orElse(null);
-        boolean isOverlapping = bookingTableRepository.existsByTableAndStartTimeBetween(table, startTime, endTime)
-                || bookingTableRepository.existsByTableAndEndTimeAfterAndStartTimeBefore(table, startTime, endTime)
-                || bookingTableRepository.existsByTableAndStartTimeBeforeAndEndTimeAfter(table, startTime, endTime);
+        boolean isOverlapping = bookingTableRepository.existsByTableAndStartTimeBetweenAndUpdatedFalse(table, startTime, endTime)
+                || bookingTableRepository.existsByTableAndEndTimeAfterAndStartTimeBeforeAndUpdatedFalse(table, startTime, endTime)
+                || bookingTableRepository.existsByTableAndStartTimeBeforeAndEndTimeAfterAndUpdatedFalse(table, startTime, endTime);
         return !isOverlapping;
     }
 
@@ -81,11 +111,11 @@ public class BookingTableServiceImpl implements BookingTableService {
         LocalDateTime endTime = startTime.plusHours(2 + additionalTime);
         Table table = tableRepository.findById(tableId).orElse(null);
 
-        boolean isOverlapping = bookingTableRepository.existsByTableAndStartTimeBetweenAndIdNot(
+        boolean isOverlapping = bookingTableRepository.existsByTableAndStartTimeBetweenAndIdNotAndUpdatedFalse(
                 table, startTime, endTime, bookingIdToExclude)
-                || bookingTableRepository.existsByTableAndEndTimeAfterAndStartTimeBeforeAndIdNot(
+                || bookingTableRepository.existsByTableAndEndTimeAfterAndStartTimeBeforeAndIdNotAndUpdatedFalse(
                 table, startTime, endTime, bookingIdToExclude)
-                || bookingTableRepository.existsByTableAndStartTimeBeforeAndEndTimeAfterAndIdNot(
+                || bookingTableRepository.existsByTableAndStartTimeBeforeAndEndTimeAfterAndIdNotAndUpdatedFalse(
                 table, startTime, endTime, bookingIdToExclude);
 
         return !isOverlapping;
@@ -153,7 +183,7 @@ public class BookingTableServiceImpl implements BookingTableService {
     }
 
     @Override
-    public List<Table> showStatusTableByAvailable(LocalDateTime startTime, int additionalTime, Long catalogId) {
+    public List<TableResponse> showStatusTableByAvailable(LocalDateTime startTime, int additionalTime, Long catalogId) {
         Catalog catalog = catalogRepository.findById(catalogId).orElse(null);
         if (catalog == null) {
             // Xử lý trường hợp catalog không tìm thấy
@@ -166,9 +196,9 @@ public class BookingTableServiceImpl implements BookingTableService {
         List<Table> newlyUnavailableTables = new ArrayList<>();
 
         for (Table table : availableTables) {
-            boolean isOverlapping = bookingTableRepository.existsByTableAndStartTimeBetween(table, startTime, endTime)
-                    || bookingTableRepository.existsByTableAndEndTimeAfterAndStartTimeBefore(table, startTime, endTime)
-                    || bookingTableRepository.existsByTableAndStartTimeBeforeAndEndTimeAfter(table, startTime, endTime);
+            boolean isOverlapping = bookingTableRepository.existsByTableAndStartTimeBetweenAndUpdatedFalse(table, startTime, endTime)
+                    || bookingTableRepository.existsByTableAndEndTimeAfterAndStartTimeBeforeAndUpdatedFalse(table, startTime, endTime)
+                    || bookingTableRepository.existsByTableAndStartTimeBeforeAndEndTimeAfterAndUpdatedFalse(table, startTime, endTime);
             if (isOverlapping) {
                 newlyUnavailableTables.add(table);
             }
@@ -177,16 +207,36 @@ public class BookingTableServiceImpl implements BookingTableService {
         availableTables.removeAll(newlyUnavailableTables);
         unavailableTables.addAll(newlyUnavailableTables);
 
-        for (Table table : newlyUnavailableTables) {
-            table.setAvailable(false);
+//        List<TableResponse> newlyUnavailableTableResponses = new ArrayList<>();
+//        for (Table table : newlyUnavailableTables) {
+//            TableResponse tableResponse = convertTableToTableResponse(table);
+//            tableResponse.setAvailable(false);
+//            newlyUnavailableTableResponses.add(tableResponse);
+//        }
+
+        List<TableResponse> availableTableResponses = new ArrayList<>();
+        for (Table table : availableTables) {
+            TableResponse tableResponse = convertTableToTableResponse(table);
+            availableTableResponses.add(tableResponse);
         }
 
-        List<Table> allTables = new ArrayList<>();
-        allTables.addAll(availableTables);
-        allTables.addAll(unavailableTables);
+        List<TableResponse> unavailableTableResponses = new ArrayList<>();
+        for (Table table : unavailableTables) {
+            TableResponse tableResponse = convertTableToTableResponse(table);
+            tableResponse.setAvailable(false);
+            unavailableTableResponses.add(tableResponse);
+        }
 
-        allTables.sort(Comparator.comparing(Table::getId));
-        return allTables;
+//        List<Table> allTables = new ArrayList<>();
+//        allTables.addAll(availableTables);
+//        allTables.addAll(unavailableTables);
+
+        List<TableResponse> allTableResponses = new ArrayList<>();
+        allTableResponses.addAll(availableTableResponses);
+        allTableResponses.addAll(unavailableTableResponses);
+
+        allTableResponses.sort(Comparator.comparing(TableResponse::getId));
+        return allTableResponses;
     }
 
     @Override
@@ -204,5 +254,15 @@ public class BookingTableServiceImpl implements BookingTableService {
             return new ResponseMessage(400, "Bạn chỉ có thể hủy đặt bàn trong vòng 15 phút sau khi đặt.");
         }
         return new ResponseMessage(200, "Hủy đặt bàn thành công.");
+    }
+
+    private TableResponse convertTableToTableResponse(Table table) {
+        return TableResponse.builder()
+                .id(table.getId())
+                .tableNumber(table.getTableNumber())
+                .capacity(table.getCapacity())
+                .available(table.isAvailable())
+                .catalog(table.getCatalog())
+                .build();
     }
 }
