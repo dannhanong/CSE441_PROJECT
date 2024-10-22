@@ -99,6 +99,8 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
 
         toolbar = view.findViewById(R.id.toolbarTable);
 
+//        btnConfirm.setEnabled(false);
+
         // Thiết lập Toolbar làm ActionBar
         if (getActivity() != null) {
             AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -146,9 +148,9 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
             tvTimeSelected.setText("Thời gian chọn: ");
         });
 
-//        if (getFormattedDateTime() == null || selectedTableIds.isEmpty()) {
-//            btnConfirm.setEnabled(false);
-//        }
+        if (getFormattedDateTime() == null || selectedTableIds.isEmpty()) {
+            btnConfirm.setEnabled(false);
+        }
 
         btnConfirm.setOnClickListener(view1 -> {
 //            Bundle arguments = getArguments();

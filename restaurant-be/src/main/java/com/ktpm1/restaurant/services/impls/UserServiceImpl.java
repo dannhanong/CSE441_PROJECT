@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
         if (currentUser == null) {
             return ResponseMessage.builder()
                     .status(404)
-                    .message("user_not_found")
+                    .message("Người dùng không tồn tại")
                     .build();
         }
 
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
             if (!changePasswordForm.getNewPassword().equals(changePasswordForm.getConfirmPassword())) {
                 return ResponseMessage.builder()
                         .status(400)
-                        .message("password_not_match")
+                        .message("Mật khẩu mới không khớp")
                         .build();
             }
 
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
         } else {
             return ResponseMessage.builder()
                     .status(400)
-                    .message("wrong_password")
+                    .message("Mật khẩu cũ không đúng")
                     .build();
         }
     }

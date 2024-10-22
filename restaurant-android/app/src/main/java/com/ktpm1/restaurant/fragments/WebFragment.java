@@ -1,10 +1,11 @@
 package com.ktpm1.restaurant.fragments;
 
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.LayoutInflater;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -20,8 +21,8 @@ import androidx.fragment.app.Fragment;
 import com.ktpm1.restaurant.R;
 
 public class WebFragment extends Fragment {
-
     private static final String URL_KEY = "url_key";
+    private static final String VNP_RETURN_URL = "/vnpay-payment"; // Đường dẫn callback từ VNPay
     private WebView webView;
     private Toolbar toolbar;
 
@@ -39,88 +40,95 @@ public class WebFragment extends Fragment {
         // Inflate layout chứa WebView
         View view = inflater.inflate(R.layout.fragment_web, container, false);
 
-        init(view);
-
+        init(view); // Khởi tạo các thành phần giao diện
         return view;
     }
 
     private void init(View view) {
-//        toolbar = view.findViewById(R.id.toolbarWeb);
         webView = view.findViewById(R.id.webview); // Khởi tạo WebView từ layout
+        toolbar = view.findViewById(R.id.toolbar_web);
 
         // Cấu hình WebView
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true); // Bật JavaScript nếu trang yêu cầu
 
-        // Mở URL trong WebView thay vì trình duyệt bên ngoài
-        webView.setWebViewClient(new WebViewClient());
+        // Thiết lập WebViewClient để xử lý URL
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.contains(VNP_RETURN_URL)) {
+                    // Xử lý URL trả về từ VNPay
+                    Uri uri = Uri.parse(url);
+                    String transactionStatus = uri.getQueryParameter("vnp_TransactionStatus");
+                    String amount = uri.getQueryParameter("vnp_Amount");
+
+                    // Xử lý kết quả thanh toán
+                    handlePaymentResult(transactionStatus, amount);
+                    return true; // Chặn không cho mở URL ngoài WebView
+                }
+                return false; // Cho phép tải các URL khác trong WebView
+            }
+        });
 
         // Nhận URL từ Bundle
         String url = getArguments() != null ? getArguments().getString(URL_KEY) : null;
         if (url != null) {
-            webView.loadUrl(url);
+            webView.loadUrl(url); // Tải URL
         }
 
-//        // Thiết lập Toolbar làm ActionBar
-//        if (getActivity() != null) {
-//            AppCompatActivity activity = (AppCompatActivity) getActivity();
-//            activity.setSupportActionBar(toolbar);
-//
-//            if (activity.getSupportActionBar() != null) {
-//                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//                activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back); // Icon back tùy chỉnh
-//                activity.getSupportActionBar().setTitle("Thanh toán đơn hàng");
-//            }
-//        }
-//
-//        // Cho phép Fragment lắng nghe sự kiện MenuItem
-//        setHasOptionsMenu(true);
-//
-//        // Xử lý sự kiện nút back trong Fragment
-//        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
-//            @Override
-//            public void handleOnBackPressed() {
-//                if (shouldInterceptBackPress()) {
-//                    Toast.makeText(getContext(), "Back pressed in CartFragment", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    setEnabled(false); // Cho phép hệ thống xử lý sự kiện back
-//                    requireActivity().onBackPressed();
-//                }
-//            }
-//        });
+        // Thiết lập Toolbar làm ActionBar
+        if (getActivity() != null) {
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
+            activity.setSupportActionBar(toolbar);
 
-        // Lắng nghe nút Back
-        view.setFocusableInTouchMode(true);
-        view.requestFocus();
-        view.setOnKeyListener(new View.OnKeyListener() {
+            if (activity.getSupportActionBar() != null) {
+                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back); // Icon back tùy chỉnh
+                activity.getSupportActionBar().setTitle("Thanh toán đơn hàng");
+            }
+        }
+
+        // Cho phép Fragment lắng nghe sự kiện MenuItem
+        setHasOptionsMenu(true);
+
+        // Xử lý sự kiện nút back trong Fragment
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-                    if (webView.canGoBack()) {
-                        webView.goBack(); // Quay lại trang trước trong WebView nếu có
-                        return true;
-                    } else {
-                        // Nếu không thể quay lại trong WebView, quay lại Fragment đích và truyền dữ liệu
-                        sendResultAndGoBack();
-                        return true;
-                    }
+            public void handleOnBackPressed() {
+                if (webView.canGoBack()) {
+                    webView.goBack(); // Quay lại trang trước trong WebView
+                } else {
+                    requireActivity().onBackPressed(); // Quay lại Fragment trước đó
                 }
-                return false;
             }
         });
-
     }
 
-    private void sendResultAndGoBack() {
-        // Tạo dữ liệu để gửi về Fragment trước
-        Bundle result = new Bundle();
-        result.putString("status", "success"); // Truyền dữ liệu status (ví dụ thành công)
+    // Xử lý kết quả thanh toán từ VNPay
+    private void handlePaymentResult(String transactionStatus, String amount) {
+        if ("00".equals(transactionStatus)) {
+            // Thanh toán thành công
+            Toast.makeText(getContext(), "Thanh toán thành công, số tiền: " + amount, Toast.LENGTH_LONG).show();
+        } else {
+            // Thanh toán thất bại
+            Toast.makeText(getContext(), "Thanh toán thất bại.", Toast.LENGTH_LONG).show();
+        }
+        // Quay lại Fragment trước đó sau khi xử lý kết quả
+        requireActivity().getSupportFragmentManager().popBackStack();
+    }
 
-        // Sử dụng setFragmentResult để gửi dữ liệu về Fragment trước
-        getParentFragmentManager().setFragmentResult("requestKey", result);
-
-        // Quay lại Fragment trước đó bằng popBackStack
-        getActivity().getSupportFragmentManager().popBackStack();
+    // Xử lý sự kiện MenuItem trong Toolbar (nút back)
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            if (webView.canGoBack()) {
+                webView.goBack(); // Quay lại trang trước đó trong WebView
+            } else {
+                requireActivity().onBackPressed(); // Quay lại Fragment trước đó
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
