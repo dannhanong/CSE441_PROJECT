@@ -1,5 +1,8 @@
 package com.ktpm1.restaurant.fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,14 +18,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
+import com.ktpm1.restaurant.apis.AuthApi;
+import com.ktpm1.restaurant.configs.ApiClient;
+import com.ktpm1.restaurant.models.User;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class EditProfileFragment extends Fragment {
-
     private EditText nameEditText;
     private EditText emailEditText;
     private Button backButton;
     private Button saveButton;
+    private ImageView profileImage;
 
     @Nullable
     @Override
@@ -36,6 +48,7 @@ public class EditProfileFragment extends Fragment {
         emailEditText = view.findViewById(R.id.txt_emailEditText);
         backButton = view.findViewById(R.id.btn_back);
         saveButton = view.findViewById(R.id.btn_save);
+        profileImage = view.findViewById(R.id.img_profile);
 
         // Load user information
         loadUserInfo();
@@ -55,25 +68,40 @@ public class EditProfileFragment extends Fragment {
     }
 
     private void loadUserInfo() {
-        // This is where you would retrieve the user's information from your data source
-        // For example, using SharedPreferences, a database, or a network call
-        // For demo, let's use hardcoded values
+        AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
+        Call<User> call = authApi.getProfile("Bearer " + token);
 
-        String userName = "Lê Văn Khải";  // Replace with actual data retrieval
-        String userEmail = "example@mail.com";  // Replace with actual data retrieval
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    User user = response.body();
+                    if (user != null) {
+                        String fileCode = user.getAvatarCode();
+                        String imageUrl = BuildConfig.BASE_URL + "/files/preview/" + fileCode;
+                        nameEditText.setText(user.getName());
+                        emailEditText.setText(user.getEmail());
+                        Glide.with(requireContext()).load(imageUrl).into(profileImage);
+                    }
+                } else {
+                    Log.e("EditProfileFragment", "Failed to load user information");
+                }
+            }
 
-        nameEditText.setText(userName);
-        emailEditText.setText(userEmail);
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                // Handle failure
+                Log.e("EditProfileFragment", "Failed to load user information", t);
+            }
+        });
     }
 
     private void saveUserInfo() {
-        // Retrieve input from EditText fields
         String updatedName = nameEditText.getText().toString();
         String updatedEmail = emailEditText.getText().toString();
 
-        // Here you would save the updated information to your data source
-        // For example, saving to SharedPreferences, a database, or sending a network request
-        // For demo, just log the updated values
         Log.d("EditProfileFragment", "Updated Name: " + updatedName);
         Log.d("EditProfileFragment", "Updated Email: " + updatedEmail);
 

@@ -3,29 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <!-- Header với nút back -->
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_back" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Thông tin giỏ hàng"
-            android:textSize="18sp"
-            android:layout_gravity="center"
-            android:layout_marginStart="16dp" />
-
-    </LinearLayout>
+        app:titleTextColor="@color/black"
+        app:navigationIconTint="@color/black"
+        android:elevation="4dp"
+        android:theme="@style/CustomToolbarTheme" />
 
     <!-- Danh sách sản phẩm -->
 

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".fragments.TableFragment">
+
+    <!-- Thanh trên cùng -->
+
+
+    <!-- Text hiển thị tổng số đơn và số bàn trống -->
+
+    <!-- RecyclerView hiển thị danh sách bàn -->
+
+    <!-- Thanh điều hướng dưới cùng -->
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarTable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:theme="@style/CustomToolbarTheme"
+        app:navigationIconTint="@color/black"
+        app:titleTextColor="@color/black"
+        tools:ignore="MissingConstraints" />
+
+    <LinearLayout
+        android:id="@+id/status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarTable"
+        tools:layout_editor_absoluteX="0dp">
+
+
+        <TextView
+            android:id="@+id/txt_time_selected"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Thời gian chọn: "
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="115dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_bt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="Bàn trống: "
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txt_free_tables"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="10"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txt_slash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="/"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txt_total_tables"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="10"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcv_tables_by_catalog"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_margin="14dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/status_bar"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/btn_confirm_table"
+        android:layout_width="wrap_content"
+        android:layout_height="46dp"
+        android:background="@drawable/button_bg"
+        android:text="Xác nhận"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rcv_tables_by_catalog"
+        app:layout_constraintVertical_bias="0.659" />
+
+    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--        android:id="@+id/navigation_bar"-->
+    <!--        android:layout_width="416dp"-->
+    <!--        android:layout_height="55dp"-->
+    <!--        android:background="#FFFFFF"-->
+    <!--        android:gravity="center"-->
+    <!--        android:orientation="horizontal"-->
+    <!--        android:padding="16dp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        tools:ignore="MissingConstraints"-->
+    <!--        tools:layout_editor_absoluteX="-6dp">-->
+
+    <!--        <ImageView-->
+    <!--            android:id="@+id/nav_orders"-->
+    <!--            android:layout_width="30dp"-->
+    <!--            android:layout_height="34dp"-->
+    <!--            android:contentDescription="Orders"-->
+    <!--            android:src="@drawable/ic_orders"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent" />-->
+
+    <!--        <ImageView-->
+    <!--            android:id="@+id/nav_tables"-->
+    <!--            android:layout_width="26dp"-->
+    <!--            android:layout_height="33dp"-->
+    <!--            android:contentDescription="Tables"-->
+    <!--            android:src="@drawable/ic_tables"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--            app:layout_constraintEnd_toStartOf="@+id/nav_payments"-->
+    <!--            app:layout_constraintStart_toEndOf="@+id/nav_orders" />-->
+
+    <!--        <ImageView-->
+    <!--            android:id="@+id/nav_payments"-->
+    <!--            android:layout_width="31dp"-->
+    <!--            android:layout_height="29dp"-->
+    <!--            android:contentDescription="Payments"-->
+    <!--            android:src="@drawable/ic_payments"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent" />-->
+    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--        tools:layout_editor_absoluteX="16dp"-->

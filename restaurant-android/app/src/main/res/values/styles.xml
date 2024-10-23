@@ -4,9 +4,9 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="ShapeAppearance_MaterialComponents_CustomSmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">50%</item>
+    <style name="CustomToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textSize">20sp</item>  <!-- Kích thước title 20sp -->
+        <item name="android:textColor">@color/black</item>  <!-- Màu đen cho title -->
     </style>
 
 </resources>

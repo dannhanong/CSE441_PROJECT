@@ -30,8 +30,11 @@ public class Order {
     Table table;
     LocalDateTime orderTime;
     long totalPrice;
+    @Enumerated(EnumType.STRING)
     OrderStatus status;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     Set<OrderItem> orderItems = new HashSet<>();
+    boolean paid = false;
+    LocalDateTime createdAt = LocalDateTime.now();
 }
 

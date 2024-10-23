@@ -1,0 +1,19 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Không có sự thay đổi nào khi TextView được nhấn -->
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/white"/> <!-- Giữ màu trắng khi nhấn -->
+            <corners android:radius="16dp"/>
+            <stroke android:width="2dp" android:color="@color/black"/> <!-- Viền đen khi nhấn -->
+        </shape>
+    </item>
+
+    <!-- Trạng thái bình thường -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/white"/> <!-- Màu trắng bình thường -->
+            <corners android:radius="16dp"/>
+            <stroke android:width="2dp" android:color="@color/black"/> <!-- Viền đen bình thường -->
+        </shape>
+    </item>
+</selector>

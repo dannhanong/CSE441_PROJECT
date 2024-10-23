@@ -16,12 +16,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PaymentMethod {
+public class PaymentMethodDefault {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String name;
-    @ManyToMany(mappedBy = "paymentMethods")
+    PaymentMethod paymentMethodEnum;
+    @ManyToMany(mappedBy = "paymentMethodDefaults")
     @JsonIgnore
     Set<User> users = new HashSet<>();
 }

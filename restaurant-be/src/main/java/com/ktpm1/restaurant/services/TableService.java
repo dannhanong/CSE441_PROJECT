@@ -1,8 +1,10 @@
 package com.ktpm1.restaurant.services;
 
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
+import com.ktpm1.restaurant.models.Catalog;
 import com.ktpm1.restaurant.models.Table;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TableService {
@@ -13,4 +15,5 @@ public interface TableService {
     List<Table> getAllTable();
     ResponseMessage deleteTable(Long id);
     Table updateTableStatus(Long id);
+    List<Table> getTableByCatalog(Long catalogId);
 }
