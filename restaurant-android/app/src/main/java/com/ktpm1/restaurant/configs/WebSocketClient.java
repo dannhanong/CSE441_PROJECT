@@ -1,46 +1,46 @@
 package com.ktpm1.restaurant.configs;
 
-import org.json.JSONObject;
-
-import lombok.SneakyThrows;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 public class WebSocketClient extends WebSocketListener {
+
+    private static final int NORMAL_CLOSURE_STATUS = 1000;
     private WebSocket webSocket;
-    private WebSocketCallback callback;
 
-    public WebSocketClient(WebSocketCallback callback) {
-        this.callback = callback;
-    }
-
-    public void startWebSocket() {
+    public void connectWebSocket(String wsUrl) {
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url("ws://your-server-ip/ws/table-reservation").build();
-        webSocket = client.newWebSocket(request, this);
+        Request request = new Request.Builder().url(wsUrl).build();
+        webSocket = client.newWebSocket(request, this); // Khởi tạo WebSocket với listener này
+        client.dispatcher().executorService().shutdown(); // Quản lý kết nối
     }
 
-    @SneakyThrows
     @Override
     public void onMessage(WebSocket webSocket, String text) {
-        // Nhận thông tin cập nhật từ server
-        JSONObject jsonObject = new JSONObject(text);
-        int tableId = jsonObject.getInt("tableId");
-        String status = jsonObject.getString("status");
+        System.out.println("Receiving : " + text);
+    }
 
-        // Gọi callback để cập nhật giao diện
-        callback.onTableStatusUpdated(tableId, status);
+    @Override
+    public void onOpen(WebSocket webSocket, okhttp3.Response response) {
+        System.out.println("WebSocket opened!");
+        // Gửi message thử nếu cần
+        webSocket.send("Hello Server!");
+    }
+
+    @Override
+    public void onClosing(WebSocket webSocket, int code, String reason) {
+        webSocket.close(NORMAL_CLOSURE_STATUS, null);
     }
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, okhttp3.Response response) {
-        // Xử lý khi lỗi
+        t.printStackTrace();
     }
 
-    // Interface callback
-    public interface WebSocketCallback {
-        void onTableStatusUpdated(int tableId, String status);
+    public void closeWebSocket() {
+        webSocket.close(NORMAL_CLOSURE_STATUS, "Goodbye!");
     }
 }

@@ -29,7 +29,7 @@ public class Order {
     @JoinColumn(name = "table_id")
     Table table;
     LocalDateTime orderTime;
-    long totalPrice;
+    int totalPrice;
     @Enumerated(EnumType.STRING)
     OrderStatus status;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

@@ -15,6 +15,6 @@ public class OrderItem {
     Order order;
     Food food;
     int quantity;
-    long itemPrice;
+    int itemPrice;
 }
 

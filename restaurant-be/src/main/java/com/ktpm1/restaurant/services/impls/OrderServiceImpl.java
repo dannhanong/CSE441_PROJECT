@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -41,19 +42,11 @@ public class OrderServiceImpl implements OrderService {
     public EventCreateOrder createOrder(String username) {
         User user = userRepository.findByUsername(username);
         Cart cart = cartRepository.findByUser(user);
-        List<BookingTable> bookingTables = bookingTableRepository.findByUser(user);
+        List<BookingTable> bookingTables = bookingTableRepository.findByUserAndPaidFalse(user);
 
         if (cart == null || cart.getCartItems().isEmpty()) {
             return null;
         }
-
-//        Order order = Order.builder()
-//                .user(user)
-//                .status(OrderStatus.CREATED)
-//                .table(tableRepository.findById(orderRequest.getTableId()).orElse(null))
-//                .orderTime(orderRequest.getOrderTime())
-//                .totalPrice(cart.getTotalPrice())
-//                .build();
 
         List<Order> orders = new ArrayList<>();
 
@@ -64,34 +57,25 @@ public class OrderServiceImpl implements OrderService {
             order.setTable(bookingTable.getTable());
             order.setOrderTime(LocalDateTime.now());
             order.setTotalPrice(cart.getTotalPrice());
-
-            historyBookingTableRepository.save(HistoryBookingTable.builder()
-                    .id(bookingTable.getId())
-                    .table(bookingTable.getTable())
-                    .user(bookingTable.getUser())
-                    .bookingTime(bookingTable.getBookingTime())
-                    .startTime(bookingTable.getStartTime())
-                    .endTime(bookingTable.getEndTime())
-                    .paid(bookingTable.isPaid())
-                    .updatedAvailableStart(false)
-                    .updatedAvailableEnd(false)
-                    .build());
+            bookingTable.setPaid(true);
+            bookingTableRepository.save(bookingTable);
 
             for (CartItem cartItem : cart.getCartItems()) {
                 OrderItem orderItem = OrderItem.builder()
                         .food(cartItem.getFood())
                         .quantity(cartItem.getQuantity())
                         .itemPrice(cartItem.getPrice())
+                        .order(order)
                         .build();
                 order.getOrderItems().add(orderItem);
             }
-//            kafkaTemplate.send("create-order", EventCreateOrder.builder().order(order).cart(cart).build());
-//            oderRepository.save(order);
-//            cartRepository.delete(cart);
-            orders.add(order);
+
+            orders.add(oderRepository.save(order));
         }
-//        bookingTableRepository.deleteAll(bookingTables);
-        return EventCreateOrder.builder().orders(orders).cart(cart).build();
+        return EventCreateOrder.builder()
+                .orders(orders)
+                .bookingTables(bookingTables)
+                .cart(cart).build();
     }
 
     @Override
@@ -114,6 +98,7 @@ public class OrderServiceImpl implements OrderService {
                     .food(cartItem.getFood())
                     .quantity(cartItem.getQuantity())
                     .itemPrice(cartItem.getPrice())
+                    .order(order)
                     .build();
             order.getOrderItems().add(orderItem);
         }
@@ -225,6 +210,15 @@ public class OrderServiceImpl implements OrderService {
 //
 //        return result;
         return null;
+    }
+
+    private OrderItem fromCartItemToOrderItem(CartItem cartItem, Order order) {
+        return OrderItem.builder()
+                .food(cartItem.getFood())
+                .quantity(cartItem.getQuantity())
+                .itemPrice(cartItem.getPrice())
+                .order(order)
+                .build();
     }
 
     @Override

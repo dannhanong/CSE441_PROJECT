@@ -9,4 +9,9 @@
         <item name="android:textColor">@color/black</item>  <!-- Màu đen cho title -->
     </style>
 
+    <style name="Theme.TransparentModal" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/semi_transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 </resources>

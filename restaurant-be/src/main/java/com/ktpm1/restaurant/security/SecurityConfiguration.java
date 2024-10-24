@@ -59,7 +59,8 @@ public class SecurityConfiguration {
                 CorsConfiguration corsConfig = new CorsConfiguration();
                 corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
                 corsConfig.addAllowedHeader("*");
-                corsConfig.addAllowedOrigin("*");
+                corsConfig.addAllowedOriginPattern("*");
+                corsConfig.setAllowCredentials(true);
                 return corsConfig;
             });
         });

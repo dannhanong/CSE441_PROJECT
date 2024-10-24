@@ -18,7 +18,7 @@ public class Order {
     User user;
     Table table;
     LocalDateTime orderTime;
-    long totalPrice;
+    int totalPrice;
     OrderStatus status;
     Set<OrderItem> orderItems = new HashSet<>();
     boolean paid = false;

@@ -27,6 +27,6 @@ public class OrderItem {
     @JoinColumn(name = "food_id")
     Food food;
     int quantity;
-    long itemPrice;
+    int itemPrice;
 }
 

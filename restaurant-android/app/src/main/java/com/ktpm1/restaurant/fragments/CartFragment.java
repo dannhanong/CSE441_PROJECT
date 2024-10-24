@@ -115,15 +115,11 @@ public class CartFragment extends Fragment {
         });
 
         // Xử lý sự kiện thêm món mới
-        tvAddMoreItems.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        tvAddMoreItems.setOnClickListener(view1 ->
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new SearchFragment())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+                .replace(R.id.fragment_container, new SearchFragment())
+                .addToBackStack(null)
+                .commit());
 
         return view;
     }

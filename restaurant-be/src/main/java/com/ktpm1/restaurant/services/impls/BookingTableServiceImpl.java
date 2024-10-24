@@ -15,6 +15,7 @@ import com.ktpm1.restaurant.repositories.UserRepository;
 import com.ktpm1.restaurant.services.BookingTableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,8 @@ public class BookingTableServiceImpl implements BookingTableService {
     private TableRepository tableRepository;
     @Autowired
     private CatalogRepository catalogRepository;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public ResponseMessage createBookingTable(String username, BookingTableRequest bookingTableRequest) {
@@ -43,7 +46,7 @@ public class BookingTableServiceImpl implements BookingTableService {
 
         for (Long tableId : tableIds) {
             if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
-                throw new RuntimeException("Table is not available at the selected time.");
+                throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
             } else {
                 Table table = tableRepository.findById(tableId).orElse(null);
                 BookingTable bookingTable = new BookingTable();
@@ -57,14 +60,15 @@ public class BookingTableServiceImpl implements BookingTableService {
                 bookingTable.setEndTime(endTime);
 
                 if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
-                    throw new RuntimeException("Table is not available at the selected time.");
+                    throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
                 }
 
                 bookingTableRepository.save(bookingTable);
             }
         }
-
-        return new ResponseMessage(200, "Đặt bàn thành công.");
+        ResponseMessage responseMessage = new ResponseMessage(200, "Đặt bàn thành công.");
+        simpMessagingTemplate.convertAndSend("/topic/bookings", responseMessage);
+        return responseMessage;
     }
 
     @Override

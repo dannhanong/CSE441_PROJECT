@@ -7,6 +7,8 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -19,6 +21,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -29,10 +35,12 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.TableAdapter;
 import com.ktpm1.restaurant.apis.BookingTableApi;
@@ -68,6 +76,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
     private AlertDialog dialog;
     private Toolbar toolbar;
     private Button btnConfirm;
+    private ImageView imgHelp;
 
     public TableFragment() {
     }
@@ -96,6 +105,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
         selectedTableIds = new ArrayList<>();
         rcvTables.setLayoutManager(new GridLayoutManager(getContext(), 3));
         btnConfirm = view.findViewById(R.id.btn_confirm_table);
+        imgHelp = view.findViewById(R.id.img_help);
 
         toolbar = view.findViewById(R.id.toolbarTable);
 
@@ -157,6 +167,47 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
             createBookingTable();
         });
 
+        imgHelp.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Hướng dẫn chọn bàn");
+
+            // Tạo SpannableStringBuilder để chứa văn bản với định dạng khác nhau
+            SpannableStringBuilder message = new SpannableStringBuilder();
+
+            // Phần đầu tiên của thông báo (không định dạng)
+            message.append("Chọn ngày và giờ bạn muốn đặt bàn, sau đó chọn bàn bạn muốn đặt. " +
+                    "Sau khi chọn xong, nhấn nút Xác nhận để hoàn tất đặt bàn.\n\n");
+
+            // Phần "Chú ý:" được in nghiêng
+            SpannableString notice = new SpannableString("Chú ý: \n");
+            notice.setSpan(new StyleSpan(Typeface.BOLD), 0, notice.length(), 0);  // In nghiêng
+            message.append(notice);
+
+            // Phần dưới "Chú ý" có màu đỏ
+            SpannableString redText1 = new SpannableString("\t(*) Bạn chỉ có thể đặt bàn từ 7:00 đến 19:30 trong ngày\n");
+            SpannableString redText2 = new SpannableString("\t(*) Mỗi bàn mặc định có thời gian đặt là 2 tiếng, nếu bạn muốn đặt thời gian khác, " +
+                    "hãy chọn thêm thời gian phù hợp với nhu cầu, tránh làm ảnh hưởng đến những khách hàng khác.");
+
+            // Áp dụng màu đỏ cho văn bản
+            redText1.setSpan(new ForegroundColorSpan(Color.RED), 0, redText1.length(), 0);
+            redText1.setSpan(new StyleSpan(Typeface.ITALIC), 0, redText1.length(), 0);
+            redText2.setSpan(new ForegroundColorSpan(Color.RED), 0, redText2.length(), 0);
+            redText2.setSpan(new StyleSpan(Typeface.ITALIC), 0, redText2.length(), 0);
+
+            // Thêm phần văn bản có màu đỏ vào thông báo
+            message.append(redText1);
+            message.append(redText2);
+
+            // Đặt nội dung cho AlertDialog
+            builder.setMessage(message);
+
+            // Nút "Đã hiểu"
+            builder.setPositiveButton("Đã hiểu", (dialog, which) -> dialog.dismiss());
+
+            // Hiển thị AlertDialog
+            builder.show();
+        });
+
     }
 
     private void showDateTimePicker() {
@@ -164,25 +215,25 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
         View dialogView = inflater.inflate(R.layout.dialog_time_prompt, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(dialogView);
-        TextView timePrompt = dialogView.findViewById(R.id.timePrompt);
-        timePrompt.setText("Chọn ngày và giờ để xem trạng thái bàn");
-        dialog = builder.create();
-        Window window = dialog.getWindow();
-        if (window != null) {
-            // Đặt các thuộc tính cho window
-            WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-            layoutParams.copyFrom(window.getAttributes());
-            layoutParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL; // Đặt vị trí ở góc trên
-            layoutParams.y = 50; // Khoảng cách từ trên cùng (thay đổi giá trị này tùy theo ý muốn)
-            window.setAttributes(layoutParams);
-
-            layoutParams.dimAmount = 1.0f; // Độ mờ của nền (0.0f: không mờ, 1.0f: mờ hoàn toàn)
-            window.setAttributes(layoutParams);
-
-            // Cho phép làm mờ nền
-            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            window.setWindowAnimations(android.R.style.Animation_Dialog);
-        }
+//        TextView timePrompt = dialogView.findViewById(R.id.timePrompt);
+//        timePrompt.setText("Chọn ngày và giờ để xem trạng thái bàn");
+//        dialog = builder.create();
+//        Window window = dialog.getWindow();
+//        if (window != null) {
+//            // Đặt các thuộc tính cho window
+//            WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+//            layoutParams.copyFrom(window.getAttributes());
+//            layoutParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL; // Đặt vị trí ở góc trên
+//            layoutParams.y = 50; // Khoảng cách từ trên cùng (thay đổi giá trị này tùy theo ý muốn)
+//            window.setAttributes(layoutParams);
+//
+//            layoutParams.dimAmount = 1.0f; // Độ mờ của nền (0.0f: không mờ, 1.0f: mờ hoàn toàn)
+//            window.setAttributes(layoutParams);
+//
+//            // Cho phép làm mờ nền
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+//            window.setWindowAnimations(android.R.style.Animation_Dialog);
+//        }
 
         calendar = Calendar.getInstance();
 //        selectedYear = calendar.get(Calendar.YEAR);
@@ -202,26 +253,40 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
 
             showTimePicker();
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
-        dialog.show();
+//        dialog.show();
     }
 
     private void showTimePicker() {
-        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                // Lưu giờ được chọn
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (view, hourOfDay, minute) -> {
+            // Kiểm tra giờ được chọn có nằm ngoài phạm vi hợp lệ không
+            if (hourOfDay < 7 || (hourOfDay == 19 && minute > 30) || hourOfDay > 19) {
+                // Hiển thị thông báo nếu giờ không hợp lệ
+                Snackbar snackbar = Snackbar.make(getView(), "Chỉ có thể chọn thời gian từ 7:00 đến 19:30", 5000);
+
+                // Truy cập vào TextView của Snackbar để thay đổi màu chữ
+                View snackbarView = snackbar.getView();
+                TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+                textView.setTextColor(getResources().getColor(R.color.green));
+                textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                snackbar.show();
+
+                showTimePicker();
+            } else {
+                // Lưu giờ được chọn sau khi đã kiểm tra
                 selectedHour = hourOfDay;
                 selectedMinute = minute;
 
-//                Toast.makeText(getContext(), "Time: " + hourOfDay + ":" + minute, Toast.LENGTH_SHORT).show();
-                tvTimeSelected.append(" " + hourOfDay + ":" + minute);
-                dialog.dismiss();
+                // Hiển thị thời gian đã chọn
+                String formattedTime = String.format("%02d:%02d", hourOfDay, minute);
+                tvTimeSelected.append(" " + formattedTime);
 
-                // Sau khi người dùng chọn ngày và giờ, gọi API để lấy trạng thái bàn
+                // Gọi API để lấy trạng thái bàn sau khi người dùng chọn thời gian
                 fetchTables();
             }
         }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+
         timePickerDialog.show();
     }
 

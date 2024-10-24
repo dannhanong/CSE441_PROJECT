@@ -111,46 +111,29 @@
         app:layout_constraintTop_toBottomOf="@+id/rcv_tables_by_catalog"
         app:layout_constraintVertical_bias="0.659" />
 
-    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-    <!--        android:id="@+id/navigation_bar"-->
-    <!--        android:layout_width="416dp"-->
-    <!--        android:layout_height="55dp"-->
-    <!--        android:background="#FFFFFF"-->
-    <!--        android:gravity="center"-->
-    <!--        android:orientation="horizontal"-->
-    <!--        android:padding="16dp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        tools:ignore="MissingConstraints"-->
-    <!--        tools:layout_editor_absoluteX="-6dp">-->
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hướng dẫn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_confirm_table"
+        app:layout_constraintHorizontal_bias="0.063"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rcv_tables_by_catalog"
+        app:layout_constraintVertical_bias="0.789" />
 
-    <!--        <ImageView-->
-    <!--            android:id="@+id/nav_orders"-->
-    <!--            android:layout_width="30dp"-->
-    <!--            android:layout_height="34dp"-->
-    <!--            android:contentDescription="Orders"-->
-    <!--            android:src="@drawable/ic_orders"-->
-    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--            app:layout_constraintStart_toStartOf="parent" />-->
-
-    <!--        <ImageView-->
-    <!--            android:id="@+id/nav_tables"-->
-    <!--            android:layout_width="26dp"-->
-    <!--            android:layout_height="33dp"-->
-    <!--            android:contentDescription="Tables"-->
-    <!--            android:src="@drawable/ic_tables"-->
-    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--            app:layout_constraintEnd_toStartOf="@+id/nav_payments"-->
-    <!--            app:layout_constraintStart_toEndOf="@+id/nav_orders" />-->
-
-    <!--        <ImageView-->
-    <!--            android:id="@+id/nav_payments"-->
-    <!--            android:layout_width="31dp"-->
-    <!--            android:layout_height="29dp"-->
-    <!--            android:contentDescription="Payments"-->
-    <!--            android:src="@drawable/ic_payments"-->
-    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent" />-->
-    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+    <ImageView
+        android:id="@+id/img_help"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_help"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_confirm_table"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textView9"
+        app:layout_constraintTop_toBottomOf="@+id/rcv_tables_by_catalog"
+        app:layout_constraintVertical_bias="0.786" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

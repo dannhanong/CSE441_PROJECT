@@ -10,4 +10,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="red_orange">#CB664F</color>
     <color name="green">#00FF00</color>
+    <color name="semi_transparent">#80000000</color> <!-- Nền mờ (50% đen) -->
 </resources>

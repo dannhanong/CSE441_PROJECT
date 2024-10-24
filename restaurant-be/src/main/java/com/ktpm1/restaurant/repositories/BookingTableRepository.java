@@ -27,6 +27,7 @@ public interface BookingTableRepository extends JpaRepository<BookingTable, Long
     List<BookingTable> findByStartTimeBeforeAndUpdatedFalse(LocalDateTime currentTime);
     List<BookingTable> findByEndTimeBeforeAndUpdatedFalse(LocalDateTime currentTime);
     List<BookingTable> findByUser(User user);
+    List<BookingTable> findByUserAndPaidFalse(User user);
     @Query("SELECT b FROM BookingTable b WHERE b.user.id = :userId AND b.bookingTime = (SELECT MAX(b2.bookingTime) FROM BookingTable b2 WHERE b2.user.id = :userId)")
     List<BookingTable> findLatestBookingsByUserIdAndBookingTime(@Param("userId") Long userId);
 }
