@@ -1,5 +1,6 @@
 package com.ktpm1.restaurant.controllers;
 
+import com.ktpm1.restaurant.dtos.request.PaymentMethodRequest;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
 import com.ktpm1.restaurant.models.PaymentMethodDefault;
 import com.ktpm1.restaurant.security.jwt.JwtService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @RestController
@@ -23,10 +25,11 @@ public class PaymentMethodDefaultController {
     private JwtService jwtService;
 
     @PostMapping("/add")
-    public ResponseEntity<ResponseMessage> addPaymentMethodDefault(@RequestBody Set<PaymentMethodDefault> paymentMethodDefaults,
+    public ResponseEntity<ResponseMessage> addPaymentMethodDefault(@RequestBody PaymentMethodRequest paymentMethodRequest,
                                                                    HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
+        Set<PaymentMethodDefault> paymentMethodDefaults = new HashSet<>(paymentMethodRequest.getPaymentMethodDefaults());
         return ResponseEntity.ok(paymentMethodDefaultService.addPaymentMethodDefault(username, paymentMethodDefaults));
     }
 
