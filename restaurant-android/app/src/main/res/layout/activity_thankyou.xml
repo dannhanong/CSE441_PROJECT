@@ -34,6 +34,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cảm ơn bạn đã sử dụng dịch vụ!"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textColor="@color/blue_bg"
         android:textSize="18sp"
         android:layout_marginTop="20dp"
         android:gravity="center" />
@@ -42,6 +45,7 @@
         android:id="@+id/button_ok"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_bg"
         android:layout_marginTop="20dp"
         android:text="OK" />
     </LinearLayout>

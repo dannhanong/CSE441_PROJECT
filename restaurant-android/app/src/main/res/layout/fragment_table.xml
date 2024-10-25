@@ -8,14 +8,6 @@
     tools:context=".fragments.TableFragment">
 
     <!-- Thanh trên cùng -->
-
-
-    <!-- Text hiển thị tổng số đơn và số bàn trống -->
-
-    <!-- RecyclerView hiển thị danh sách bàn -->
-
-    <!-- Thanh điều hướng dưới cùng -->
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarTable"
         android:layout_width="match_parent"
@@ -26,68 +18,97 @@
         app:titleTextColor="@color/black"
         tools:ignore="MissingConstraints" />
 
+    <!-- Thanh trạng thái hiển thị thời gian và số bàn trống -->
     <LinearLayout
         android:id="@+id/status_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:gravity="center"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@+id/toolbarTable"
         tools:layout_editor_absoluteX="0dp">
 
-
         <TextView
             android:id="@+id/txt_time_selected"
-            android:layout_width="130dp"
+            android:layout_width="match_parent"
+            android:textAlignment="center"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Thời gian chọn: "
+            android:textColor="@color/blue_bg"
             android:textSize="16sp" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="115dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/txt_bt"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginTop="5dp"
+                    android:text="Đặt thêm: ">
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/spinner_additional_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:entries="@array/additional_time_options" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="Bàn trống: "
-                android:textSize="16sp" />
+                android:layout_marginStart="60dp"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/txt_free_tables"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="10"
-                android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/txt_bt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="Bàn trống: "
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/txt_slash"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="/"
-                android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/txt_free_tables"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="10"
+                    android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/txt_total_tables"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="10"
-                android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/txt_slash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="/"
+                    android:textSize="16sp" />
 
+                <TextView
+                    android:id="@+id/txt_total_tables"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="10"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
+    <!-- RecyclerView hiển thị danh sách bàn -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_tables_by_catalog"
         android:layout_width="match_parent"
@@ -98,10 +119,11 @@
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="MissingConstraints" />
 
+    <!-- Button xác nhận -->
     <Button
         android:id="@+id/btn_confirm_table"
         android:layout_width="wrap_content"
-        android:layout_height="46dp"
+        android:layout_height="38dp"
         android:background="@drawable/button_bg"
         android:text="Xác nhận"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -111,6 +133,7 @@
         app:layout_constraintTop_toBottomOf="@+id/rcv_tables_by_catalog"
         app:layout_constraintVertical_bias="0.659" />
 
+    <!-- TextView và ImageView cho phần hướng dẫn -->
     <TextView
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
@@ -136,5 +159,3 @@
         app:layout_constraintVertical_bias="0.786" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!--        tools:layout_editor_absoluteX="16dp"-->

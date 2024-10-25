@@ -1,10 +1,11 @@
 package com.ktpm1.restaurant.configs;
 
+import android.util.Log;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
-import okio.ByteString;
 
 public class WebSocketClient extends WebSocketListener {
 
@@ -20,14 +21,12 @@ public class WebSocketClient extends WebSocketListener {
 
     @Override
     public void onMessage(WebSocket webSocket, String text) {
-        System.out.println("Receiving : " + text);
+        Log.e("WebSocket", "Receiving : " + text);
     }
 
     @Override
     public void onOpen(WebSocket webSocket, okhttp3.Response response) {
-        System.out.println("WebSocket opened!");
-        // Gửi message thử nếu cần
-        webSocket.send("Hello Server!");
+        Log.e("WebSocket", "Connection opened");
     }
 
     @Override
@@ -37,6 +36,7 @@ public class WebSocketClient extends WebSocketListener {
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, okhttp3.Response response) {
+        Log.e("WebSocket", "Error : " + t.getMessage());
         t.printStackTrace();
     }
 

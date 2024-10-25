@@ -21,21 +21,22 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Looper;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ import com.ktpm1.restaurant.adapters.TableAdapter;
 import com.ktpm1.restaurant.apis.BookingTableApi;
 import com.ktpm1.restaurant.apis.OrderApi;
 import com.ktpm1.restaurant.configs.ApiClient;
+import com.ktpm1.restaurant.configs.WebSocketClient;
 import com.ktpm1.restaurant.dtos.requests.BookingTableRequest;
 import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
 import com.ktpm1.restaurant.dtos.responses.TableResponse;
@@ -58,11 +60,22 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import ua.naiksoftware.stomp.StompClient;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.widget.Toast;
+
+import ua.naiksoftware.stomp.Stomp;
+import ua.naiksoftware.stomp.StompClient;
+
+import okhttp3.WebSocket;
 
 public class TableFragment extends Fragment implements TableAdapter.OnTableSelectionChangedListener{
     private Long catalogId;
@@ -77,6 +90,12 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
     private Toolbar toolbar;
     private Button btnConfirm;
     private ImageView imgHelp;
+    private Spinner additionalTimeSpinner;
+    private HashMap<String, Integer> additionalTimeMap;
+    private int additionalTime;
+    private WebSocketClient webSocketClient;
+    private StompClient stompClient;
+    private List<TableResponse> tableListAfter;
 
     public TableFragment() {
     }
@@ -88,12 +107,35 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_table, container, false);
+//        webSocketClient = new WebSocketClient();
+//        webSocketClient.connectWebSocket("ws://192.168.1.10:8080/ws/websocket");
+
+        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.1.15:8080/ws/websocket");
+
+        // Kết nối
+        stompClient.connect();
+
+        // Subscribe tới topic "/topic/bookings"
+        stompClient.topic("/topic/bookings").subscribe(message -> {
+            Log.e("WebSocket", "Message received: " + message.getPayload());
+
+            new Handler(Looper.getMainLooper()).post(() ->
+                    updateTableStatus());
+        });
 
         init(view);
 
         fetchTables();
 
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (stompClient != null) {
+            stompClient.disconnect();  // Đóng kết nối WebSocket khi Activity bị hủy
+        }
     }
 
     private void init(View view) {
@@ -108,6 +150,35 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
         imgHelp = view.findViewById(R.id.img_help);
 
         toolbar = view.findViewById(R.id.toolbarTable);
+        additionalTimeSpinner = view.findViewById(R.id.spinner_additional_time);
+
+        additionalTimeMap = new HashMap<>();
+        additionalTimeMap.put("Có sẵn", 0);
+        additionalTimeMap.put("1 giờ", 1);
+        additionalTimeMap.put("2 giờ", 2);
+        additionalTimeMap.put("3 giờ", 3);
+        additionalTimeMap.put("4 giờ", 4);
+        additionalTimeMap.put("5 giờ", 5);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.additional_time_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        additionalTimeSpinner.setAdapter(adapter);
+
+        additionalTimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selectedOption = parentView.getItemAtPosition(position).toString();
+                int selectedTime = additionalTimeMap.get(selectedOption);
+                additionalTime = selectedTime;
+
+                fetchTables();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+            }
+        });
 
 //        btnConfirm.setEnabled(false);
 
@@ -207,7 +278,6 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
             // Hiển thị AlertDialog
             builder.show();
         });
-
     }
 
     private void showDateTimePicker() {
@@ -316,7 +386,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
     private void fetchTables() {
         String formattedDateTime = getFormattedDateTime();
         BookingTableApi bookingTableApi = ApiClient.getClient().create(BookingTableApi.class);
-        Call<List<TableResponse>> call = bookingTableApi.getStatusTableByAvailable(formattedDateTime, 0,catalogId);
+        Call<List<TableResponse>> call = bookingTableApi.getStatusTableByAvailable(formattedDateTime, additionalTime,catalogId);
         call.enqueue(new Callback<List<TableResponse>>() {
             @Override
             public void onResponse(Call<List<TableResponse>> call, Response<List<TableResponse>> response) {
@@ -327,6 +397,38 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
                         rcvTables.setAdapter(tableAdapter);
                         tvFreeTables.setText(String.valueOf(tableList.stream().map(TableResponse::isAvailable).filter(available -> available).count()));
                         tvTotalTables.setText(String.valueOf(tableList.size()));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<TableResponse>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    private void updateTableStatus() {
+        String formattedDateTime = getFormattedDateTime();
+        BookingTableApi bookingTableApi = ApiClient.getClient().create(BookingTableApi.class);
+        Call<List<TableResponse>> call = bookingTableApi.getStatusTableByAvailable(formattedDateTime, additionalTime,catalogId);
+        call.enqueue(new Callback<List<TableResponse>>() {
+            @Override
+            public void onResponse(Call<List<TableResponse>> call, Response<List<TableResponse>> response) {
+                if (response.isSuccessful()) {
+                    tableListAfter = response.body();
+
+                    if (tableListAfter != null) {
+                        for (int i = 0; i < tableList.size(); i++) {
+                            TableResponse oldTable = tableList.get(i);
+                            TableResponse newTable = tableListAfter.get(i);
+
+                            if (oldTable.isAvailable() != newTable.isAvailable()) {
+                                tableList.set(i, newTable);
+                                rcvTables.getAdapter().notifyItemChanged(i);
+                                tvFreeTables.setText(String.valueOf(tableList.stream().map(TableResponse::isAvailable).filter(available -> available).count()));
+                            }
+                        }
                     }
                 }
             }
@@ -355,7 +457,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
         String formattedDateTime = getFormattedDateTime();
 
         BookingTableApi bookingTableApi = ApiClient.getClient().create(BookingTableApi.class);
-        BookingTableRequest bookingTableRequest = new BookingTableRequest(selectedTableIds, formattedDateTime, 0); // Gửi chuỗi định dạng
+        BookingTableRequest bookingTableRequest = new BookingTableRequest(selectedTableIds, formattedDateTime, additionalTime);
 
         Call<ResponseMessage> call = bookingTableApi.createBookingTable("Bearer " + token, bookingTableRequest);
         call.enqueue(new Callback<ResponseMessage>() {
@@ -440,7 +542,6 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
                     // Tạo instance WebFragment và truyền URL
                     WebFragment webFragment = WebFragment.newInstance(url);
 
-                    // Thay thế Fragment hiện tại bằng WebFragment để hiển thị trang VNPay
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, webFragment) // R.id.fragment_container là container của fragment trong Activity của bạn
                             .addToBackStack(null) // Thêm vào BackStack để có thể quay lại

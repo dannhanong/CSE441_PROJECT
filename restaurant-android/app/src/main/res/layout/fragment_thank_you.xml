@@ -26,10 +26,11 @@
             android:id="@+id/thank_you_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:textStyle="bold"
             android:text="Cảm ơn bạn đã sử dụng dịch vụ!"
-            android:textColor="@android:color/black"
+            android:textColor="@color/blue_bg"
             android:textSize="16sp" />
 
         <Button

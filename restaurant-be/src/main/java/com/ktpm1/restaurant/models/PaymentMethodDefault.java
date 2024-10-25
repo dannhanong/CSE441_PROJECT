@@ -20,6 +20,7 @@ public class PaymentMethodDefault {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Enumerated(EnumType.STRING)
     PaymentMethod paymentMethodEnum;
     @ManyToMany(mappedBy = "paymentMethodDefaults")
     @JsonIgnore

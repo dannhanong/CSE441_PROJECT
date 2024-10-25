@@ -67,7 +67,7 @@ public class BookingTableServiceImpl implements BookingTableService {
             }
         }
         ResponseMessage responseMessage = new ResponseMessage(200, "Đặt bàn thành công.");
-        simpMessagingTemplate.convertAndSend("/topic/bookings", responseMessage);
+        simpMessagingTemplate.convertAndSend("/topic/bookings", "success_booking");
         return responseMessage;
     }
 
