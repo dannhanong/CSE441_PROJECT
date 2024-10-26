@@ -1,66 +1,96 @@
 package com.ktpm1.restaurant.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.tabs.TabLayout;
 import com.ktpm1.restaurant.R;
+import com.ktpm1.restaurant.adapters.FoodHistoryAdapter;
+import com.ktpm1.restaurant.apis.FoodHistoryApi;
+import com.ktpm1.restaurant.configs.ApiClient;
+import com.ktpm1.restaurant.models.Food;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RecentFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class RecentFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private RecyclerView recyclerView;
+    private FoodHistoryAdapter adapter;
+    private TabLayout tabLayout;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public RecentFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RecentFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RecentFragment newInstance(String param1, String param2) {
-        RecentFragment fragment = new RecentFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_recent, container, false);
+
+        tabLayout = view.findViewById(R.id.tabLayout);
+        recyclerView = view.findViewById(R.id.recyclerViewFoodHistory);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // Thêm tab thủ công
+        tabLayout.addTab(tabLayout.newTab().setText("Mới nhất"));
+        tabLayout.addTab(tabLayout.newTab().setText("Cũ nhất"));
+
+        // Gọi phương thức load dữ liệu
+        loadFoodHistory();
+
+        // Xử lý sự kiện chọn tab
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                // Tải lại dữ liệu dựa trên tab được chọn
+                loadFoodHistory();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        return view;
+    }
+
+    private void loadFoodHistory() {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
+
+        if (token == null) {
+            Toast.makeText(getContext(), "Token not found", Toast.LENGTH_SHORT).show();
+            return;
         }
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recent, container, false);
+        FoodHistoryApi api = ApiClient.getClient().create(FoodHistoryApi.class);
+        Call<List<Food>> call = api.getMyFoodHistory("Bearer " + token);
+
+        call.enqueue(new Callback<List<Food>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Food>> call, @NonNull Response<List<Food>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Food> foodList = response.body();
+                    adapter = new FoodHistoryAdapter(foodList);
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    Toast.makeText(getContext(), "Failed to load food history", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Food>> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

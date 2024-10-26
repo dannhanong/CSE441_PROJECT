@@ -17,7 +17,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"http://192.168.1.15:8080\"")
+        buildConfigField("String", "BASE_URL", "\"http://192.168.1.3:8080\"")
     }
 
     // Bật tính năng BuildConfig
@@ -70,5 +70,6 @@ dependencies {
     implementation ("com.google.android.material:material:1.3.0-alpha01")
     implementation ("io.reactivex.rxjava2:rxjava:2.2.19")
     implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
+
 
 }
