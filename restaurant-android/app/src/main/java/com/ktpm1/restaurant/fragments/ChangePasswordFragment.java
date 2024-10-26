@@ -1,5 +1,6 @@
 package com.ktpm1.restaurant.fragments;
 
+import static android.app.PendingIntent.getActivity;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.SharedPreferences;
@@ -80,7 +81,7 @@ public class ChangePasswordFragment extends Fragment {
         }
 
         if (!newPassword.equals(confirmPassword)) {
-            textViewMessage.setText("Passwords do not match.");
+            textViewMessage.setText("Mật khẩu nhập lại không trùng, vui lòng nhập lại.");
             return;
         }
 
@@ -96,10 +97,10 @@ public class ChangePasswordFragment extends Fragment {
                     if (user != null && currentPassword.equals(user.getPassword())) {
                         updatePassword(token, newPassword);
                     } else {
-                        textViewMessage.setText("Current password is incorrect.");
+                        textViewMessage.setText("Mật khẩu cũ sai, vui lòng nhập lại.");
                     }
                 } else {
-                    textViewMessage.setText("Failed to retrieve user details.");
+                    textViewMessage.setText("Không lấy được thông tin người dùng.");
                 }
             }
 
@@ -124,7 +125,7 @@ public class ChangePasswordFragment extends Fragment {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     // Password successfully updated
-                    textViewMessage.setText("Password changed successfully.");
+                    textViewMessage.setText("Đổi mật khẩu thành công.");
                     clearFields();
 
                     buttonBack.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +140,7 @@ public class ChangePasswordFragment extends Fragment {
                     });
                 } else {
                     // Handle failure (e.g., invalid current password)
-                    textViewMessage.setText("Failed to change password.");
+                    textViewMessage.setText("Không đổi được mật khẩu.");
                 }
             }
 
