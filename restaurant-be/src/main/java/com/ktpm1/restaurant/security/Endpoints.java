@@ -17,6 +17,7 @@ public class Endpoints {
             "/categories/admin/create",
             "/foods/admin/create",
             "/tables/admin/create",
+            "/catalogs/admin/**",
     };
 
     public static final String[] PUBLIC_GET_ENDPOINTS = {
@@ -26,6 +27,8 @@ public class Endpoints {
             "/tables/**",
             "/orders/create",
             "/files/**",
+            "/tables/by-catalog/**",
+            "/catalogs/**",
     };
 
     public static final String[] PRIVATE_GET_ENDPOINTS = {
@@ -36,6 +39,7 @@ public class Endpoints {
     public static final String[] PUBLIC_PUT_ENDPOINTS = {
             "/auth/reset-password",
             "/auth/update-verify-code",
+            "/tables/update-status/**",
     };
 
     public static final String[] PRIVATE_PUT_ENDPOINTS = {

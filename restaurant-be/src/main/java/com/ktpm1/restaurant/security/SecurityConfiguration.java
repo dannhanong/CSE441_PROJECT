@@ -52,6 +52,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, Endpoints.PRIVATE_DELETE_ENDPOINTS).authenticated()
                         .requestMatchers(HttpMethod.POST, Endpoints.PRIVATE_POST_ENDPOINTS).authenticated()
                         .requestMatchers(HttpMethod.GET, Endpoints.ADMIN_GET_ENDPOINTS).hasAuthority("ADMIN")
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().permitAll()
         );
         http.cors(cors -> {
@@ -59,7 +60,8 @@ public class SecurityConfiguration {
                 CorsConfiguration corsConfig = new CorsConfiguration();
                 corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
                 corsConfig.addAllowedHeader("*");
-                corsConfig.addAllowedOrigin("*");
+                corsConfig.addAllowedOriginPattern("*");
+                corsConfig.setAllowCredentials(true);
                 return corsConfig;
             });
         });

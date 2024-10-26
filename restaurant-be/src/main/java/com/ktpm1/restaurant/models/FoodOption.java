@@ -32,7 +32,7 @@ public class FoodOption {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FoodOption that = (FoodOption) o;
-        return id.equals(that.id); // So sánh dựa trên id
+        return id.equals(that.id);
     }
 
     @Override

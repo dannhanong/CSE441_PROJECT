@@ -6,13 +6,18 @@ import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,20 +45,51 @@ public class CartFragment extends Fragment {
     private CartAdapter cartAdapter;
     private List<CartItem> cartItems;
     private Button btnClear;
+    private Toolbar toolbar;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
+        // Ánh xạ các view
         recyclerViewCart = view.findViewById(R.id.recycler_view_cart);
         tvEmptyCart = view.findViewById(R.id.tv_empty_cart);
         btnClear = view.findViewById(R.id.btn_clear);
         tvAddMoreItems = view.findViewById(R.id.tv_addMoreItem);
+        toolbar = view.findViewById(R.id.toolbar);
 
+        // Thiết lập Toolbar làm ActionBar
+        if (getActivity() != null) {
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
+            activity.setSupportActionBar(toolbar);
+
+            if (activity.getSupportActionBar() != null) {
+                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back); // Icon back tùy chỉnh
+                activity.getSupportActionBar().setTitle("Thông tin giỏ hàng");
+            }
+        }
+
+        // Cho phép Fragment lắng nghe sự kiện MenuItem
+        setHasOptionsMenu(true);
+
+        // Xử lý sự kiện nút back trong Fragment
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (shouldInterceptBackPress()) {
+                    Toast.makeText(getContext(), "Back pressed in CartFragment", Toast.LENGTH_SHORT).show();
+                } else {
+                    setEnabled(false); // Cho phép hệ thống xử lý sự kiện back
+                    requireActivity().onBackPressed();
+                }
+            }
+        });
+
+        // Cài đặt RecyclerView
         recyclerViewCart.setLayoutManager(new LinearLayoutManager(getContext()));
         cartItems = new ArrayList<>();
-
         cartAdapter = new CartAdapter(cartItems, getContext());
         recyclerViewCart.setAdapter(cartAdapter);
 
@@ -63,6 +99,7 @@ public class CartFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerViewCart);
 
+        // Xử lý sự kiện nút Clear Cart
         btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,20 +114,33 @@ public class CartFragment extends Fragment {
             }
         });
 
-        tvAddMoreItems.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Đến fragment SearchFragment
+        // Xử lý sự kiện thêm món mới
+        tvAddMoreItems.setOnClickListener(view1 ->
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new SearchFragment())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+                .replace(R.id.fragment_container, new SearchFragment())
+                .addToBackStack(null)
+                .commit());
 
         return view;
     }
 
+    // Xử lý sự kiện MenuItem trong Toolbar (nút back)
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // Quay lại Fragment hoặc Activity trước đó
+            requireActivity().onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Phương thức kiểm tra điều kiện xử lý nút back
+    private boolean shouldInterceptBackPress() {
+        return false; // Trả về false nếu không cần chặn back
+    }
+
+    // ItemTouchHelper để xử lý vuốt xóa item trong giỏ hàng
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -100,50 +150,19 @@ public class CartFragment extends Fragment {
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             if (direction == ItemTouchHelper.LEFT) {
-                int position = viewHolder.getAdapterPosition(); // Lưu lại vị trí của item
+                int position = viewHolder.getAdapterPosition();
 
-                // Hiển thị hộp thoại xác nhận
                 new AlertDialog.Builder(getContext())
                         .setTitle("Xác nhận xóa món")
                         .setMessage("Bạn có chắc chắn muốn xóa món ăn này khỏi giỏ hàng không?")
-                        .setPositiveButton("Xóa", (dialog, which) -> {
-                            // Khi chọn "Xóa", xóa item
-                            cartAdapter.removeItem(position);
-                        })
-                        .setNegativeButton("Hủy", (dialog, which) -> {
-                            // Khi chọn "Hủy", khôi phục lại trạng thái ban đầu của item
-                            cartAdapter.notifyItemChanged(position);
-                        })
+                        .setPositiveButton("Xóa", (dialog, which) -> cartAdapter.removeItem(position))
+                        .setNegativeButton("Hủy", (dialog, which) -> cartAdapter.notifyItemChanged(position))
                         .show();
             }
         }
-
-//        @Override
-//        public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-//            if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-//                // Vẽ nền hoặc nút xóa khi vuốt
-//                View itemView = viewHolder.itemView;
-//                Paint p = new Paint();
-//                p.setColor(Color.RED);
-//                RectF background = new RectF(itemView.getRight() + dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-//                c.drawRect(background, p);
-//
-//                // Có thể thêm biểu tượng nút xóa (icon)
-//                Drawable deleteIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_delete); // Thêm icon của bạn
-//                int itemHeight = itemView.getBottom() - itemView.getTop();
-//                int iconMargin = (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
-//                int iconTop = itemView.getTop() + iconMargin;
-//                int iconBottom = iconTop + deleteIcon.getIntrinsicHeight();
-//                int iconLeft = itemView.getRight() - iconMargin - deleteIcon.getIntrinsicWidth();
-//                int iconRight = itemView.getRight() - iconMargin;
-//
-//                deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
-//                deleteIcon.draw(c);
-//            }
-//            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-//        }
     };
 
+    // Lấy danh sách giỏ hàng từ API
     private void getCart() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("token", null);
@@ -170,6 +189,7 @@ public class CartFragment extends Fragment {
         });
     }
 
+    // Xóa toàn bộ giỏ hàng
     public void clearCart() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("token", null);
@@ -192,6 +212,7 @@ public class CartFragment extends Fragment {
         });
     }
 
+    // Hiển thị hoặc ẩn thông báo khi giỏ hàng trống
     private void toggleEmptyCartMessage() {
         if (cartItems.size() == 0) {
             recyclerViewCart.setVisibility(View.GONE);

@@ -11,6 +11,7 @@ import com.ktpm1.restaurant.services.EmailService;
 import com.ktpm1.restaurant.services.FileUploadService;
 import com.ktpm1.restaurant.services.RoleService;
 import com.ktpm1.restaurant.services.UserService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -78,7 +79,7 @@ public class UserServiceImpl implements UserService {
         if (currentUser == null) {
             return ResponseMessage.builder()
                     .status(404)
-                    .message("user_not_found")
+                    .message("Người dùng không tồn tại")
                     .build();
         }
 
@@ -86,7 +87,7 @@ public class UserServiceImpl implements UserService {
             if (!changePasswordForm.getNewPassword().equals(changePasswordForm.getConfirmPassword())) {
                 return ResponseMessage.builder()
                         .status(400)
-                        .message("password_not_match")
+                        .message("Mật khẩu mới không khớp")
                         .build();
             }
 
@@ -99,7 +100,7 @@ public class UserServiceImpl implements UserService {
         } else {
             return ResponseMessage.builder()
                     .status(400)
-                    .message("wrong_password")
+                    .message("Mật khẩu cũ không đúng")
                     .build();
         }
     }
@@ -195,6 +196,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private String generateVerificationCode() {
-        return UUID.randomUUID().toString();
+//        return UUID.randomUUID().toString();
+        return RandomStringUtils.randomNumeric(6);
     }
 }

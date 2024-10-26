@@ -9,6 +9,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.TabStopSpan;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -175,12 +176,25 @@ public class FoodOptionsBottomSheet extends BottomSheetDialogFragment {
                 if (response.isSuccessful()) {
                     List<FoodOption> foodOptions = response.body();
                     for (FoodOption foodOption : foodOptions) {
+                        LinearLayout linearLayoutOption = new LinearLayout(getContext());
+                        linearLayoutOption.setOrientation(LinearLayout.HORIZONTAL);
+                        linearLayoutOption.setGravity(Gravity.END);
+
+                        TextView textView = new TextView(getContext());
+                        textView.setText(foodOption.getName() + " - " + foodOption.getPrice() + "đ");
+                        textView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
                         CheckBox checkBox = new CheckBox(getContext());
                         checkBox.setButtonTintList(getResources().getColorStateList(R.color.blue_bg));
-//                        checkBox.setText(foodOption.getName() + " - " + foodOption.getPrice() + "đ");
-                        setupCheckBox(checkBox, foodOption);
-                        linearLayout.addView(checkBox);
 
+                        // Add TextView và CheckBox vào LinearLayout
+                        linearLayoutOption.addView(textView);
+                        linearLayoutOption.addView(checkBox);
+
+                        // Thêm linearLayoutOption vào bố cục cha (ví dụ như LinearLayout tổng)
+                        linearLayout.addView(linearLayoutOption);
+
+                        // Xử lý sự kiện chọn checkbox
                         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                             if (isChecked) {
                                 foodOptionIds.add(foodOption.getId());

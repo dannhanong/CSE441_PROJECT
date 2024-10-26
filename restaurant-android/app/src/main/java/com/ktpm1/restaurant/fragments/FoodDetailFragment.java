@@ -1,5 +1,6 @@
 package com.ktpm1.restaurant.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -20,6 +21,8 @@ import com.ktpm1.restaurant.adapters.ImagePagerAdapter;
 import com.ktpm1.restaurant.apis.FoodApi;
 import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.dtos.responses.FoodDetailAndRelated;
+import com.ktpm1.restaurant.fragments.homeofs.SuggestionsFragment;
+import com.ktpm1.restaurant.listeners.RecyclerTouchListener;
 import com.ktpm1.restaurant.models.Food;
 
 import java.util.List;
@@ -35,9 +38,25 @@ public class FoodDetailFragment extends Fragment {
     private RecyclerView recyclerViewRelatedDishes;
     private FoodDetailAndRelated foodDetailAndRelated;
     private Long foodId;
+    private SuggestionsFragment.OnFoodSelectedListener callback;
 
     public FoodDetailFragment(Long foodId) {
         this.foodId = foodId;
+    }
+
+    public interface OnFoodSelectedListener {
+        void onFoodSelected(Long foodId);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof SuggestionsFragment.OnFoodSelectedListener) {
+            callback = (SuggestionsFragment.OnFoodSelectedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFoodSelectedListener");
+        }
     }
 
     @Override
@@ -60,6 +79,18 @@ public class FoodDetailFragment extends Fragment {
             FoodOptionsBottomSheet bottomSheet = new FoodOptionsBottomSheet(foodId);
             bottomSheet.show(getParentFragmentManager(), "FoodOptionsBottomSheet");
         });
+
+        recyclerViewRelatedDishes.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerViewRelatedDishes, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Food food = foodDetailAndRelated.getRelatedFoods().get(position);
+                callback.onFoodSelected(food.getId());
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+            }
+        }));
 
         return view;
     }

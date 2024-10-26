@@ -95,119 +95,101 @@ public class CartServiceImpl implements CartService {
             cartItemRepository.save(newCartItem);
         }
 
-        cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
+        cart.setTotalPrice(cart.getCartItems().stream().mapToInt(CartItem::getPrice).sum());
         cartRepository.save(cart);
 
         return new ResponseMessage(200, "Thêm vào giỏ hàng thành công");
     }
 
     @Override
-    public ResponseMessage addToCart(String username, Long foodId) {
-        User user = userRepository.findByUsername(username);
-        Cart cart = cartRepository.findByUser(user);
-
-        if (cart == null) {
-            cart = new Cart();
-            cart.setUser(user);
-            cartRepository.save(cart);
-            cart = cartRepository.findByUser(user);
-        }
-
-        Food food = foodRepository.findById(foodId).orElse(null);
-        if (food != null) {
-            CartItem cartItem = cart.getCartItems().stream()
-                    .filter(item -> item.getFood().getId().equals(foodId))
-                    .findFirst()
-                    .orElse(null);
-            if (cartItem != null) {
-                cartItem.setQuantity(cartItem.getQuantity() + 1);
-                cartItem.setPrice(food.getPrice() * cartItem.getQuantity());
-                long totalPriceFood = cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum();
-                long totalPriceOption = cartItem.getOptions().stream().mapToLong(FoodOption::getPrice).sum();
-                cart.setTotalPrice(totalPriceFood + totalPriceOption);
-                cartItemRepository.save(cartItem);
-                cartRepository.save(cart);
-                return new ResponseMessage(200, "Thêm vào giỏ hàng thành công");
-            } else {
-                cartItem = CartItem.builder()
-                        .cart(cart)
-                        .food(food)
-                        .quantity(1)
-                        .price(food.getPrice())
-                        .build();
-                cart.getCartItems().add(cartItem);
-                cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
-                cartRepository.save(cart);
-                return new ResponseMessage(200, "Thêm vào giỏ hàng thành công");
-            }
-        }
-        return new ResponseMessage(400, "Món ăn không tồn tại");
-    }
-
-    @Override
-    public ResponseMessage updateCart(String username, CartRequest cartRequest) {
-        User user = userRepository.findByUsername(username);
-        Cart cart = cartRepository.findByUser(user);
-        Food food = foodRepository.findById(cartRequest.getFoodId()).orElse(null);
-
-        if (food != null) {
-            List<FoodOption> selectedOptions;
-            if (cartRequest.getFoodOptionIds() != null && !cartRequest.getFoodOptionIds().isEmpty()) {
-                selectedOptions = foodOptionRepository.findAllById(cartRequest.getFoodOptionIds());
-            } else {
-                selectedOptions = new ArrayList<>();
-            }
-
-            System.out.println(cartRequest.getFoodId());
-
-            CartItem cartItem = cart.getCartItems().stream()
-                    .filter(item -> item.getFood().getId().equals(cartRequest.getFoodId())) // Kiểm tra các tùy chọn
-                    .findFirst()
-                    .orElse(null);
-
-            if (cartItem != null) {
-                // Cập nhật số lượng và giá dựa trên số lượng và các tùy chọn
-                int totalPrice = food.getPrice();
-                for (FoodOption option : selectedOptions) {
-                    totalPrice += option.getPrice();
-                }
-                cartItem.setQuantity(cartRequest.getQuantity());
-                cartItem.setPrice(totalPrice * cartItem.getQuantity());
-                cartItem.setOptions(selectedOptions); // Cập nhật các tùy chọn
-                cartItemRepository.save(cartItem);
-
-                // Cập nhật tổng giá của giỏ hàng
-                cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
-                cartRepository.save(cart);
-
-                return new ResponseMessage(200, "Cập nhật giỏ hàng thành công");
-            }
-        }
-        return new ResponseMessage(400, "Món ăn không tồn tại");
-    }
-
-    @Override
     @Transactional
-    public ResponseMessage removeFromCart(String username, Long foodId) {
+    public ResponseMessage removeFromCart(String username, Long cartItemId) {
         User user = userRepository.findByUsername(username);
         Cart cart = cartRepository.findByUser(user);
-        Food food = foodRepository.findById(foodId).orElse(null);
-        if (food != null) {
-            CartItem cartItem = cart.getCartItems().stream()
-                    .filter(item -> item.getFood().getId().equals(foodId))
-                    .findFirst()
-                    .orElse(null);
-            if (cartItem != null) {
-                cart.getCartItems().remove(cartItem);
-                cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
-                cartRepository.save(cart);
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
+        if (cartItem != null) {
+            cart.getCartItems().remove(cartItem);
+            cart.setTotalPrice(cart.getCartItems().stream().mapToInt(CartItem::getPrice).sum());
+            cartRepository.save(cart);
 
-                return new ResponseMessage(200, "Xóa khỏi giỏ hàng thành công");
-            }
+            return new ResponseMessage(200, "Xóa khỏi giỏ hàng thành công");
         }
 
         return new ResponseMessage(400, "Món ăn không tồn tại");
     }
+
+    @Override
+    public ResponseMessage updateCart(String username, Long cartItemId, int quantity) {
+        User user = userRepository.findByUsername(username);
+        Cart cart = cartRepository.findByUser(user);
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
+        if (cartItem != null) {
+            for (CartItem item : cart.getCartItems()) {
+                if (item.getId().equals(cartItemId)) {
+                    item.setQuantity(quantity);
+                    item.setPrice(item.getFood().getPrice() * quantity);
+
+                    List<FoodOption> selectedOptions = item.getOptions();
+                    int totalPrice = item.getFood().getPrice();
+                    for (FoodOption option : selectedOptions) {
+                        totalPrice += option.getPrice();
+                    }
+                    item.setPrice(totalPrice * quantity);
+                    cartItemRepository.save(item);
+                    break;
+                }
+            }
+
+            cart.setTotalPrice(cart.getCartItems().stream().mapToInt(CartItem::getPrice).sum());
+            cartRepository.save(cart);
+
+            return new ResponseMessage(200, "Cập nhật giỏ hàng thành công");
+        }
+
+        return new ResponseMessage(400, "Món ăn không tồn tại");
+    }
+
+//    @Override
+//    public ResponseMessage updateCart(String username, CartRequest cartRequest) {
+//        User user = userRepository.findByUsername(username);
+//        Cart cart = cartRepository.findByUser(user);
+//        Food food = foodRepository.findById(cartRequest.getFoodId()).orElse(null);
+//
+//        if (food != null) {
+//            List<FoodOption> selectedOptions;
+//            if (cartRequest.getFoodOptionIds() != null && !cartRequest.getFoodOptionIds().isEmpty()) {
+//                selectedOptions = foodOptionRepository.findAllById(cartRequest.getFoodOptionIds());
+//            } else {
+//                selectedOptions = new ArrayList<>();
+//            }
+//
+//            System.out.println(cartRequest.getFoodId());
+//
+//            CartItem cartItem = cart.getCartItems().stream()
+//                    .filter(item -> item.getFood().getId().equals(cartRequest.getFoodId())) // Kiểm tra các tùy chọn
+//                    .findFirst()
+//                    .orElse(null);
+//
+//            if (cartItem != null) {
+//                // Cập nhật số lượng và giá dựa trên số lượng và các tùy chọn
+//                int totalPrice = food.getPrice();
+//                for (FoodOption option : selectedOptions) {
+//                    totalPrice += option.getPrice();
+//                }
+//                cartItem.setQuantity(cartRequest.getQuantity());
+//                cartItem.setPrice(totalPrice * cartItem.getQuantity());
+//                cartItem.setOptions(selectedOptions); // Cập nhật các tùy chọn
+//                cartItemRepository.save(cartItem);
+//
+//                // Cập nhật tổng giá của giỏ hàng
+//                cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
+//                cartRepository.save(cart);
+//
+//                return new ResponseMessage(200, "Cập nhật giỏ hàng thành công");
+//            }
+//        }
+//        return new ResponseMessage(400, "Món ăn không tồn tại");
+//    }
 
     @Override
     @Transactional

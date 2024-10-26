@@ -16,6 +16,6 @@ public class CartItem {
     Cart cart;
     Food food;
     int quantity;
-    long price;
+    int price;
     List<FoodOption> options;
 }

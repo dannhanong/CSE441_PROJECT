@@ -15,14 +15,16 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ktpm1.restaurant.R;
+import com.ktpm1.restaurant.fragments.CatalogFragment;
 import com.ktpm1.restaurant.fragments.FoodDetailFragment;
 import com.ktpm1.restaurant.fragments.HomeFragment;
 import com.ktpm1.restaurant.fragments.ProfileFragment;
 import com.ktpm1.restaurant.fragments.RecentFragment;
 import com.ktpm1.restaurant.fragments.SearchFragment;
+import com.ktpm1.restaurant.fragments.TableFragment;
 import com.ktpm1.restaurant.fragments.homeofs.SuggestionsFragment;
 
-public class MainActivity extends AppCompatActivity implements SuggestionsFragment.OnFoodSelectedListener{
+public class MainActivity extends AppCompatActivity implements SuggestionsFragment.OnFoodSelectedListener, CatalogFragment.OnCatalogSelectedListener {
     private BottomNavigationView bottomNavigationView;
 
     @Override
@@ -79,6 +81,14 @@ public class MainActivity extends AppCompatActivity implements SuggestionsFragme
         // Thay thế bằng FoodDetailFragment khi món ăn được chọn
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, new FoodDetailFragment(foodId));
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    @Override
+    public void onCatalogSelected(Long catalogId) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, new TableFragment(catalogId));
         transaction.addToBackStack(null);
         transaction.commit();
     }

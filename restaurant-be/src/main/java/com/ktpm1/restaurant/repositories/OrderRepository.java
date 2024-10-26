@@ -1,6 +1,7 @@
 package com.ktpm1.restaurant.repositories;
 
 import com.ktpm1.restaurant.models.Order;
+import com.ktpm1.restaurant.models.OrderStatus;
 import com.ktpm1.restaurant.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +19,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAll(Pageable pageable);
     Page<Order> findByUser(Pageable pageable, User user);
     List<Order> findByUser(User user);
+    List<Order> findByStatus(OrderStatus status);
 }

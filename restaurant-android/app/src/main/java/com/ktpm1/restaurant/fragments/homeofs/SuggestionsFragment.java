@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,7 +15,6 @@ import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.FoodAdapter;
 import com.ktpm1.restaurant.apis.FoodApi;
 import com.ktpm1.restaurant.configs.ApiClient;
-import com.ktpm1.restaurant.fragments.FoodDetailFragment;
 import com.ktpm1.restaurant.listeners.RecyclerTouchListener;
 import com.ktpm1.restaurant.models.Food;
 
