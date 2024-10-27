@@ -80,6 +80,8 @@ public class ChangePasswordFragment extends Fragment {
             return;
         }
 
+
+
         if (!newPassword.equals(confirmPassword)) {
             textViewMessage.setText("Mật khẩu nhập lại không trùng, vui lòng nhập lại.");
             return;
@@ -89,6 +91,7 @@ public class ChangePasswordFragment extends Fragment {
         String token = sharedPreferences.getString("token", null);
         AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
         Call<User> call = authApi.getProfile("Bearer " + token);
+        
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -119,10 +122,10 @@ public class ChangePasswordFragment extends Fragment {
 
         // Call the change password API
         AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
-        Call<Void> call = authApi.changePassword("Bearer " + token, request);
-        call.enqueue(new Callback<Void>() {
+        Call<User> call = authApi.changePassword("Bearer " + token, request);
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
                     // Password successfully updated
                     textViewMessage.setText("Đổi mật khẩu thành công.");
@@ -145,7 +148,7 @@ public class ChangePasswordFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable throwable) {
+            public void onFailure(Call<User> call, Throwable throwable) {
                 // Handle network or API failure
                 textViewMessage.setText("Error: " + throwable.getMessage());
             }

@@ -41,7 +41,7 @@ public interface AuthApi {
                              @Part("phone") RequestBody phone,
                              @Part MultipartBody.Part avatar);
     @PUT("/user/change-password")
-    Call<Void> changePassword(
+    Call<User> changePassword(
             @Header("Authorization") String token,
             @Body ChangePasswordRequest request
     );
