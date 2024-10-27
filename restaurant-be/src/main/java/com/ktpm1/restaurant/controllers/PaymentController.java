@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class PaymentController {
@@ -42,7 +45,12 @@ public class PaymentController {
             model.addAttribute("transactionId", transactionId);
 //
             if (paymentStatus == 1) {
-                orderService.updateOrderPaid(Long.parseLong(orderInfo));
+                List<Long> orderIdsList = Arrays.stream(orderInfo.split(","))
+                        .map(Long::valueOf)
+                        .collect(Collectors.toList());
+
+                orderIdsList.forEach(orderId -> orderService.updateOrderPaid(orderId));
+
                 try {
                     response.sendRedirect("myapp://payment/success?orderId=" + orderInfo + "&totalPrice=" + totalPrice);
                 } catch (IOException e) {

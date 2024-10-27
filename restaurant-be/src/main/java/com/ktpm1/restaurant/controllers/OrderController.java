@@ -1,5 +1,6 @@
 package com.ktpm1.restaurant.controllers;
 
+import com.ktpm1.restaurant.dtos.request.BookingTableRequest;
 import com.ktpm1.restaurant.dtos.request.OrderRequest;
 import com.ktpm1.restaurant.dtos.response.VNPayMessage;
 import com.ktpm1.restaurant.models.Order;
@@ -48,11 +49,11 @@ public class OrderController {
     }
 
     @PostMapping("/create-food-and-table")
-    public ResponseEntity<VNPayMessage> createOrder(HttpServletRequest request) {
+    public ResponseEntity<VNPayMessage> createOrder(HttpServletRequest request, @RequestBody BookingTableRequest bookingTableRequest) {
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
 
-        List<Order> orders = orderService.createOrder(username).getOrders();
+        List<Order> orders = orderService.createOrderTableAndFood(username, bookingTableRequest).getOrders();
         int totalPayment = orders.stream().mapToInt(Order::getTotalPrice).sum();
         List<Long> orderIds = orders.stream().map(Order::getId).collect(Collectors.toList());
 

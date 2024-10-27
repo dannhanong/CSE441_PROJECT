@@ -22,10 +22,11 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
 
     private List<TableResponse> tableList;
     private List<Long> selectedTableIds = new ArrayList<>();
+    private List<String> selectedTableNumbers = new ArrayList<>();
     private OnTableSelectionChangedListener listener;
 
     public interface OnTableSelectionChangedListener {
-        void onTableSelectionChanged(List<Long> selectedTableIds);
+        void onTableSelectionChanged(List<Long> selectedTableIds, List<String> selectedTableNumbers);
     }
 
     public TableAdapter(List<TableResponse> tableList) {
@@ -41,6 +42,9 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
         return new ArrayList<>(selectedTableIds);
     }
 
+    public List<String> getSelectedTableNumbers() {
+        return new ArrayList<>(selectedTableNumbers);
+    }
 
     @NonNull
     @Override
@@ -69,6 +73,7 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
                 holder.tvTableStatus.setText(table.isAvailable() ? "Trống" : "Đã đặt");
                 holder.tableButton.setEnabled(table.isAvailable());
                 selectedTableIds.remove(table.getId());
+                selectedTableNumbers.remove(table.getTableNumber());
             } else {
                 table.setSelected(true);
                 holder.tableButton.setAlpha(0.7f);
@@ -76,12 +81,14 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
                 holder.tvTableStatus.setTextColor(Color.BLUE);
                 holder.tvTableStatus.setText("Đã chọn");
                 selectedTableIds.add(table.getId());
+                selectedTableNumbers.add(table.getTableNumber());
             }
 
             selectedTableIds = getSelectedTableIds();
+            selectedTableNumbers = getSelectedTableNumbers();
 
             if (listener != null) {
-                listener.onTableSelectionChanged(selectedTableIds);
+                listener.onTableSelectionChanged(selectedTableIds, selectedTableNumbers);
             }
         });
     }

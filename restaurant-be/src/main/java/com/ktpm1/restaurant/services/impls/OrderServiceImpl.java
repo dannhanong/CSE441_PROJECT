@@ -1,11 +1,13 @@
 package com.ktpm1.restaurant.services.impls;
 
 import com.ktpm1.restaurant.dtos.events.EventCreateOrder;
+import com.ktpm1.restaurant.dtos.request.BookingTableRequest;
 import com.ktpm1.restaurant.dtos.request.OrderRequest;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
 import com.ktpm1.restaurant.dtos.response.VNPayMessage;
 import com.ktpm1.restaurant.models.*;
 import com.ktpm1.restaurant.repositories.*;
+import com.ktpm1.restaurant.services.BookingTableService;
 import com.ktpm1.restaurant.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,12 +39,14 @@ public class OrderServiceImpl implements OrderService {
     private BookingTableRepository bookingTableRepository;
     @Autowired
     private HistoryBookingTableRepository historyBookingTableRepository;
+    @Autowired
+    private BookingTableService bookingTableService;
 
     @Override
     public EventCreateOrder createOrder(String username) {
         User user = userRepository.findByUsername(username);
         Cart cart = cartRepository.findByUser(user);
-        List<BookingTable> bookingTables = bookingTableRepository.findByUserAndPaidFalse(user);
+        List<BookingTable> bookingTables = bookingTableRepository.findByUserAndPaidFalseAndAddCartTrue(user);
 
         if (cart == null || cart.getCartItems().isEmpty()) {
             return null;
@@ -74,7 +78,6 @@ public class OrderServiceImpl implements OrderService {
         }
         return EventCreateOrder.builder()
                 .orders(orders)
-                .bookingTables(bookingTables)
                 .cart(cart).build();
     }
 
@@ -119,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
 //        oderRepository.save(order);
 //        return order;
         User user = userRepository.findByUsername(username);
-        List<BookingTable> bookingTables = bookingTableRepository.findByUser(user);
+        List<BookingTable> bookingTables = bookingTableRepository.findByUserAndAddCartFalse(user);
 
         List<Order> orders = new ArrayList<>();
         for (BookingTable bookingTable : bookingTables) {
@@ -233,6 +236,46 @@ public class OrderServiceImpl implements OrderService {
                     order.setPaid(true);
                     oderRepository.save(order);
                 });
+    }
+
+    @Override
+    public EventCreateOrder createOrderTableAndFood(String username, BookingTableRequest bookingTableRequest) {
+        User user = userRepository.findByUsername(username);
+        Cart cart = cartRepository.findByUser(user);
+
+        if (cart == null || cart.getCartItems().isEmpty()) {
+            return null;
+        }
+
+        bookingTableService.createBookingTableBeforeCreateOrderTAndF(username, bookingTableRequest);
+
+        List<Order> orders = new ArrayList<>();
+
+        for(Long tableId : bookingTableRequest.getTableIds()) {
+            Table table = tableRepository.findById(tableId).orElse(null);
+            Order order = new Order();
+            order.setUser(user);
+            order.setStatus(OrderStatus.CREATED);
+            order.setTable(table);
+            order.setOrderTime(LocalDateTime.now());
+            order.setTotalPrice(cart.getTotalPrice());
+
+            for (CartItem cartItem : cart.getCartItems()) {
+                OrderItem orderItem = OrderItem.builder()
+                        .food(cartItem.getFood())
+                        .quantity(cartItem.getQuantity())
+                        .itemPrice(cartItem.getPrice())
+                        .order(order)
+                        .build();
+                order.getOrderItems().add(orderItem);
+            }
+
+            orders.add(oderRepository.save(order));
+        }
+
+        return EventCreateOrder.builder()
+                .orders(orders)
+                .cart(cart).build();
     }
 
 }

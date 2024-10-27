@@ -58,6 +58,7 @@ public class BookingTableServiceImpl implements BookingTableService {
                         LocalTime.of(bookingTableRequest.getStartTime().getHour() + 2 + bookingTableRequest.getAdditionalTime(),
                                 bookingTableRequest.getStartTime().getMinute()));
                 bookingTable.setEndTime(endTime);
+                bookingTable.setAddCart(bookingTableRequest.isAddCart());
 
                 if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
                     throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
@@ -69,6 +70,39 @@ public class BookingTableServiceImpl implements BookingTableService {
         ResponseMessage responseMessage = new ResponseMessage(200, "Đặt bàn thành công.");
         simpMessagingTemplate.convertAndSend("/topic/bookings", "success_booking");
         return responseMessage;
+    }
+
+    @Override
+    public void createBookingTableBeforeCreateOrderTAndF(String username, BookingTableRequest bookingTableRequest) {
+        User user = userRepository.findByUsername(username);
+        List<Long> tableIds = bookingTableRequest.getTableIds();
+
+        for (Long tableId : tableIds) {
+            if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
+                throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
+            } else {
+                Table table = tableRepository.findById(tableId).orElse(null);
+                BookingTable bookingTable = new BookingTable();
+                bookingTable.setUser(user);
+                bookingTable.setTable(table);
+                bookingTable.setBookingTime(LocalDateTime.now());
+                bookingTable.setStartTime(bookingTableRequest.getStartTime());
+                LocalDateTime endTime = LocalDateTime.of(bookingTableRequest.getStartTime().toLocalDate(),
+                        LocalTime.of(bookingTableRequest.getStartTime().getHour() + 2 + bookingTableRequest.getAdditionalTime(),
+                                bookingTableRequest.getStartTime().getMinute()));
+                bookingTable.setEndTime(endTime);
+                bookingTable.setPaid(true);
+                bookingTable.setAddCart(bookingTableRequest.isAddCart());
+
+                if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
+                    throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
+                }
+
+                bookingTableRepository.save(bookingTable);
+            }
+        }
+        ResponseMessage responseMessage = new ResponseMessage(200, "Đặt bàn thành công.");
+        simpMessagingTemplate.convertAndSend("/topic/bookings", "success_booking");
     }
 
     @Override

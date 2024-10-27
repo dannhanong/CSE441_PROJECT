@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Thêm món trong giỏ hàng"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="10dp" />
+
+    <TextView
+        android:id="@+id/dialogMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:text="Bạn có muốn đặt món trong giỏ hàng cùng không?" />
+
+
+    <TextView
+        android:id="@+id/detailCartOnDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chi tiết giỏ hàng"
+        android:layout_marginTop="10dp"
+        android:textStyle="italic"
+        android:textColor="@color/gray"
+        android:textAlignment="center" />
+
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="160dp"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/btnRefuseOrderTAndF"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:text="Từ chối"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:background="@color/refuse_bg"
+            android:textAlignment="center"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnConFirmOrderTAndF"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@color/blue_bg"
+            android:textColor="@color/white"
+            android:text="Đồng ý"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:textAlignment="center"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

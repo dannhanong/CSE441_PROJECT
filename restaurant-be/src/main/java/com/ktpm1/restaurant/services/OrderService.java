@@ -1,6 +1,7 @@
 package com.ktpm1.restaurant.services;
 
 import com.ktpm1.restaurant.dtos.events.EventCreateOrder;
+import com.ktpm1.restaurant.dtos.request.BookingTableRequest;
 import com.ktpm1.restaurant.dtos.request.OrderRequest;
 import com.ktpm1.restaurant.dtos.response.ResponseMessage;
 import com.ktpm1.restaurant.dtos.response.VNPayMessage;
@@ -24,4 +25,5 @@ public interface OrderService {
     List<Table> getAvailableTables(Instant start, Instant end);
     List<Table> getAllTables();
     void updateOrderPaid(Long id);
+    EventCreateOrder createOrderTableAndFood(String username, BookingTableRequest bookingTableRequest);
 }
