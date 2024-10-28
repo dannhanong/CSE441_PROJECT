@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -24,7 +25,8 @@ public class FoodHistoryController {
     public ResponseEntity<List<Food>> getMyFoodHistory(HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
-        return ResponseEntity.ok(foodHistoryService.getFoodHistory(username));
+        List<Food> foodHistory = foodHistoryService.getFoodHistory(username);
+        return ResponseEntity.ok(foodHistory);
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

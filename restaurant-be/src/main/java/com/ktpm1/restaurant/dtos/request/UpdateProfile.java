@@ -12,6 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateProfile {
     String name;
-    String phone;
+    String email;
     MultipartFile avatar;
 }

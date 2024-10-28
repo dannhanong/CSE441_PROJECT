@@ -5,7 +5,6 @@ import static android.content.Context.MODE_PRIVATE;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -107,7 +106,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
 //        webSocketClient = new WebSocketClient();
 //        webSocketClient.connectWebSocket("ws://192.168.1.10:8080/ws/websocket");
 
-        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.1.16:8080/ws/websocket");
+        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.1.6:8080/ws/websocket");
 
         // Kết nối
         stompClient.connect();

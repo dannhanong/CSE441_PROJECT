@@ -12,6 +12,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
@@ -34,9 +35,12 @@ public interface AuthApi {
     @GET("/auth/verify")
     Call<ResponseMessage> verify(@Query("code") String code);
 
-    @PUT("/auth/update-profile")
-    Call<User> updateProfile(@Header("Authorization") String token,
-                             @Part("name") RequestBody name,
-                             @Part("phone") RequestBody phone,
-                             @Part MultipartBody.Part avatar);
+    @PUT("/auth/update/profile")
+    @Multipart
+    Call<ResponseMessage> updateProfile(
+            @Header("Authorization") String token,
+            @Part("name") RequestBody name,
+            @Part("email") RequestBody email,
+            @Part MultipartBody.Part avatar
+    );
 }
