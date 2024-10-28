@@ -22,6 +22,7 @@ import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.ProfileAdapter;
 import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
+import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
 import com.ktpm1.restaurant.models.User;
 
 import retrofit2.Call;
@@ -64,11 +65,34 @@ public class ProfileFragment extends Fragment {
                         .commit();
             }
         });
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "Đăng xuất", Toast.LENGTH_SHORT).show();
-            }
+        logoutButton.setOnClickListener(v -> {
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            String token = sharedPreferences.getString("token", null);
+
+            AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
+            Call<ResponseMessage> call = authApi.logout("Bearer " + token);
+            call.enqueue(new Callback<ResponseMessage>() {
+                @Override
+                public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
+                    if (response.isSuccessful()){
+                        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.remove("token"); // Xóa giá trị "token"
+                        editor.apply(); // Áp dụng thay đổi
+
+                        HomeFragment homeFragment = new HomeFragment();
+                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, homeFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseMessage> call, Throwable throwable) {
+
+                }
+            });
         });
 
         String[] settingsOptions = {
