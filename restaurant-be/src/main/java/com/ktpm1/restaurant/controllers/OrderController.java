@@ -1,5 +1,6 @@
 package com.ktpm1.restaurant.controllers;
 
+import com.ktpm1.restaurant.dtos.request.BookingTableRequest;
 import com.ktpm1.restaurant.dtos.request.OrderRequest;
 import com.ktpm1.restaurant.dtos.response.VNPayMessage;
 import com.ktpm1.restaurant.models.Order;
@@ -48,18 +49,18 @@ public class OrderController {
     }
 
     @PostMapping("/create-food-and-table")
-    public ResponseEntity<VNPayMessage> createOrder(HttpServletRequest request) {
+    public ResponseEntity<VNPayMessage> createOrder(HttpServletRequest request, @RequestBody BookingTableRequest bookingTableRequest) {
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
 
-        List<Order> orders = orderService.createOrder(username).getOrders();
-        Long totalPayment = orders.stream().mapToLong(Order::getTotalPrice).sum();
+        List<Order> orders = orderService.createOrderTableAndFood(username, bookingTableRequest).getOrders();
+        int totalPayment = orders.stream().mapToInt(Order::getTotalPrice).sum();
         List<Long> orderIds = orders.stream().map(Order::getId).collect(Collectors.toList());
 
         String orderIdsString = orderIds.stream().map(String::valueOf).collect(Collectors.joining(","));
 
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        String vnpayUrl = vnPayService.createOrder(Integer.parseInt(totalPayment+""), orderIdsString, baseUrl);
+        String vnpayUrl = vnPayService.createOrder(totalPayment, orderIdsString, baseUrl);
 
         VNPayMessage VNPayMessage = new VNPayMessage("payment", vnpayUrl);
         return ResponseEntity.ok(VNPayMessage);

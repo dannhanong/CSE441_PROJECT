@@ -16,5 +16,5 @@ public class Cart {
     Long id;
     User user;
     Set<CartItem> cartItems = new HashSet<>();
-    long totalPrice;
+    int totalPrice;
 }

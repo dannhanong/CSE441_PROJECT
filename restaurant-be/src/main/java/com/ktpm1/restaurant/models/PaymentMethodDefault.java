@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "payment_methods")
+@Table(name = "payment_method_default")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,8 +20,6 @@ public class PaymentMethodDefault {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Enumerated(EnumType.STRING)
     PaymentMethod paymentMethodEnum;
-    @ManyToMany(mappedBy = "paymentMethodDefaults")
-    @JsonIgnore
-    Set<User> users = new HashSet<>();
 }

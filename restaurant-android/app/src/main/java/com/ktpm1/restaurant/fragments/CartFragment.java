@@ -26,8 +26,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.CartAdapter;
 import com.ktpm1.restaurant.apis.CartApi;
+import com.ktpm1.restaurant.apis.OrderApi;
 import com.ktpm1.restaurant.configs.ApiClient;
+import com.ktpm1.restaurant.dtos.requests.BookingTableRequest;
 import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
+import com.ktpm1.restaurant.dtos.responses.VNPayMessage;
 import com.ktpm1.restaurant.models.Cart;
 import com.ktpm1.restaurant.models.CartItem;
 
@@ -44,20 +47,29 @@ public class CartFragment extends Fragment {
     private TextView tvEmptyCart, tvAddMoreItems;
     private CartAdapter cartAdapter;
     private List<CartItem> cartItems;
-    private Button btnClear;
+    private Button btnClear, btnContinue;
     private Toolbar toolbar;
+    private BookingTableRequest bookingRequest;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
-        // Ánh xạ các view
         recyclerViewCart = view.findViewById(R.id.recycler_view_cart);
         tvEmptyCart = view.findViewById(R.id.tv_empty_cart);
         btnClear = view.findViewById(R.id.btn_clear);
+        btnContinue = view.findViewById(R.id.btn_continue);
         tvAddMoreItems = view.findViewById(R.id.tv_addMoreItem);
         toolbar = view.findViewById(R.id.toolbar);
+        if (getArguments() != null) {
+            bookingRequest = getArguments().getParcelable("bookingRequest");
+            if (bookingRequest != null) {
+                btnContinue.setText("Đặt bàn ngay");
+            }
+        }
+
+        btnContinue.setOnClickListener(view1 -> onContinueButtonClick());
 
         // Thiết lập Toolbar làm ActionBar
         if (getActivity() != null) {
@@ -100,30 +112,21 @@ public class CartFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(recyclerViewCart);
 
         // Xử lý sự kiện nút Clear Cart
-        btnClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Xác nhận xóa xóa giỏ hàng")
-                        .setMessage("Bạn có chắc chắn muốn xóa tất cả món ăn khỏi giỏ hàng?")
-                        .setPositiveButton("Xóa", (dialog, which) -> {
-                            clearCart();
-                        })
-                        .setNegativeButton("Hủy", null)
-                        .show();
-            }
-        });
+        btnClear.setOnClickListener(view2 -> new AlertDialog.Builder(getContext())
+                .setTitle("Xác nhận xóa xóa giỏ hàng")
+                .setMessage("Bạn có chắc chắn muốn xóa tất cả món ăn khỏi giỏ hàng?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    clearCart();
+                })
+                .setNegativeButton("Hủy", null)
+                .show());
 
         // Xử lý sự kiện thêm món mới
-        tvAddMoreItems.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        tvAddMoreItems.setOnClickListener(view1 ->
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new SearchFragment())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+                .replace(R.id.fragment_container, new SearchFragment())
+                .addToBackStack(null)
+                .commit());
 
         return view;
     }
@@ -225,5 +228,70 @@ public class CartFragment extends Fragment {
             recyclerViewCart.setVisibility(View.VISIBLE);
             tvEmptyCart.setVisibility(View.GONE);
         }
+    }
+
+    private void onContinueButtonClick() {
+        if (bookingRequest != null) {
+            // Gọi API tạo đơn hàng với BookingTableRequest
+            createOrderWithBookingRequest(bookingRequest);
+        } else {
+            // Gọi API khác nếu không có BookingTableRequest
+            submitCartOnly();
+        }
+    }
+
+    // Hàm gọi API createOrder với BookingTableRequest
+    private void createOrderWithBookingRequest(BookingTableRequest bookingRequest) {
+        OrderApi orderApi = ApiClient.getClient().create(OrderApi.class);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
+
+        Call<VNPayMessage> call = orderApi.createOrder("Bearer " + token, bookingRequest);
+        call.enqueue(new Callback<VNPayMessage>() {
+            @Override
+            public void onResponse(Call<VNPayMessage> call, Response<VNPayMessage> response) {
+                if (response.isSuccessful()) {
+                    String url = response.body().getVnpayUrl();
+
+                    // Tạo instance WebFragment và truyền URL
+                    WebFragment webFragment = WebFragment.newInstance(url);
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, webFragment)
+                            .addToBackStack(null)
+                            .commit();
+                } else {
+                    Toast.makeText(getContext(), "Đặt bàn thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<VNPayMessage> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    // Hàm gọi API submitCartOnly nếu không có BookingTableRequest
+    private void submitCartOnly() {
+        OrderApi orderApi = ApiClient.getClient().create(OrderApi.class);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
+
+        Call<ResponseMessage> call = orderApi.createOrderFoodOnly("Bearer " + token);
+        call.enqueue(new Callback<ResponseMessage>() {
+            @Override
+            public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getContext(), "Giỏ hàng đã được gửi thành công", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Gửi giỏ hàng thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseMessage> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 }

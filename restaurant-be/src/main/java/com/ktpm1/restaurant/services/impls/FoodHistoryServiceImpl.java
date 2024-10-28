@@ -10,6 +10,7 @@ import com.ktpm1.restaurant.services.FoodHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,6 +34,8 @@ public class FoodHistoryServiceImpl implements FoodHistoryService {
     public List<Food> getFoodHistory(String username) {
         User user = userRepository.findByUsername(username);
         List<FoodHistory> foodHistories = foodHistoryRepository.findByUser(user);
-        return foodHistories.stream().map(FoodHistory::getFood).toList();
+        foodHistories.sort(Comparator.comparing(FoodHistory::getId).reversed());
+        List<Food> foods = foodHistories.stream().map(FoodHistory::getFood).toList();
+        return foods;
     }
 }

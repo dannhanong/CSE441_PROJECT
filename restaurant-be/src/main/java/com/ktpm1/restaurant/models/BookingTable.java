@@ -37,4 +37,5 @@ public class BookingTable {
     @Column(nullable = false)
     boolean paid = false;
     boolean updated = false;
+    boolean addCart;
 }

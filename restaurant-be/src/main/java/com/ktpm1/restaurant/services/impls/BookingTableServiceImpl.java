@@ -15,6 +15,7 @@ import com.ktpm1.restaurant.repositories.UserRepository;
 import com.ktpm1.restaurant.services.BookingTableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,8 @@ public class BookingTableServiceImpl implements BookingTableService {
     private TableRepository tableRepository;
     @Autowired
     private CatalogRepository catalogRepository;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public ResponseMessage createBookingTable(String username, BookingTableRequest bookingTableRequest) {
@@ -43,7 +46,7 @@ public class BookingTableServiceImpl implements BookingTableService {
 
         for (Long tableId : tableIds) {
             if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
-                throw new RuntimeException("Table is not available at the selected time.");
+                throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
             } else {
                 Table table = tableRepository.findById(tableId).orElse(null);
                 BookingTable bookingTable = new BookingTable();
@@ -55,16 +58,51 @@ public class BookingTableServiceImpl implements BookingTableService {
                         LocalTime.of(bookingTableRequest.getStartTime().getHour() + 2 + bookingTableRequest.getAdditionalTime(),
                                 bookingTableRequest.getStartTime().getMinute()));
                 bookingTable.setEndTime(endTime);
+                bookingTable.setAddCart(bookingTableRequest.isAddCart());
 
                 if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
-                    throw new RuntimeException("Table is not available at the selected time.");
+                    throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
                 }
 
                 bookingTableRepository.save(bookingTable);
             }
         }
+        ResponseMessage responseMessage = new ResponseMessage(200, "Đặt bàn thành công.");
+        simpMessagingTemplate.convertAndSend("/topic/bookings", "success_booking");
+        return responseMessage;
+    }
 
-        return new ResponseMessage(200, "Đặt bàn thành công.");
+    @Override
+    public void createBookingTableBeforeCreateOrderTAndF(String username, BookingTableRequest bookingTableRequest) {
+        User user = userRepository.findByUsername(username);
+        List<Long> tableIds = bookingTableRequest.getTableIds();
+
+        for (Long tableId : tableIds) {
+            if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
+                throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
+            } else {
+                Table table = tableRepository.findById(tableId).orElse(null);
+                BookingTable bookingTable = new BookingTable();
+                bookingTable.setUser(user);
+                bookingTable.setTable(table);
+                bookingTable.setBookingTime(LocalDateTime.now());
+                bookingTable.setStartTime(bookingTableRequest.getStartTime());
+                LocalDateTime endTime = LocalDateTime.of(bookingTableRequest.getStartTime().toLocalDate(),
+                        LocalTime.of(bookingTableRequest.getStartTime().getHour() + 2 + bookingTableRequest.getAdditionalTime(),
+                                bookingTableRequest.getStartTime().getMinute()));
+                bookingTable.setEndTime(endTime);
+                bookingTable.setPaid(true);
+                bookingTable.setAddCart(bookingTableRequest.isAddCart());
+
+                if (!isTableAvailable(tableId, bookingTableRequest.getStartTime(), bookingTableRequest.getAdditionalTime())) {
+                    throw new RuntimeException("Bàn không khả dụng vào thời gian đã chọn.");
+                }
+
+                bookingTableRepository.save(bookingTable);
+            }
+        }
+        ResponseMessage responseMessage = new ResponseMessage(200, "Đặt bàn thành công.");
+        simpMessagingTemplate.convertAndSend("/topic/bookings", "success_booking");
     }
 
     @Override

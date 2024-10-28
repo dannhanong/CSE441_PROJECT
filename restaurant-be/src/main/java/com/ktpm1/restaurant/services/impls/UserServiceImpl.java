@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
                     .build();
         }
         currentUser.setName(updateProfile.getName());
-        currentUser.setPhoneNumber(updateProfile.getPhone());
+        currentUser.setEmail(updateProfile.getEmail());
 
         MultipartFile avatar = updateProfile.getAvatar();
         if (avatar != null && !avatar.isEmpty()) {

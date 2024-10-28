@@ -49,4 +49,12 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string-array name="additional_time_options">
+        <item>Có sẵn</item>
+        <item>1 giờ</item>
+        <item>2 giờ</item>
+        <item>3 giờ</item>
+        <item>4 giờ</item>
+        <item>5 giờ</item>
+    </string-array>
 </resources>

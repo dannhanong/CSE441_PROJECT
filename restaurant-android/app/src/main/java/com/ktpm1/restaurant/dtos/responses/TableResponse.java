@@ -16,5 +16,5 @@ public class TableResponse {
     int capacity;
     boolean available;
     Catalog catalog;
-    boolean selected = false;
+    boolean selected;
 }

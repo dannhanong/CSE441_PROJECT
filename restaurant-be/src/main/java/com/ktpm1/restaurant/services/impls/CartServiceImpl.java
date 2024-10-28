@@ -95,7 +95,7 @@ public class CartServiceImpl implements CartService {
             cartItemRepository.save(newCartItem);
         }
 
-        cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
+        cart.setTotalPrice(cart.getCartItems().stream().mapToInt(CartItem::getPrice).sum());
         cartRepository.save(cart);
 
         return new ResponseMessage(200, "Thêm vào giỏ hàng thành công");
@@ -109,7 +109,7 @@ public class CartServiceImpl implements CartService {
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
         if (cartItem != null) {
             cart.getCartItems().remove(cartItem);
-            cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
+            cart.setTotalPrice(cart.getCartItems().stream().mapToInt(CartItem::getPrice).sum());
             cartRepository.save(cart);
 
             return new ResponseMessage(200, "Xóa khỏi giỏ hàng thành công");
@@ -130,7 +130,7 @@ public class CartServiceImpl implements CartService {
                     item.setPrice(item.getFood().getPrice() * quantity);
 
                     List<FoodOption> selectedOptions = item.getOptions();
-                    long totalPrice = item.getFood().getPrice();
+                    int totalPrice = item.getFood().getPrice();
                     for (FoodOption option : selectedOptions) {
                         totalPrice += option.getPrice();
                     }
@@ -140,7 +140,7 @@ public class CartServiceImpl implements CartService {
                 }
             }
 
-            cart.setTotalPrice(cart.getCartItems().stream().mapToLong(CartItem::getPrice).sum());
+            cart.setTotalPrice(cart.getCartItems().stream().mapToInt(CartItem::getPrice).sum());
             cartRepository.save(cart);
 
             return new ResponseMessage(200, "Cập nhật giỏ hàng thành công");
