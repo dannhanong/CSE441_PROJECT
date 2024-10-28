@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".fragments.ProfileFragment">
-
-    <!-- User Profile Image -->
+    
     <ImageView
         android:id="@+id/profileImage"
         android:layout_width="80dp"
@@ -19,7 +18,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Username -->
     <TextView
         android:id="@+id/tv_name_profile"
         android:layout_width="wrap_content"
@@ -31,7 +29,6 @@
         app:layout_constraintStart_toEndOf="@id/profileImage"
         app:layout_constraintTop_toTopOf="@id/profileImage" />
 
-    <!-- Email -->
     <TextView
         android:id="@+id/tv_email_profile"
         android:layout_width="wrap_content"
@@ -56,7 +53,6 @@
         app:layout_constraintTop_toTopOf="@id/tv_name_profile"
         tools:ignore="TouchTargetSizeCheck" />
 
-    <!-- Logout Button -->
     <ListView
         android:id="@+id/settings_list"
         android:layout_width="0dp"

@@ -1,5 +1,6 @@
 package com.ktpm1.restaurant.apis;
 
+import com.ktpm1.restaurant.dtos.requests.ChangePasswordRequest;
 import com.ktpm1.restaurant.dtos.requests.LoginForm;
 import com.ktpm1.restaurant.dtos.requests.RegisterRequest;
 import com.ktpm1.restaurant.dtos.responses.LoginResponse;
@@ -35,6 +36,14 @@ public interface AuthApi {
     @GET("/auth/verify")
     Call<ResponseMessage> verify(@Query("code") String code);
 
+    @PUT("/auth/change-password")
+    Call<ResponseMessage> changePassword(
+            @Header("Authorization") String token,
+            @Body ChangePasswordRequest request
+    );
+
+    @POST("/auth/logout")
+    Call<ResponseMessage> logout(@Header("Authorization") String token   );
     @PUT("/auth/update/profile")
     @Multipart
     Call<ResponseMessage> updateProfile(
