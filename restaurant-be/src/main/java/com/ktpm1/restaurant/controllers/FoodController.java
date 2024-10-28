@@ -57,7 +57,8 @@ public class FoodController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FoodDetailAndRelated> getFood(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<FoodDetailAndRelated> getFood(@PathVariable Long id,
+                                                        HttpServletRequest request) {
         try {
             String token = getTokenFromRequest(request);
             String username = jwtService.extractUsername(token);

@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface BookingTableService {
     ResponseMessage createBookingTable(String username, BookingTableRequest bookingTableRequest);
+    void createBookingTableBeforeCreateOrderTAndF(String username, BookingTableRequest bookingTableRequest);
     ResponseMessage createBookingTableByEmployeeRole(BookingTableRequest bookingTableRequest);
     boolean isTableAvailable(Long tableId, LocalDateTime startTime, int additionalTime);
     List<BookingTable> getBookingsByDate(LocalDateTime date);

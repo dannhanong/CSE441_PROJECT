@@ -7,13 +7,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
-import com.ktpm1.restaurant.models.Food; // Sử dụng class Food
+import com.ktpm1.restaurant.models.Food;
 import java.util.List;
 
 public class FoodHistoryAdapter extends RecyclerView.Adapter<FoodHistoryAdapter.FoodHistoryViewHolder> {
-
-    private List<Food> foodList; // Thay đổi thành List<Food>
+    private List<Food> foodList;
 
     public FoodHistoryAdapter(List<Food> foodList) {
         this.foodList = foodList;
@@ -28,10 +30,12 @@ public class FoodHistoryAdapter extends RecyclerView.Adapter<FoodHistoryAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull FoodHistoryViewHolder holder, int position) {
-        Food food = foodList.get(position); // Thay đổi thành Food
-
+        Food food = foodList.get(position);
         holder.tvFoodName.setText(food.getName());
-        // Bạn có thể sửa lại cách hiển thị các thuộc tính khác của Food
+        String fileCode = food.getImageCode();
+        String imageUrl = BuildConfig.BASE_URL + "/files/preview/" + fileCode;
+        holder.tvFoodPrice.setText(String.valueOf(food.getPrice()) + " VNĐ");
+        Glide.with(holder.itemView).load(imageUrl).into(holder.imgFood);
     }
 
     @Override
@@ -41,14 +45,13 @@ public class FoodHistoryAdapter extends RecyclerView.Adapter<FoodHistoryAdapter.
 
     public static class FoodHistoryViewHolder extends RecyclerView.ViewHolder {
         ImageView imgFood;
-        TextView tvFoodName, tvFoodTime, tvFoodTable, tvStatus;
+        TextView tvFoodName, tvFoodPrice, tvStatus;
 
         public FoodHistoryViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgFood = itemView.findViewById(R.id.imgFood);
-            tvFoodName = itemView.findViewById(R.id.tvFoodName);
-            tvFoodTime = itemView.findViewById(R.id.tvFoodTime);
-            tvFoodTable = itemView.findViewById(R.id.tvFoodTable);
+            imgFood = itemView.findViewById(R.id.img_history_food);
+            tvFoodName = itemView.findViewById(R.id.tv_history_foodName);
+            tvFoodPrice = itemView.findViewById(R.id.tv_price_history_food);
             tvStatus = itemView.findViewById(R.id.tvStatus);
         }
     }

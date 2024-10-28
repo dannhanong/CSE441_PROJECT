@@ -11,6 +11,7 @@ import com.ktpm1.restaurant.repositories.CategoryRepository;
 import com.ktpm1.restaurant.repositories.FoodRepository;
 import com.ktpm1.restaurant.repositories.UserRepository;
 import com.ktpm1.restaurant.services.FileUploadService;
+import com.ktpm1.restaurant.services.FoodHistoryService;
 import com.ktpm1.restaurant.services.FoodService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,8 @@ public class FoodServiceImpl implements FoodService {
     private UserRepository userRepository;
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
+    @Autowired
+    private FoodHistoryService foodHistoryService;
 
     @Override
     public Food createFood(FoodRequest foodRequest) {
@@ -176,6 +179,7 @@ public class FoodServiceImpl implements FoodService {
         List<Food> relatedFoods = foodRepository.findByCategoryAndIdNot(food.getCategory(), id);
         User user = userRepository.findByUsername(username);
         // kafkaTemplate.send("food-view", EventHistoryFoodCreate.builder().food(food).user(user).build());
+        foodHistoryService.addFoodToHistory(food, user);
         return FoodDetailAndRelated.builder().food(food).relatedFoods(relatedFoods).build();
     }
 

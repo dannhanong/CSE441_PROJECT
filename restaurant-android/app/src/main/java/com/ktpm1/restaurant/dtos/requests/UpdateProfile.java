@@ -1,9 +1,8 @@
 package com.ktpm1.restaurant.dtos.requests;
 
-import java.io.File;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import okhttp3.MultipartBody;
 
 @Getter
 @Setter
@@ -13,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateProfile {
     String name;
-    String phone;
-    File avatar;
+    String email;
+    MultipartBody.Part avatar;
 }

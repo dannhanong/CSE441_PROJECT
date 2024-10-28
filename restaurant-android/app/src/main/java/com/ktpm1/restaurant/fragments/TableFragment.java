@@ -5,7 +5,6 @@ import static android.content.Context.MODE_PRIVATE;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -73,9 +72,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import ua.naiksoftware.stomp.Stomp;
-import ua.naiksoftware.stomp.StompClient;
-
-import okhttp3.WebSocket;
 
 public class TableFragment extends Fragment implements TableAdapter.OnTableSelectionChangedListener{
     private Long catalogId;
@@ -84,6 +80,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
     private TextView tvTotalTables, tvTimeSelected;
     private List<TableResponse> tableList;
     private List<Long> selectedTableIds;
+    private List<String> selectedTableNumbers;
     private Calendar calendar;
     private int selectedYear, selectedMonth, selectedDay, selectedHour, selectedMinute;
     private AlertDialog dialog;
@@ -93,7 +90,6 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
     private Spinner additionalTimeSpinner;
     private HashMap<String, Integer> additionalTimeMap;
     private int additionalTime;
-    private WebSocketClient webSocketClient;
     private StompClient stompClient;
     private List<TableResponse> tableListAfter;
 
@@ -110,12 +106,11 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
 //        webSocketClient = new WebSocketClient();
 //        webSocketClient.connectWebSocket("ws://192.168.1.10:8080/ws/websocket");
 
-        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.1.15:8080/ws/websocket");
+        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.1.6:8080/ws/websocket");
 
         // Kết nối
         stompClient.connect();
 
-        // Subscribe tới topic "/topic/bookings"
         stompClient.topic("/topic/bookings").subscribe(message -> {
             Log.e("WebSocket", "Message received: " + message.getPayload());
 
@@ -145,6 +140,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
         tvTimeSelected = view.findViewById(R.id.txt_time_selected);
         tableList = new ArrayList<>();
         selectedTableIds = new ArrayList<>();
+        selectedTableNumbers = new ArrayList<>();
         rcvTables.setLayoutManager(new GridLayoutManager(getContext(), 3));
         btnConfirm = view.findViewById(R.id.btn_confirm_table);
         imgHelp = view.findViewById(R.id.img_help);
@@ -235,7 +231,18 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
 
         btnConfirm.setOnClickListener(view1 -> {
 //            Bundle arguments = getArguments();
-            createBookingTable();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Kiểm tra lại thông tin đặt bàn");
+            String selectedTables = selectedTableNumbers.stream().map(String::valueOf).reduce((s1, s2) -> s1 + ", " + s2).orElse("");
+            builder.setMessage("Bạn đã chọn bàn số " + selectedTables + ". Chắc chắn với lựa chọn này?");
+            builder.setPositiveButton("Xác nhận", (dialog, which) -> {
+                nextToCreateOrder();
+                dialog.dismiss();
+            });
+            builder.setNegativeButton("Hủy", (dialog, which) -> {
+                dialog.dismiss();
+            });
+            builder.show();
         });
 
         imgHelp.setOnClickListener(v -> {
@@ -441,8 +448,9 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
     }
 
     @Override
-    public void onTableSelectionChanged(List<Long> selectedTableIds) {
+    public void onTableSelectionChanged(List<Long> selectedTableIds, List<String> selectedTableNumbers) {
         this.selectedTableIds = selectedTableIds;
+        this.selectedTableNumbers = selectedTableNumbers;
         if (getFormattedDateTime().equals("") == false && !selectedTableIds.isEmpty()) {
             btnConfirm.setEnabled(true);
         } else {
@@ -450,21 +458,23 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
         }
     }
 
-    private void createBookingTable() {
+    private void createBookingTable(boolean addCart) {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("token", null);
 
         String formattedDateTime = getFormattedDateTime();
 
         BookingTableApi bookingTableApi = ApiClient.getClient().create(BookingTableApi.class);
-        BookingTableRequest bookingTableRequest = new BookingTableRequest(selectedTableIds, formattedDateTime, additionalTime);
+        BookingTableRequest bookingTableRequest = new BookingTableRequest(selectedTableIds, formattedDateTime, additionalTime, addCart);
 
         Call<ResponseMessage> call = bookingTableApi.createBookingTable("Bearer " + token, bookingTableRequest);
         call.enqueue(new Callback<ResponseMessage>() {
             @Override
             public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
                 if (response.isSuccessful()) {
-                    nextToCreateOrder();
+//                    nextToCreateOrder();
+                    selectedTableIds.clear();
+                    selectedTableNumbers.clear();
                 } else {
                     Toast.makeText(getContext(), "Đặt bàn thất bại", Toast.LENGTH_SHORT).show();
                 }
@@ -478,35 +488,48 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
     }
 
     private void nextToCreateOrder() {
-        if (selectedTableIds != null) {
-            if (selectedTableIds.size() > 0) {
-                // Tạo hộp thoại AlertDialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Thêm món trong giỏ hàng");
-                builder.setMessage("Bạn có muốn thêm các món trong giỏ hàng vào không?");
+        if (selectedTableIds != null && selectedTableIds.size() > 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-                // Nút Xác nhận
-                builder.setPositiveButton("Xác nhận", (dialog, which) -> {
-                    // Gọi API khi người dùng chọn "Xác nhận"
-                    callApiToAddItemsToCart();
-                });
+            // Sử dụng layout tùy chỉnh cho AlertDialog
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_custom_layout, null);
+            builder.setView(dialogView);
 
-                // Nút Từ chối
-                builder.setNegativeButton("Từ chối", (dialog, which) -> {
-                    // Gọi API khi người dùng chọn "Từ chối"
-                    callApiToDeclineItems();
-                });
+            // Tham chiếu đến các thành phần trong layout tùy chỉnh
+            TextView btnCartDetail = dialogView.findViewById(R.id.detailCartOnDialog);
+            TextView btnConfirm = dialogView.findViewById(R.id.btnConFirmOrderTAndF);
+            TextView btnDecline = dialogView.findViewById(R.id.btnRefuseOrderTAndF);
 
-                // Hiển thị hộp thoại
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            } else {
-                Toast.makeText(getContext(), "Đặt bàn thất bại", Toast.LENGTH_SHORT).show();
-            }
+            // Tạo AlertDialog
+            AlertDialog dialog = builder.create();
+
+            btnCartDetail.setOnClickListener(v -> {
+                goToCartFragment(new BookingTableRequest(selectedTableIds, getFormattedDateTime(), additionalTime, true));
+                dialog.dismiss();
+            });
+
+            // Sự kiện cho nút "Xác nhận"
+            btnConfirm.setOnClickListener(v -> {
+                callApiToAddItemsToCart();
+                dialog.dismiss(); // Đóng hộp thoại sau khi thực hiện hành động
+            });
+
+            // Sự kiện cho nút "Từ chối"
+            btnDecline.setOnClickListener(v -> {
+                callApiToDeclineItems();
+                dialog.dismiss(); // Đóng hộp thoại sau khi thực hiện hành động
+            });
+
+            // Hiển thị hộp thoại
+            dialog.show();
+        } else {
+            Toast.makeText(getContext(), "Đặt bàn thất bại", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void callApiToDeclineItems() {
+        createBookingTable(false);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("token", null);
         OrderApi orderApi = ApiClient.getClient().create(OrderApi.class);
@@ -532,13 +555,13 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
         OrderApi orderApi = ApiClient.getClient().create(OrderApi.class);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("token", null);
-        Call<VNPayMessage> call = orderApi.createOrder("Bearer " + token);
+        Call<VNPayMessage> call = orderApi.createOrder("Bearer " + token,
+                new BookingTableRequest(selectedTableIds, getFormattedDateTime(), additionalTime, true));
         call.enqueue(new Callback<VNPayMessage>() {
             @Override
             public void onResponse(Call<VNPayMessage> call, Response<VNPayMessage> response) {
                 if (response.isSuccessful()) {
-                    String url = response.body().getVnpayUrl(); // Lấy URL từ response
-
+                    String url = response.body().getVnpayUrl();
                     // Tạo instance WebFragment và truyền URL
                     WebFragment webFragment = WebFragment.newInstance(url);
 
@@ -556,5 +579,18 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
                 t.printStackTrace();
             }
         });
+    }
+
+    private void goToCartFragment(BookingTableRequest bookingRequest) {
+        CartFragment cartFragment = new CartFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("bookingRequest", bookingRequest);
+        cartFragment.setArguments(bundle);
+
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, cartFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

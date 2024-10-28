@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ktpm1.restaurant.R;
+import com.ktpm1.restaurant.adapters.ProfileAdapter;
 import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.models.User;
@@ -80,9 +81,19 @@ public class ProfileFragment extends Fragment {
                 "Tin tức & Dịch vụ"
         };
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, settingsOptions);
-        settingsList.setAdapter(adapter);
+        int[] icon ={
+                R.drawable.profilfe_card_payment,
+                R.drawable.profile_cart,
+                R.drawable.profile_password,
+                R.drawable.profile_help,
+                R.drawable.profile_notification,
+                R.drawable.profile_guard,
+                R.drawable.profile_new
 
+        };
+
+        ProfileAdapter icon_adapter = new ProfileAdapter(getActivity(), settingsOptions,icon);
+        settingsList.setAdapter(icon_adapter);
         settingsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

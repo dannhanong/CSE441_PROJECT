@@ -14,6 +14,5 @@ import java.util.List;
 @Builder
 public class EventCreateOrder {
     private List<Order> orders;
-    private List<BookingTable> bookingTables;
     private Cart cart;
 }

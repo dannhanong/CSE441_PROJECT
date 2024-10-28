@@ -9,14 +9,13 @@
 
     <!-- Ảnh đồ ăn -->
     <ImageView
-        android:id="@+id/imgFood"
+        android:id="@+id/img_history_food"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginEnd="8dp"
         android:scaleType="centerCrop"
         />
 
-    <!-- Thông tin đồ ăn -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -24,7 +23,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tvFoodName"
+            android:id="@+id/tv_history_foodName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tên món ăn"
@@ -32,15 +31,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/tvFoodTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ngày giờ"
-            android:textColor="@color/gray"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvFoodTable"
+            android:id="@+id/tv_price_history_food"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Bàn làm việc - 1 Hoa"
@@ -53,7 +44,7 @@
         android:id="@+id/tvStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Xong"
+        android:text="Chi tiết"
         android:textColor="@color/blue"
         android:textSize="14sp" />
 </LinearLayout>

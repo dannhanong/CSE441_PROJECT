@@ -18,4 +18,5 @@ public class BookingTableRequest {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime startTime;
     int additionalTime = 0;
+    boolean addCart;
 }

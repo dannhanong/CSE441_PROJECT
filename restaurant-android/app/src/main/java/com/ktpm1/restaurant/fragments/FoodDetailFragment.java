@@ -1,6 +1,7 @@
 package com.ktpm1.restaurant.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -98,7 +99,10 @@ public class FoodDetailFragment extends Fragment {
     private void fetchFoodDetails() {
         FoodApi foodApi = ApiClient.getClient().create(FoodApi.class);
 
-        Call<FoodDetailAndRelated> call = foodApi.getFoodDetailAndRelated(foodId);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
+
+        Call<FoodDetailAndRelated> call = foodApi.getFoodDetailAndRelated(foodId, "Bearer " + token);
         call.enqueue(new Callback<FoodDetailAndRelated>() {
             @Override
             public void onResponse(Call<FoodDetailAndRelated> call, Response<FoodDetailAndRelated> response) {
