@@ -4,7 +4,7 @@ import com.ktpm1.restaurant.dtos.requests.LoginForm;
 import com.ktpm1.restaurant.dtos.requests.RegisterRequest;
 import com.ktpm1.restaurant.dtos.responses.LoginResponse;
 import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
-import com.ktpm1.restaurant.models.ChangePasswordRequest;
+import com.ktpm1.restaurant.dtos.requests.ChangePasswordRequest;
 import com.ktpm1.restaurant.models.User;
 
 import okhttp3.MultipartBody;
@@ -40,9 +40,12 @@ public interface AuthApi {
                              @Part("name") RequestBody name,
                              @Part("phone") RequestBody phone,
                              @Part MultipartBody.Part avatar);
-    @PUT("/user/change-password")
-    Call<User> changePassword(
+    @PUT("/auth/change-password")
+    Call<ResponseMessage> changePassword(
             @Header("Authorization") String token,
             @Body ChangePasswordRequest request
     );
+
+    @POST("/auth/logout")
+    Call<ResponseMessage> logout(@Header("Authorization") String token   );
 }

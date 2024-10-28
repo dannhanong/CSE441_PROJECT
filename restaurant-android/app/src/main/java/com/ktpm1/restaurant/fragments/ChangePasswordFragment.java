@@ -1,6 +1,5 @@
 package com.ktpm1.restaurant.fragments;
 
-import static android.app.PendingIntent.getActivity;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.SharedPreferences;
@@ -18,7 +17,8 @@ import androidx.fragment.app.Fragment;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
-import com.ktpm1.restaurant.models.ChangePasswordRequest;
+import com.ktpm1.restaurant.dtos.requests.ChangePasswordRequest;
+import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
 import com.ktpm1.restaurant.models.User;
 
 import retrofit2.Call;
@@ -58,15 +58,13 @@ public class ChangePasswordFragment extends Fragment {
                 changePassword();
             }
         });
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ProfileFragment profileFragment = new ProfileFragment();
-                requireActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, profileFragment) // Change 'fragment_container' to your actual container ID
-                        .addToBackStack(null)
-                        .commit();
-            }
+
+        buttonBack.setOnClickListener(view1 -> {
+            ProfileFragment profileFragment = new ProfileFragment();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, profileFragment) // Change 'fragment_container' to your actual container ID
+                    .addToBackStack(null)
+                    .commit();
         });
     }
 
@@ -80,8 +78,6 @@ public class ChangePasswordFragment extends Fragment {
             return;
         }
 
-
-
         if (!newPassword.equals(confirmPassword)) {
             textViewMessage.setText("Mật khẩu nhập lại không trùng, vui lòng nhập lại.");
             return;
@@ -89,67 +85,37 @@ public class ChangePasswordFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("token", null);
+
         AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
-        Call<User> call = authApi.getProfile("Bearer " + token);
-        
-        call.enqueue(new Callback<User>() {
+        Call<ResponseMessage> call = authApi.changePassword("Bearer " + token,
+                new ChangePasswordRequest(currentPassword, newPassword, confirmPassword));
+        call.enqueue(new Callback<ResponseMessage>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful()) {
-                    User user = response.body();
-                    if (user != null && currentPassword.equals(user.getPassword())) {
-                        updatePassword(token, newPassword);
-                    } else {
-                        textViewMessage.setText("Mật khẩu cũ sai, vui lòng nhập lại.");
-                    }
-                } else {
-                    textViewMessage.setText("Không lấy được thông tin người dùng.");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable throwable) {
-                textViewMessage.setText("Không lấy được thông tin người dùng.");
-            }
-        });
-    }
-
-    private void updatePassword(String token, String newPassword) {
-        String currentPassword = editTextCurrentPassword.getText().toString();
-
-        // Create the request body with current and new password
-        ChangePasswordRequest request = new ChangePasswordRequest(currentPassword, newPassword);
-
-        // Call the change password API
-        AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
-        Call<User> call = authApi.changePassword("Bearer " + token, request);
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
                 if (response.isSuccessful()) {
                     // Password successfully updated
-                    textViewMessage.setText("Đổi mật khẩu thành công.");
-                    clearFields();
+                    ResponseMessage responseMessage = response.body();
+                    if (responseMessage.getStatus() == 200) {
+                        textViewMessage.setText("Đổi mật khẩu thành công.");
+                        clearFields();
+                    } else {
+                        textViewMessage.setText(responseMessage.getMessage());
+                    }
 
-                    buttonBack.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ProfileFragment profileFragment = new ProfileFragment();
-                            requireActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.fragment_container, profileFragment)
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
+                    buttonBack.setOnClickListener(view -> {
+                        ProfileFragment profileFragment = new ProfileFragment();
+                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, profileFragment)
+                                .addToBackStack(null)
+                                .commit();
                     });
                 } else {
-                    // Handle failure (e.g., invalid current password)
                     textViewMessage.setText("Không đổi được mật khẩu.");
                 }
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable throwable) {
-                // Handle network or API failure
+            public void onFailure(Call<ResponseMessage> call, Throwable throwable) {
                 textViewMessage.setText("Error: " + throwable.getMessage());
             }
         });
