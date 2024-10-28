@@ -2,6 +2,7 @@ plugins {
 //    alias(libs.plugins.android.application)
     id("com.android.application")
     id("com.google.gms.google-services")
+    id("com.android.application") version "8.6.0"
 }
 
 android {
@@ -70,6 +71,6 @@ dependencies {
     implementation ("com.google.android.material:material:1.3.0-alpha01")
     implementation ("io.reactivex.rxjava2:rxjava:2.2.19")
     implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
-
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
 
 }
