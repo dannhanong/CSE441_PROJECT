@@ -4,8 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.text.InputType;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etUsername, etPassword;
     private Button btnLogin;
     private TextView tvSignUp;
-
+    private boolean isShowPassword = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +39,8 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvSignUp = findViewById(R.id.tvSignUp);
+        ImageView isToogleButton = findViewById(R.id.ivTogglePasswordVisibility);
+        isToogleButton.setOnClickListener(this::togglePasswordVisibility);
 
         btnLogin.setOnClickListener(view -> {
             String username = etUsername.getText().toString();
@@ -49,7 +55,17 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
-
+    private void togglePasswordVisibility(View view){
+            if(isShowPassword){
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                ((ImageView) view).setImageResource(R.drawable.ic_eye_icon);
+            }else{
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                ((ImageView) view).setImageResource(R.drawable.ic_eye_icon);
+            }
+            etPassword.setSelection(etPassword.getText().length());
+            isShowPassword = !isShowPassword;
+    }
     private void login(LoginForm loginForm) {
         AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
 

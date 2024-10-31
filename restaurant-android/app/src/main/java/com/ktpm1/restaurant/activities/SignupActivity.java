@@ -1,13 +1,16 @@
+
+
 package com.ktpm1.restaurant.activities;
 
 
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,6 +29,7 @@ import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.dtos.requests.RegisterRequest;
 import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
+import com.ktpm1.restaurant.models.User;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,7 +43,8 @@ public class SignupActivity extends AppCompatActivity {
     private EditText fullNameInput, usernameInput, emailInput, phoneInput, passwordInput, confirmPasswordInput;
     private Button registerButton;
     private FirebaseAuth mAuth;
-    private TextView loginLink;
+    private boolean isShowPassword = false;
+    private boolean isShowConfirmPassword = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +56,7 @@ public class SignupActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Ánh xạ các thành phần trong giao diện
         fullNameInput = findViewById(R.id.full_name);
         usernameInput = findViewById(R.id.username);
         emailInput = findViewById(R.id.email);
@@ -58,12 +64,14 @@ public class SignupActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.password);
         confirmPasswordInput = findViewById(R.id.confirm_password);
         registerButton = findViewById(R.id.register_button);
-        loginLink = findViewById(R.id.login_link);
+        ImageView passwordToggle = findViewById(R.id.ivTogglePasswordVisibility);
+        ImageView confirmPasswordToggle = findViewById(R.id.ivTogglePasswordVisibility2);
+
+        passwordToggle.setOnClickListener(this::togglePasswordVisibility);
+        confirmPasswordToggle.setOnClickListener(this::toggleConfirmPasswordVisibility);
         mAuth = FirebaseAuth.getInstance();
-        loginLink.setOnClickListener(view -> {
-            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-            startActivity(intent);
-        });
+
+        // Xử lý sự kiện nút đăng ký
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,6 +80,28 @@ public class SignupActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private void togglePasswordVisibility(View view) {
+        if (isShowPassword) {
+            passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            ((ImageView) view).setImageResource(R.drawable.ic_eye_icon);
+        } else {
+            passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            ((ImageView) view).setImageResource(R.drawable.ic_eye_icon);
+        }
+        passwordInput.setSelection(passwordInput.getText().length());
+        isShowPassword = !isShowPassword;
+    }
+    private void toggleConfirmPasswordVisibility(View view) {
+        if (isShowConfirmPassword) {
+            confirmPasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            ((ImageView) view).setImageResource(R.drawable.ic_eye_icon);
+        } else {
+            confirmPasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            ((ImageView) view).setImageResource(R.drawable.ic_eye_icon);
+        }
+        confirmPasswordInput.setSelection(confirmPasswordInput.getText().length());
+        isShowConfirmPassword = !isShowConfirmPassword;
     }
 
     private boolean validateInputs() {
@@ -108,20 +138,16 @@ public class SignupActivity extends AppCompatActivity {
         String confirmPassword = confirmPasswordInput.getText().toString();
 
         if (password.equals(confirmPassword)) {
-            Set<String> roles = new HashSet<>();
-            roles.add("USER");
-
             RegisterRequest registerRequest = new RegisterRequest(fullName, username, password, confirmPassword, email, phoneNumber);
 
             AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
-            Call<ResponseMessage> call = authApi.signup(registerRequest);
+            Call<User> call = authApi.signup(registerRequest);
 
-            call.enqueue(new Callback<ResponseMessage>() {
+            call.enqueue(new Callback<User>() {
                 @Override
-                public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
+                public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful()) {
-                        ResponseMessage responseMessage = response.body();
-                        Toast.makeText(SignupActivity.this, responseMessage.getMessage(), Toast.LENGTH_SHORT).show();
+                        User user = response.body();
 
                         sendVerificationCode(username, phoneNumber);
 
@@ -134,7 +160,7 @@ public class SignupActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<ResponseMessage> call, Throwable throwable) {
+                public void onFailure(Call<User> call, Throwable throwable) {
                     Toast.makeText(SignupActivity.this, "Đăng ký thất bại!", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -216,5 +242,3 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 }
-
-
