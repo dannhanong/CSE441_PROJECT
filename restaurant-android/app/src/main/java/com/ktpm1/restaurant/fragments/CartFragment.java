@@ -3,6 +3,7 @@ package com.ktpm1.restaurant.fragments;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -208,7 +209,8 @@ public class CartFragment extends Fragment {
                 if (response.isSuccessful()) {
                     cartItems.clear();
                     cartAdapter.setCartItems(cartItems);
-                    toggleEmptyCartMessage();
+                    cartAdapter.notifyDataSetChanged(); // Cập nhật lại giao diện
+                    toggleEmptyCartMessage(); // Hiển thị thông báo giỏ hàng trống (nếu cần)
                 }
             }
 
@@ -234,6 +236,8 @@ public class CartFragment extends Fragment {
         if (bookingRequest != null) {
             // Gọi API tạo đơn hàng với BookingTableRequest
             createOrderWithBookingRequest(bookingRequest);
+        } else if (bookingRequest == null && cartItems.size() > 0) {
+            submitCartOnly();
         } else {
             // Gọi API khác nếu không có BookingTableRequest
             submitCartOnly();

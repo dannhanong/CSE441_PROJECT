@@ -67,10 +67,20 @@ public class OrderController {
     }
 
     @PostMapping("/create-food-only")
-    public ResponseEntity<Order> createOrderFoodOnly(HttpServletRequest request) {
+    public ResponseEntity<VNPayMessage> createOrderFoodOnly(HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
-        return ResponseEntity.ok(orderService.createOrderFoodOnly(username));
+
+        Order order = orderService.createOrderFoodOnly(username);
+
+        int totalPayment = order.getTotalPrice();
+        String orderIdsString = String.valueOf(order.getId());
+
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        String vnpayUrl = vnPayService.createOrder(totalPayment, orderIdsString, baseUrl);
+
+        VNPayMessage VNPayMessage = new VNPayMessage("payment", vnpayUrl);
+        return ResponseEntity.ok(VNPayMessage);
     }
 
     @PostMapping("/create-table-only")

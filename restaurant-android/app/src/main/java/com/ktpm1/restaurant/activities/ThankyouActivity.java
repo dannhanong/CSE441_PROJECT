@@ -3,6 +3,7 @@ package com.ktpm1.restaurant.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +26,7 @@ public class ThankyouActivity extends AppCompatActivity {
 //            return insets;
 //        });
 
-        Button buttonOk = findViewById(R.id.button_ok);
+        TextView buttonOk = findViewById(R.id.button_ok);
         buttonOk.setOnClickListener(v -> {
             Intent intent = new Intent(ThankyouActivity.this, MainActivity.class);
             startActivity(intent);

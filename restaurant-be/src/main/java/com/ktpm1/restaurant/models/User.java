@@ -59,6 +59,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "payment_method_default_id"))
     Set<PaymentMethodDefault> paymentMethodDefaults = new HashSet<>();
 
+    String avatarCode;
+
     public User(String name, String username, String encode, String email, String phoneNumber) {
         this.name = name;
         this.username = username;

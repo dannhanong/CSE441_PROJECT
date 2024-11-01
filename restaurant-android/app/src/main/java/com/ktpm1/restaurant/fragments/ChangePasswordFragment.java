@@ -5,13 +5,19 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.ktpm1.restaurant.R;
@@ -31,7 +37,8 @@ public class ChangePasswordFragment extends Fragment {
     private EditText editTextConfirmPassword;
     private Button buttonChangePassword;
     private TextView textViewMessage;
-    private Button buttonBack;
+//    private Button buttonBack;
+    private Toolbar toolbar;
 
     @Nullable
     @Override
@@ -49,7 +56,35 @@ public class ChangePasswordFragment extends Fragment {
         editTextConfirmPassword = view.findViewById(R.id.txt_ConfirmPassword);
         buttonChangePassword = view.findViewById(R.id.btn_Save);
         textViewMessage = view.findViewById(R.id.textViewMessage);
-        buttonBack = view.findViewById(R.id.btn_Back);
+        toolbar = view.findViewById(R.id.toolbar);
+//        buttonBack = view.findViewById(R.id.btn_Back);
+
+        // Thiết lập Toolbar làm ActionBar
+        if (getActivity() != null) {
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
+            activity.setSupportActionBar(toolbar);
+
+            if (activity.getSupportActionBar() != null) {
+                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back); // Icon back tùy chỉnh
+                activity.getSupportActionBar().setTitle("Đổi mật khẩu");
+            }
+        }
+
+        setHasOptionsMenu(true);
+
+        // Xử lý sự kiện nút back trong Fragment
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (shouldInterceptBackPress()) {
+                    Toast.makeText(getContext(), "Back pressed in CartFragment", Toast.LENGTH_SHORT).show();
+                } else {
+                    setEnabled(false); // Cho phép hệ thống xử lý sự kiện back
+                    requireActivity().onBackPressed();
+                }
+            }
+        });
 
         buttonChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,13 +93,29 @@ public class ChangePasswordFragment extends Fragment {
             }
         });
 
-        buttonBack.setOnClickListener(view1 -> {
-            ProfileFragment profileFragment = new ProfileFragment();
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, profileFragment) // Change 'fragment_container' to your actual container ID
-                    .addToBackStack(null)
-                    .commit();
-        });
+//        buttonBack.setOnClickListener(view1 -> {
+//            ProfileFragment profileFragment = new ProfileFragment();
+//            requireActivity().getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.fragment_container, profileFragment) // Change 'fragment_container' to your actual container ID
+//                    .addToBackStack(null)
+//                    .commit();
+//        });
+    }
+
+    // Xử lý sự kiện MenuItem trong Toolbar (nút back)
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // Quay lại Fragment hoặc Activity trước đó
+            requireActivity().onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Phương thức kiểm tra điều kiện xử lý nút back
+    private boolean shouldInterceptBackPress() {
+        return false; // Trả về false nếu không cần chặn back
     }
 
     private void changePassword() {
@@ -101,13 +152,13 @@ public class ChangePasswordFragment extends Fragment {
                         textViewMessage.setText(responseMessage.getMessage());
                     }
 
-                    buttonBack.setOnClickListener(view -> {
-                        ProfileFragment profileFragment = new ProfileFragment();
-                        requireActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, profileFragment)
-                                .addToBackStack(null)
-                                .commit();
-                    });
+//                    buttonBack.setOnClickListener(view -> {
+//                        ProfileFragment profileFragment = new ProfileFragment();
+//                        requireActivity().getSupportFragmentManager().beginTransaction()
+//                                .replace(R.id.fragment_container, profileFragment)
+//                                .addToBackStack(null)
+//                                .commit();
+//                    });
                 } else {
                     textViewMessage.setText("Không đổi được mật khẩu.");
                 }
