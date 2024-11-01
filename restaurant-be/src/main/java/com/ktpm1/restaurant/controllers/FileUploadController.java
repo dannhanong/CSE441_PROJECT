@@ -2,6 +2,7 @@ package com.ktpm1.restaurant.controllers;
 
 import com.ktpm1.restaurant.services.FileUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
@@ -21,8 +22,9 @@ public class FileUploadController {
 
     @GetMapping("/preview/{fileCode}")
     public ResponseEntity<byte[]> previewImage(@PathVariable("fileCode") String fileCode) throws IOException {
-        Resource resource = null;
-        String contentType = null;
+        Resource resource;
+        String contentType;
+
         try {
             resource = fileUploadService.getFileAsResource(fileCode);
             contentType = resource.getURL().openConnection().getContentType();
@@ -30,14 +32,11 @@ public class FileUploadController {
             return ResponseEntity.internalServerError().build();
         }
 
-        if (resource == null) {
-            return ResponseEntity.notFound().build();
-        }
-
         byte[] imageData = StreamUtils.copyToByteArray(resource.getInputStream());
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
+                .cacheControl(CacheControl.noCache().mustRevalidate())
                 .body(imageData);
     }
 }

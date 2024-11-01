@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.models.Food;
@@ -34,8 +35,12 @@ public class FoodHistoryAdapter extends RecyclerView.Adapter<FoodHistoryAdapter.
         holder.tvFoodName.setText(food.getName());
         String fileCode = food.getImageCode();
         String imageUrl = BuildConfig.BASE_URL + "/files/preview/" + fileCode;
-        holder.tvFoodPrice.setText(String.valueOf(food.getPrice()) + " VNĐ");
-        Glide.with(holder.itemView).load(imageUrl).into(holder.imgFood);
+        holder.tvFoodPrice.setText(food.getPrice() + " VNĐ");
+        Glide.with(holder.itemView)
+                .load(imageUrl)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(holder.imgFood);
     }
 
     @Override
