@@ -2,9 +2,12 @@ package com.ktpm1.restaurant.fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +42,10 @@ public class ChangePasswordFragment extends Fragment {
     private TextView textViewMessage;
 //    private Button buttonBack;
     private Toolbar toolbar;
+    private Button buttonBack;
+    boolean[] isOldPasswordVisible = {false};
+    boolean[] isNewPasswordVisible = {false};
+    boolean[] isConfirmPasswordVisible = {false};
 
     @Nullable
     @Override
@@ -85,6 +92,11 @@ public class ChangePasswordFragment extends Fragment {
                 }
             }
         });
+        buttonBack = view.findViewById(R.id.btn_Back);
+        editTextCurrentPassword = view.findViewById(R.id.txt_OldPassword);
+        editTextNewPassword = view.findViewById(R.id.txt_NewPassword);
+        editTextConfirmPassword = view.findViewById(R.id.txt_ConfirmPassword);
+
 
         buttonChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +105,38 @@ public class ChangePasswordFragment extends Fragment {
             }
         });
 
+        buttonBack.setOnClickListener(view1 -> {
+            ProfileFragment profileFragment = new ProfileFragment();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, profileFragment) // Change 'fragment_container' to your actual container ID
+                    .addToBackStack(null)
+                    .commit();
+        });
+        setPasswordVisibilityToggle(editTextCurrentPassword, isOldPasswordVisible);
+        setPasswordVisibilityToggle(editTextNewPassword, isNewPasswordVisible);
+        setPasswordVisibilityToggle(editTextConfirmPassword, isConfirmPasswordVisible);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setPasswordVisibilityToggle(EditText editText, boolean[] isVisible) {
+        editText.setOnTouchListener((View v, MotionEvent event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (editText.getRight() - editText.getCompoundDrawables()[2].getBounds().width())) {
+
+                    if (isVisible[0]) {
+                        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_eye_closed_icon, 0); // icon mắt
+                    } else {
+                        editText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_eye_icon, 0); // icon đóng mắt
+                    }
+                    isVisible[0] = !isVisible[0];
+                    editText.setSelection(editText.getText().length());
+                    return true;
+                }
+            }
+            return false;
+        });
 //        buttonBack.setOnClickListener(view1 -> {
 //            ProfileFragment profileFragment = new ProfileFragment();
 //            requireActivity().getSupportFragmentManager().beginTransaction()
@@ -176,5 +220,7 @@ public class ChangePasswordFragment extends Fragment {
         editTextNewPassword.setText("");
         editTextConfirmPassword.setText("");
     }
+
+
 }
 

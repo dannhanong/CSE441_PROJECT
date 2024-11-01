@@ -51,14 +51,14 @@ public class ProfileFragment extends Fragment {
         editProfileButton.setOnClickListener(v -> {
             EditProfileFragment editProfileFragment = new EditProfileFragment();
             requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, editProfileFragment) // Change 'fragment_container' to your actual container ID
+                    .replace(R.id.fragment_container, editProfileFragment)
                     .addToBackStack(null) // Add to back stack
                     .commit();
         });
         editProfileText.setOnClickListener(v -> {
             EditProfileFragment editProfileFragment = new EditProfileFragment();
             requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, editProfileFragment) // Change 'fragment_container' to your actual container ID
+                    .replace(R.id.fragment_container, editProfileFragment)
                     .addToBackStack(null)
                     .commit();
         });
