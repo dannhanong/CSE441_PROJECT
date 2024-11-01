@@ -2,22 +2,31 @@ package com.ktpm1.restaurant.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import android.content.Context;
+import android.content.SharedPreferences;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.DishAdapter;
 import com.ktpm1.restaurant.adapters.SelectedTableAdapter;
+import com.ktpm1.restaurant.apis.OrderApi;
 import com.ktpm1.restaurant.dtos.responses.TableResponse;
 import com.ktpm1.restaurant.models.Catalog;
+import com.ktpm1.restaurant.models.Order;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ReviewOrderActivity extends AppCompatActivity {
 
@@ -25,6 +34,7 @@ public class ReviewOrderActivity extends AppCompatActivity {
     private TextView tvTotalAmount;
     private Button btnConfirmOrder;
     private List<TableResponse> selectedTables;
+    private OrderApi orderApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,30 +47,60 @@ public class ReviewOrderActivity extends AppCompatActivity {
         tvTotalAmount = findViewById(R.id.tvTotalAmount);
         btnConfirmOrder = findViewById(R.id.btnConfirmOrder);
 
-        // Dữ liệu mẫu cho món ăn
+        // Khởi tạo Retrofit và OrderApi
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.110.68") //
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        orderApi = retrofit.create(OrderApi.class);
+
+        String token = "Bearer " + getToken();
+
+        fetchReservedTables(token);
+
         List<String> dishList = Arrays.asList("Gà chiên", "Cá kho tộ", "Bún bò Huế");
 
-        // Dữ liệu mẫu cho bàn đã chọn
-        selectedTables = new ArrayList<>();
-        selectedTables.add(new TableResponse(1L, "Bàn số 1", 4, true, new Catalog("Khu A"), true));
-        selectedTables.add(new TableResponse(2L, "Bàn số 2", 6, true, new Catalog("Khu B"), true));
-
-        // Thiết lập RecyclerView cho món ăn
         rvDishes.setLayoutManager(new LinearLayoutManager(this));
-        rvDishes.setAdapter(new DishAdapter(dishList)); // Sử dụng DishAdapter để hiển thị danh sách món ăn
+        rvDishes.setAdapter(new DishAdapter(dishList));
 
-        // Thiết lập RecyclerView cho bàn đã chọn
-        rvTables.setLayoutManager(new LinearLayoutManager(this));
-        rvTables.setAdapter(new SelectedTableAdapter(selectedTables)); // Sử dụng SelectedTableAdapter mới
-
-        // Hiển thị tổng giá trị đơn hàng (giả lập)
-        tvTotalAmount.setText("500,000 VND");
-
-        // Xử lý sự kiện nút để quay lại MainActivity
         btnConfirmOrder.setOnClickListener(v -> {
             Intent intent = new Intent(ReviewOrderActivity.this, MainActivity.class);
             startActivity(intent);
-            finish(); // Đóng ReviewOrderActivity nếu không cần quay lại
+            finish();
         });
     }
+
+    private void fetchReservedTables(String token) {
+        orderApi.getReservedTables(token).enqueue(new Callback<List<TableResponse>>() {
+            @Override
+            public void onResponse(Call<List<TableResponse>> call, Response<List<TableResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    selectedTables = response.body();
+
+                    rvTables.setLayoutManager(new LinearLayoutManager(ReviewOrderActivity.this));
+                    rvTables.setAdapter(new SelectedTableAdapter(selectedTables));
+                } else {
+                    try {
+                        String errorResponse = response.errorBody() != null ? response.errorBody().string() : "Phản hồi rỗng";
+                        Log.e("ReviewOrderActivity", "Lỗi từ server: " + errorResponse + ", Mã trạng thái: " + response.code());
+                    } catch (Exception e) {
+                        Log.e("ReviewOrderActivity", "Không thể xử lý lỗi từ server.", e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<TableResponse>> call, Throwable t) {
+                Log.e("ReviewOrderActivity", "Lỗi khi gọi API: " + t.getMessage());
+            }
+        });
+    }
+
+
+
+    private String getToken() {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("jwt_token", "");
+    }
+
 }
