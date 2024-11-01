@@ -24,7 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -59,7 +58,6 @@ public class UserServiceImpl implements UserService {
     public User save(User user) {
         user.setEnabled(false);
         user.setVerificationCode(generateVerificationCode());
-        user.setEndOfVerifyTime(LocalDateTime.now().plusMinutes(2));
         return userRepository.save(user);
     }
 
@@ -126,7 +124,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean verify(String verificationCode) {
-        User user = userRepository.findByVerificationCodeAndEndOfVerifyTimeBefore(verificationCode, LocalDateTime.now());
+        User user = userRepository.findByVerificationCode(verificationCode);
         if (user == null || user.isEnabled()) {
             return false;
         }else {
@@ -174,25 +172,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username);
         user.setVerificationCode(verificationCode);
         userRepository.save(user);
-    }
-
-    @Override
-    public ResponseMessage reSendVerificationCode(String phoneNumber) {
-        User user = userRepository.findByPhoneNumber(phoneNumber);
-        if (user == null) {
-            return ResponseMessage.builder()
-                    .status(404)
-                    .message("Người dùng không tồn tại")
-                    .build();
-        }
-        String verificationCode = generateVerificationCode();
-        user.setVerificationCode(verificationCode);
-        user.setEndOfVerifyTime(LocalDateTime.now().plusMinutes(2));
-        userRepository.save(user);
-        return ResponseMessage.builder()
-                .status(200)
-                .message("Gửi lại mã xác thực thành công")
-                .build();
     }
 
     private void enableUser(Long id) {

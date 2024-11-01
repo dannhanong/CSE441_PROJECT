@@ -20,11 +20,11 @@ public class ThankyouActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_thankyou);
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.thankyou),  (v, insets) -> {
-//            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-//            return insets;
-//        });
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.thankyou),  (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         TextView buttonOk = findViewById(R.id.button_ok);
         buttonOk.setOnClickListener(v -> {

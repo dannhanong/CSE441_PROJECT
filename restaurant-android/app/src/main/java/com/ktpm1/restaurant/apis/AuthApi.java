@@ -52,7 +52,4 @@ public interface AuthApi {
             @Part("email") RequestBody email,
             @Part MultipartBody.Part avatar
     );
-
-    @GET("/auth/resend-verify-code")
-    Call<ResponseMessage> resendVerifyCode(@Query("phoneNumber") String phoneNumber);
 }

@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
@@ -125,11 +124,7 @@ public class FoodOptionsBottomSheet extends BottomSheetDialogFragment {
                     tvFoodPrice.setText(String.valueOf(food.getPrice()));
                     String fileCode = food.getImageCode();
                     String imageUrl = BuildConfig.BASE_URL + "/files/preview/" + fileCode;
-                    Glide.with(getContext())
-                            .load(imageUrl)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(true)
-                            .into(imgFood);
+                    Glide.with(getContext()).load(imageUrl).into(imgFood);
                     price = food.getPrice();
                 }
             }

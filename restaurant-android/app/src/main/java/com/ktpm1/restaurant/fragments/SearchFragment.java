@@ -1,25 +1,19 @@
 package com.ktpm1.restaurant.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -35,7 +29,6 @@ import com.ktpm1.restaurant.models.Food;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,8 +42,6 @@ public class SearchFragment extends Fragment {
     private ChipGroup chipGroupCategories;
     private TextView tvNotFind;
     private SuggestionsFragment.OnFoodSelectedListener callback;
-    private final int REQ_CODE_SPEECH_INPUT = 100;
-    private Toolbar toolbar;
 
     public SearchFragment() {
     }
@@ -78,7 +69,6 @@ public class SearchFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewSearchResults);
         searchEditText = view.findViewById(R.id.searchEditText);
         chipGroupCategories = view.findViewById(R.id.chipGroupCategories);
-        toolbar = view.findViewById(R.id.toolbar);
 
         fetchCategories();
         foodList = new ArrayList<>();
@@ -89,20 +79,6 @@ public class SearchFragment extends Fragment {
 
         searchFoods("");
 
-        searchEditText.setHint("Tìm kiếm món ăn");
-
-        searchEditText.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                int drawableEnd = 2; // DrawableEnd là ở vị trí thứ 2, DrawableStart là vị trí 0
-                if (event.getRawX() >= (searchEditText.getRight() - searchEditText.getCompoundDrawables()[drawableEnd].getBounds().width())) {
-                    // Bấm vào drawableEnd (ic_mic)
-                    speedToText();
-                    return true;
-                }
-            }
-            return false;
-        });
-
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -111,10 +87,10 @@ public class SearchFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() > 0) {
-//                    setChipsEnabled(false);
+                    setChipsEnabled(false);
                     searchFoods(s.toString());
                 } else if (s.length() == 0) {
-//                    setChipsEnabled(true);
+                    setChipsEnabled(true);
                     searchFoods(s.toString());
                 } else {
                     setChipsEnabled(true);
@@ -141,43 +117,6 @@ public class SearchFragment extends Fragment {
         }));
 
         return view;
-    }
-
-    private void onMicrophoneIconClick() {
-
-    }
-
-    public void speedToText() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hãy nói món ăn bạn muốn tìm kiếm");
-
-        try {
-            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Thiết bị không hỗ trợ ghi âm", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case REQ_CODE_SPEECH_INPUT: {
-                if (resultCode == getActivity().RESULT_OK && null != data) {
-//                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-//                    searchEditText.setText(result.get(0));
-
-                    List<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String keyword = result.get(0);
-                    searchEditText.setText(keyword);
-                }
-                break;
-            }
-        }
     }
 
     private void searchFoods(String keyword) {
