@@ -2,8 +2,11 @@ package com.ktpm1.restaurant.activities;
 
 
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,25 +14,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthOptions;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.dtos.requests.RegisterRequest;
-import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
 import com.ktpm1.restaurant.models.User;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,17 +34,19 @@ public class SignupActivity extends AppCompatActivity {
     private EditText fullNameInput, usernameInput, emailInput, phoneInput, passwordInput, confirmPasswordInput;
     private Button registerButton;
     private FirebaseAuth mAuth;
+    private String otp = "", phoneNumberToVerify="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        // Fullscreen mode
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
+        setContentView(R.layout.activity_sign_in);
 
         // Ánh xạ các thành phần trong giao diện
         fullNameInput = findViewById(R.id.full_name);
@@ -117,12 +114,19 @@ public class SignupActivity extends AppCompatActivity {
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful()) {
                         User user = response.body();
-
-                        sendVerificationCode(username, phoneNumber);
-
-                        Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
+                        phoneNumberToVerify = phoneNumber;
+                        otp = user.getVerificationCode();
+                        if (ContextCompat.checkSelfPermission(SignupActivity.this, android.Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+                            sendOtp();
+                            Intent intent = new Intent(SignupActivity.this, OtpActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("phoneNumberToVerify", phoneNumberToVerify);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            ActivityCompat.requestPermissions(SignupActivity.this, new String[]{Manifest.permission.SEND_SMS}, 100);
+                        }
                     } else {
                         Toast.makeText(SignupActivity.this, "Đăng ký không thành công", Toast.LENGTH_SHORT).show();
                     }
@@ -138,78 +142,100 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
-    private void sendVerificationCode(String username, String phoneNumber) {
-        PhoneAuthOptions options =
-                PhoneAuthOptions.newBuilder(mAuth)
-                        .setPhoneNumber(phoneNumber)       // Phone number to verify
-                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                        .setActivity(this)                 // (optional) Activity for callback binding
-                        // If no activity is passed, reCAPTCHA verification can not be used.
-                        .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                            @Override
-                            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-//                                String code = phoneAuthCredential.getSmsCode();
-//                                if (code != null) {
-//                                    sendOtpToServer(code);
-//                                }
-                            }
-
-                            @Override
-                            public void onVerificationFailed(@NonNull FirebaseException e) {
-
-                            }
-
-                            @Override
-                            public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                                super.onCodeSent(s, forceResendingToken);
-                                sendOtpToServer(username, s);
-                            }
-                        })
-                        .build();
-        PhoneAuthProvider.verifyPhoneNumber(options);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                sendOtp();
+                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(this, "Quyền gửi SMS đã bị từ chối.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
-    private void sendOtpToServer(String username, String otp) {
-        AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
-        Call<ResponseMessage> call = authApi.updateVerifyCode(username, otp);
-        call.enqueue(new Callback<ResponseMessage>() {
-            @Override
-            public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
-                if (response.isSuccessful()) {
-                    ResponseMessage responseMessage = response.body();
-                    Toast.makeText(SignupActivity.this, responseMessage.getMessage(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(SignupActivity.this, "Xác thực thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseMessage> call, Throwable throwable) {
-                Toast.makeText(SignupActivity.this, "Xác thực thất bại", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void sendOtp() {
+        SmsManager smsManager = SmsManager.getDefault();
+        ArrayList<String> parts = smsManager.divideMessage(otp + " là mã xác thực của bạn");
+        String phoneNumberWithCountryCode = phoneNumberToVerify.startsWith("0")
+                ? "+84" + phoneNumberToVerify.substring(1)
+                : "+84" + phoneNumberToVerify;
+        smsManager.sendMultipartTextMessage(phoneNumberWithCountryCode, null, parts, null, null);
     }
 
-    private void verifyOtp(String otp) {
-        AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
-        Call<ResponseMessage> call = authApi.verify(otp);
-        call.enqueue(new Callback<ResponseMessage>() {
-            @Override
-            public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
-                if (response.isSuccessful()) {
-                    ResponseMessage responseMessage = response.body();
-                    Toast.makeText(SignupActivity.this, responseMessage.getMessage(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(SignupActivity.this, "Xác thực thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseMessage> call, Throwable throwable) {
-                Toast.makeText(SignupActivity.this, "Xác thực thất bại", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+//    private void sendVerificationCode(String username, String phoneNumber) {
+//        PhoneAuthOptions options =
+//                PhoneAuthOptions.newBuilder(mAuth)
+//                        .setPhoneNumber(phoneNumber)       // Phone number to verify
+//                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+//                        .setActivity(this)                 // (optional) Activity for callback binding
+//                        // If no activity is passed, reCAPTCHA verification can not be used.
+//                        .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+//                            @Override
+//                            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+////                                String code = phoneAuthCredential.getSmsCode();
+////                                if (code != null) {
+////                                    sendOtpToServer(code);
+////                                }
+//                            }
+//
+//                            @Override
+//                            public void onVerificationFailed(@NonNull FirebaseException e) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+//                                super.onCodeSent(s, forceResendingToken);
+//                                sendOtpToServer(username, s);
+//                            }
+//                        })
+//                        .build();
+//        PhoneAuthProvider.verifyPhoneNumber(options);
+//    }
+//
+//    private void sendOtpToServer(String username, String otp) {
+//        AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
+//        Call<ResponseMessage> call = authApi.updateVerifyCode(username, otp);
+//        call.enqueue(new Callback<ResponseMessage>() {
+//            @Override
+//            public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
+//                if (response.isSuccessful()) {
+//                    ResponseMessage responseMessage = response.body();
+//                    Toast.makeText(SignupActivity.this, responseMessage.getMessage(), Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(SignupActivity.this, "Xác thực thất bại", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponseMessage> call, Throwable throwable) {
+//                Toast.makeText(SignupActivity.this, "Xác thực thất bại", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
+//
+//    private void verifyOtp(String otp) {
+//        AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
+//        Call<ResponseMessage> call = authApi.verify(otp);
+//        call.enqueue(new Callback<ResponseMessage>() {
+//            @Override
+//            public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
+//                if (response.isSuccessful()) {
+//                    ResponseMessage responseMessage = response.body();
+//                    Toast.makeText(SignupActivity.this, responseMessage.getMessage(), Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(SignupActivity.this, "Xác thực thất bại", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponseMessage> call, Throwable throwable) {
+//                Toast.makeText(SignupActivity.this, "Xác thực thất bại", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 }
-
-

@@ -23,4 +23,5 @@ public interface UserService extends UserDetailsService {
     boolean verify(String verificationCode);
     ResponseMessage updateProfile(UpdateProfile updateProfile, String username);
     void updateVerificationCode(String username, String verificationCode);
+    ResponseMessage reSendVerificationCode(String phoneNumber);
 }
