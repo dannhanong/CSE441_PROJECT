@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -59,16 +58,18 @@ public class FileUploadServiceImpl implements FileUploadService {
     @Override
     public Resource getFileAsResource(String fileCode) throws IOException {
         Path uploadDirectory = Paths.get("Files-Upload");
+        foundFile = null; // Reset foundFile before searching
 
-        // Tìm file đầu tiên có tên bắt đầu bằng fileCode
-        Optional<Path> foundFile = Files.list(uploadDirectory)
-                .filter(file -> file.getFileName().toString().startsWith(fileCode))
-                .findFirst();
+        Files.list(uploadDirectory).forEach(file -> {
+            if (file.getFileName().toString().startsWith(fileCode)) {
+                foundFile = file;
+                return; // Break loop
+            }
+        });
 
-        if (foundFile.isPresent()) {
-            return new UrlResource(foundFile.get().toUri());
+        if (foundFile != null) {
+            return new UrlResource(foundFile.toUri());
         }
-
         throw new IOException("File not found with fileCode: " + fileCode);
     }
 

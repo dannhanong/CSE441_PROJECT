@@ -1,10 +1,10 @@
 package com.ktpm1.restaurant.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,38 +12,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.DishAdapter;
 import com.ktpm1.restaurant.adapters.SelectedTableAdapter;
-import com.ktpm1.restaurant.apis.OrderApi;
-import com.ktpm1.restaurant.apis.RetrofitClient;
-import com.ktpm1.restaurant.dtos.requests.BookingTableRequest;
-import com.ktpm1.restaurant.dtos.responses.VNPayMessage;
-import com.ktpm1.restaurant.models.Catalog;
 import com.ktpm1.restaurant.dtos.responses.TableResponse;
-import com.ktpm1.restaurant.dtos.responses.OrderDetailResponse;
+import com.ktpm1.restaurant.models.Catalog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ReviewOrderActivity extends AppCompatActivity {
 
     private RecyclerView rvDishes, rvTables;
     private TextView tvTotalAmount;
     private Button btnConfirmOrder;
-    private List<TableResponse> selectedTables = new ArrayList<>();
-    private List<String> dishList = new ArrayList<>();
-    private OrderApi orderApi;
-    private static final String BASE_URL = "http://192.168.110.68:8080";
+    private List<TableResponse> selectedTables;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_order);
-
-        // Khởi tạo Retrofit và API
-        orderApi = RetrofitClient.getClient(BASE_URL).create(OrderApi.class);
 
         // Khởi tạo các thành phần giao diện
         rvDishes = findViewById(R.id.rvDishes);
@@ -51,76 +37,30 @@ public class ReviewOrderActivity extends AppCompatActivity {
         tvTotalAmount = findViewById(R.id.tvTotalAmount);
         btnConfirmOrder = findViewById(R.id.btnConfirmOrder);
 
-        // Nhận mã hóa đơn (invoiceId) từ Intent
-        String invoiceId = getIntent().getStringExtra("invoiceId");
-        if (invoiceId != null) {
-            fetchOrderDetails(invoiceId);
-        } else {
-            Toast.makeText(this, "Không tìm thấy mã hóa đơn", Toast.LENGTH_SHORT).show();
-        }
+        // Dữ liệu mẫu cho món ăn
+        List<String> dishList = Arrays.asList("Gà chiên", "Cá kho tộ", "Bún bò Huế");
 
-        // Xử lý sự kiện khi nhấn nút "Xác nhận đặt hàng"
-        btnConfirmOrder.setOnClickListener(view -> createOrderWithFoodAndTable());
-    }
+        // Dữ liệu mẫu cho bàn đã chọn
+        selectedTables = new ArrayList<>();
+        selectedTables.add(new TableResponse(1L, "Bàn số 1", 4, true, new Catalog("Khu A"), true));
+        selectedTables.add(new TableResponse(2L, "Bàn số 2", 6, true, new Catalog("Khu B"), true));
 
-    // Lấy chi tiết hóa đơn từ API
-    private void fetchOrderDetails(String invoiceId) {
-        orderApi.getOrderDetails(invoiceId).enqueue(new Callback<OrderDetailResponse>() {
-            @Override
-            public void onResponse(Call<OrderDetailResponse> call, Response<OrderDetailResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    OrderDetailResponse orderDetail = response.body();
+        // Thiết lập RecyclerView cho món ăn
+        rvDishes.setLayoutManager(new LinearLayoutManager(this));
+        rvDishes.setAdapter(new DishAdapter(dishList)); // Sử dụng DishAdapter để hiển thị danh sách món ăn
 
-                    // Cập nhật giao diện với dữ liệu từ API
-                    dishList = orderDetail.getDishes();
-                    selectedTables = orderDetail.getTables();
-                    tvTotalAmount.setText(orderDetail.getTotalAmount() + " VND");
+        // Thiết lập RecyclerView cho bàn đã chọn
+        rvTables.setLayoutManager(new LinearLayoutManager(this));
+        rvTables.setAdapter(new SelectedTableAdapter(selectedTables)); // Sử dụng SelectedTableAdapter mới
 
-                    // Cập nhật RecyclerView cho món ăn
-                    rvDishes.setLayoutManager(new LinearLayoutManager(ReviewOrderActivity.this));
-                    rvDishes.setAdapter(new DishAdapter(dishList));
+        // Hiển thị tổng giá trị đơn hàng (giả lập)
+        tvTotalAmount.setText("500,000 VND");
 
-                    // Cập nhật RecyclerView cho bàn đã chọn
-                    rvTables.setLayoutManager(new LinearLayoutManager(ReviewOrderActivity.this));
-                    rvTables.setAdapter(new SelectedTableAdapter(selectedTables));
-
-                } else {
-                    Toast.makeText(ReviewOrderActivity.this, "Không lấy được chi tiết hóa đơn!", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<OrderDetailResponse> call, Throwable t) {
-                Toast.makeText(ReviewOrderActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void createOrderWithFoodAndTable() {
-        BookingTableRequest bookingTableRequest = new BookingTableRequest();
-        bookingTableRequest.setDishes(dishList);
-        List<Long> tableIds = new ArrayList<>();
-        for (TableResponse table : selectedTables) {
-            tableIds.add(table.getId());
-        }
-        bookingTableRequest.setTableIds(tableIds);
-
-        // Gọi API để tạo đơn hàng
-        orderApi.createOrderWithFoodAndTable(bookingTableRequest).enqueue(new Callback<VNPayMessage>() {
-            @Override
-            public void onResponse(Call<VNPayMessage> call, Response<VNPayMessage> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    VNPayMessage message = response.body();
-                    Toast.makeText(ReviewOrderActivity.this, "Thanh toán thành công! " + message.getPaymentUrl(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ReviewOrderActivity.this, "Lỗi khi tạo đơn hàng!", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<VNPayMessage> call, Throwable t) {
-                Toast.makeText(ReviewOrderActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
-            }
+        // Xử lý sự kiện nút để quay lại MainActivity
+        btnConfirmOrder.setOnClickListener(v -> {
+            Intent intent = new Intent(ReviewOrderActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish(); // Đóng ReviewOrderActivity nếu không cần quay lại
         });
     }
 }

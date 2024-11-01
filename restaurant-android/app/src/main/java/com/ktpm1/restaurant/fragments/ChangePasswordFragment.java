@@ -19,6 +19,7 @@ import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.dtos.requests.ChangePasswordRequest;
 import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
+import com.ktpm1.restaurant.models.User;
 
 import retrofit2.Call;
 import retrofit2.Callback;

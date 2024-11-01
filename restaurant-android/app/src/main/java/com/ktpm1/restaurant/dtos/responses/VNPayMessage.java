@@ -14,6 +14,6 @@ public class VNPayMessage {
     private String vnpayUrl;
 
     public String getPaymentUrl() {
-        return message;
+        return null;
     }
 }

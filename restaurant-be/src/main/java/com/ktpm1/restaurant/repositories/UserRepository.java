@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -26,6 +25,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.enabled = true WHERE u.id = :id")
     public void enableUser(String id);
     public User findByResetPasswordToken(String resetPasswordToken);
-    User findByVerificationCodeAndEndOfVerifyTimeBefore(String code, LocalDateTime endOfVerifyTime);
-    User findByPhoneNumber(String phoneNumber);
+    User findByVerificationCode(String code);
 }

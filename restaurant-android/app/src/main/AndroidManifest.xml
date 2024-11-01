@@ -42,6 +42,7 @@
         <activity android:name=".activities.SignupActivity" android:exported="true" />
         <activity android:name=".activities.OtpActivity" android:exported="true" />
         <activity android:name=".activities.ReviewOrderActivity" android:exported="true" />
+        <activity android:name=".activities.InvoiceListActivity" android:exported="true" />
     </application>
 
 </manifest>

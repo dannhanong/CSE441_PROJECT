@@ -26,7 +26,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.AuthApi;
@@ -136,11 +135,7 @@ public class EditProfileFragment extends Fragment {
                         String imageUrl = BuildConfig.BASE_URL + "/files/preview/" + fileCode;
                         nameEditText.setText(user.getName());
                         emailEditText.setText(user.getEmail());
-                        Glide.with(requireContext())
-                                .load(imageUrl)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true)
-                                .into(profileImage);
+                        Glide.with(requireContext()).load(imageUrl).into(profileImage);
                     }
                 } else {
                     Log.e("EditProfileFragment", "Failed to load user information");

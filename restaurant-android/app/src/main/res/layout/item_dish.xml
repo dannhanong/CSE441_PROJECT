@@ -41,6 +41,15 @@
                 android:text="30.000đ"
                 android:textColor="@color/gray"
                 android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_payment_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Thanh toán thành công"
+                android:textColor="@color/green"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -71,5 +80,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
     </LinearLayout>
+
+    <!-- Trạng thái thanh toán -->
+    <!-- Để ẩn trạng thái mặc định -->
 
 </LinearLayout>

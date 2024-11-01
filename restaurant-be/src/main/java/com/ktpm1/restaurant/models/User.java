@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,7 +50,6 @@ public class User {
     Set<Role> roles = new HashSet<>();
 
     private String avatarCode;
-    private LocalDateTime endOfVerifyTime;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_payment_method",

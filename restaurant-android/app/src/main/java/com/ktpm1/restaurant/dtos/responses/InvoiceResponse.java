@@ -7,7 +7,7 @@ public class InvoiceResponse {
     private double totalAmount;   // Tổng số tiền của hóa đơn
 
     // Constructor không tham số
-    public InvoiceResponse() {}
+    public InvoiceResponse(String number, String id, String s, int i) {}
 
     // Constructor có tham số
     public InvoiceResponse(String invoiceCode, String date, double totalAmount) {

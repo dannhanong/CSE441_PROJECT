@@ -184,11 +184,6 @@ public class AuthController {
                 .build(), verified ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/resend-verify-code")
-    public ResponseEntity<ResponseMessage> reSendVerificationCode(@RequestParam("phoneNumber") String phoneNumber) {
-        return new ResponseEntity<>(userService.reSendVerificationCode(phoneNumber), HttpStatus.OK);
-    }
-
     @GetMapping("/get/profile")
     public ResponseEntity<User> getProfile(HttpServletRequest request) {
         String token = getTokenFromRequest(request);

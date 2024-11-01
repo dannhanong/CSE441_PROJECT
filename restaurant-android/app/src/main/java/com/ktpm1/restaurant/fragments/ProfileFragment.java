@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -17,9 +18,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.ProfileAdapter;
 import com.ktpm1.restaurant.apis.AuthApi;
@@ -39,6 +37,7 @@ public class ProfileFragment extends Fragment {
     Button logoutButton;
 
     public ProfileFragment() {
+        // Required empty public constructor
     }
 
     @Override
@@ -55,14 +54,23 @@ public class ProfileFragment extends Fragment {
                     .addToBackStack(null) // Add to back stack
                     .commit();
         });
-        editProfileText.setOnClickListener(v -> {
-            EditProfileFragment editProfileFragment = new EditProfileFragment();
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, editProfileFragment) // Change 'fragment_container' to your actual container ID
-                    .addToBackStack(null)
-                    .commit();
+        editProfileText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditProfileFragment editProfileFragment = new EditProfileFragment();
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, editProfileFragment) // Change 'fragment_container' to your actual container ID
+                        .addToBackStack(null) // Add to back stack
+                        .commit();
+            }
         });
-        logoutButton.setOnClickListener(v -> Toast.makeText(getActivity(), "Đăng xuất", Toast.LENGTH_SHORT).show());
+
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Đăng xuất", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         String[] settingsOptions = {
                 "Phương thức thanh toán",
@@ -147,15 +155,8 @@ public class ProfileFragment extends Fragment {
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
                     User userInfo = response.body();
-                    String fileCode = userInfo.getAvatarCode();
-                    String imageUrl = BuildConfig.BASE_URL + "/files/preview/" + fileCode;
                     name.setText(userInfo.getName());
                     email.setText(userInfo.getPhoneNumber());
-                    Glide.with(getActivity())
-                            .load(imageUrl)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(true)
-                            .into(profileImage);
                 } else {
                 }
             }
