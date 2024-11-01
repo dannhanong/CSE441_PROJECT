@@ -42,7 +42,6 @@ public class RecentFragment extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("Mới nhất"));
         tabLayout.addTab(tabLayout.newTab().setText("Cũ nhất"));
 
-        // Gọi phương thức load dữ liệu
         loadFoodHistory();
 
         // Xử lý sự kiện chọn tab
@@ -52,7 +51,6 @@ public class RecentFragment extends Fragment {
                 // Tải lại dữ liệu dựa trên tab được chọn
                 loadFoodHistory();
             }
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {}
 

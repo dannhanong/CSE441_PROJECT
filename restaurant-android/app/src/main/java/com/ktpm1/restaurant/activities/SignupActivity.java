@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,7 @@ import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.dtos.requests.RegisterRequest;
+import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
 import com.ktpm1.restaurant.models.User;
 
 import java.util.ArrayList;
@@ -36,6 +39,8 @@ public class SignupActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String otp = "", phoneNumberToVerify="";
 
+    private boolean isShowPassword = false;
+    private boolean isShowConfirmPassword = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +53,12 @@ public class SignupActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_sign_in);
 
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
         // Ánh xạ các thành phần trong giao diện
         fullNameInput = findViewById(R.id.full_name);
         usernameInput = findViewById(R.id.username);
@@ -56,7 +67,11 @@ public class SignupActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.password);
         confirmPasswordInput = findViewById(R.id.confirm_password);
         registerButton = findViewById(R.id.register_button);
+        ImageView passwordToggle = findViewById(R.id.ivTogglePasswordVisibility);
+        ImageView confirmPasswordToggle = findViewById(R.id.ivTogglePasswordVisibility2);
 
+        passwordToggle.setOnClickListener(this::togglePasswordVisibility);
+        confirmPasswordToggle.setOnClickListener(this::toggleConfirmPasswordVisibility);
         mAuth = FirebaseAuth.getInstance();
 
         // Xử lý sự kiện nút đăng ký
@@ -68,6 +83,28 @@ public class SignupActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private void togglePasswordVisibility(View view) {
+        if (isShowPassword) {
+            passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            ((ImageView) view).setImageResource(R.drawable.ic_eye_icon);
+        } else {
+            passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            ((ImageView) view).setImageResource(R.drawable.ic_eye_icon);
+        }
+        passwordInput.setSelection(passwordInput.getText().length());
+        isShowPassword = !isShowPassword;
+    }
+    private void toggleConfirmPasswordVisibility(View view) {
+        if (isShowConfirmPassword) {
+            confirmPasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            ((ImageView) view).setImageResource(R.drawable.ic_eye_icon);
+        } else {
+            confirmPasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            ((ImageView) view).setImageResource(R.drawable.ic_eye_icon);
+        }
+        confirmPasswordInput.setSelection(confirmPasswordInput.getText().length());
+        isShowConfirmPassword = !isShowConfirmPassword;
     }
 
     private boolean validateInputs() {
