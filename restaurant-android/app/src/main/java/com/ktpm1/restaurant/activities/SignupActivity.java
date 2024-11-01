@@ -81,6 +81,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
     }
+    // Hàm toggle hiển thị/ẩn mật khẩu cho trường mật khẩu
     private void togglePasswordVisibility(View view) {
         if (isShowPassword) {
             passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -92,6 +93,7 @@ public class SignupActivity extends AppCompatActivity {
         passwordInput.setSelection(passwordInput.getText().length());
         isShowPassword = !isShowPassword;
     }
+    // Hàm toggle hiển thị/ẩn mật khẩu cho trường xác nhận mật khẩu
     private void toggleConfirmPasswordVisibility(View view) {
         if (isShowConfirmPassword) {
             confirmPasswordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -103,7 +105,7 @@ public class SignupActivity extends AppCompatActivity {
         confirmPasswordInput.setSelection(confirmPasswordInput.getText().length());
         isShowConfirmPassword = !isShowConfirmPassword;
     }
-
+    // Kiểm tra dữ liệu đầu vào trong form đăng ký
     private boolean validateInputs() {
         if (fullNameInput.getText().toString().isEmpty()) {
             fullNameInput.setError("Họ và tên không được để trống");

@@ -49,12 +49,13 @@ public class LoginActivity extends AppCompatActivity {
             LoginForm loginForm = new LoginForm(username, password);
             login(loginForm);
         });
-
+        // Xử lý sự kiện khi người dùng nhấn vào nút đăng ký
         tvSignUp.setOnClickListener(view -> {
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
             startActivity(intent);
         });
     }
+    // Hàm toggle hiển thị/ẩn mật khẩu
     private void togglePasswordVisibility(View view){
             if(isShowPassword){
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -68,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void login(LoginForm loginForm) {
         AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
-
+        // Gọi API đăng nhập
         Call<LoginResponse> call = authApi.login(loginForm);
         call.enqueue(new Callback<LoginResponse>() {
             @Override
