@@ -1,8 +1,11 @@
 package com.ktpm1.restaurant.dtos.events;
 
+import com.ktpm1.restaurant.models.BookingTable;
 import com.ktpm1.restaurant.models.Cart;
 import com.ktpm1.restaurant.models.Order;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -10,6 +13,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class EventCreateOrder {
-    private Order order;
+    private List<Order> orders;
     private Cart cart;
 }

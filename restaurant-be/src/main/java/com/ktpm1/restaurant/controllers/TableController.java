@@ -35,6 +35,16 @@ public class TableController {
         return ResponseEntity.ok(tableService.updateTable(table, id));
     }
 
+    @PutMapping("/update-status/{id}")
+    public ResponseEntity<Table> updateTableStatus(@PathVariable Long id) {
+        return ResponseEntity.ok(tableService.updateTableStatus(id));
+    }
+
+    @GetMapping("/by-catalog/{catalogId}")
+    public ResponseEntity<List<Table>> getTableByCatalog(@PathVariable Long catalogId) {
+        return ResponseEntity.ok(tableService.getTableByCatalog(catalogId));
+    }
+
     @DeleteMapping("/admin/delete/{id}")
     public ResponseEntity<ResponseMessage> deleteTable(Long id) {
         return ResponseEntity.ok(tableService.deleteTable(id));

@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,6 +50,12 @@ public class User {
     Set<Role> roles = new HashSet<>();
 
     private String avatarCode;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_payment_method",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "payment_method_default_id"))
+    Set<PaymentMethodDefault> paymentMethodDefaults = new HashSet<>();
 
     public User(String name, String username, String encode, String email, String phoneNumber) {
         this.name = name;

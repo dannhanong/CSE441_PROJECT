@@ -1,5 +1,6 @@
 package com.ktpm1.restaurant.controllers;
 
+import com.ktpm1.restaurant.dtos.request.ChangePasswordForm;
 import com.ktpm1.restaurant.dtos.request.LoginForm;
 import com.ktpm1.restaurant.dtos.request.SignupForm;
 import com.ktpm1.restaurant.dtos.request.UpdateProfile;
@@ -46,7 +47,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     @Transactional
-    public ResponseEntity<ResponseMessage> signup(@RequestBody SignupForm signupForm) {
+    public ResponseEntity<?> signup(@RequestBody SignupForm signupForm) {
         if(userService.existsByUsername(signupForm.getUsername())){
             return new ResponseEntity<>(ResponseMessage.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
@@ -104,10 +105,11 @@ public class AuthController {
             }
 
 //            emailService.sendVerificationEmail(savedUser);
-            return new ResponseEntity<>(ResponseMessage.builder()
-                    .status(HttpStatus.CREATED.value())
-                    .message("createSuccess")
-                    .build(), HttpStatus.CREATED);
+//            return new ResponseEntity<>(ResponseMessage.builder()
+//                    .status(HttpStatus.CREATED.value())
+//                    .message("createSuccess")
+//                    .build(), HttpStatus.CREATED);
+            return ResponseEntity.ok(savedUser);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(ResponseMessage.builder()
@@ -191,11 +193,19 @@ public class AuthController {
     }
 
     @PutMapping("/update/profile")
-    public ResponseEntity<ResponseMessage> updateProfile(@RequestBody UpdateProfile updateProfile,
+    public ResponseEntity<ResponseMessage> updateProfile(@ModelAttribute UpdateProfile updateProfile,
                                                          HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
         return new ResponseEntity<>(userService.updateProfile(updateProfile, username), HttpStatus.OK);
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<ResponseMessage> changePassword(@RequestBody ChangePasswordForm changePasswordForm,
+                                                          HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        String username = jwtService.extractUsername(token);
+        return new ResponseEntity<>(userService.changePassword(username, changePasswordForm), HttpStatus.OK);
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

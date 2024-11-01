@@ -28,7 +28,7 @@ public class CartItem {
     @JoinColumn(name = "food_id")
     Food food;
     int quantity;
-    long price;
+    int price;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "cart_item_options",

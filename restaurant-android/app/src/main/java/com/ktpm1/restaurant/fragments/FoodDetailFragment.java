@@ -1,5 +1,7 @@
 package com.ktpm1.restaurant.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -20,6 +22,8 @@ import com.ktpm1.restaurant.adapters.ImagePagerAdapter;
 import com.ktpm1.restaurant.apis.FoodApi;
 import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.dtos.responses.FoodDetailAndRelated;
+import com.ktpm1.restaurant.fragments.homeofs.SuggestionsFragment;
+import com.ktpm1.restaurant.listeners.RecyclerTouchListener;
 import com.ktpm1.restaurant.models.Food;
 
 import java.util.List;
@@ -30,14 +34,30 @@ import retrofit2.Response;
 
 public class FoodDetailFragment extends Fragment {
     private ViewPager2 viewPagerImages;
-    private TextView tvDishName, tvDishDescription;
+    private TextView tvDishName, tvDishDescription, tvPageIndicator, tvFoodPrice;
     private Button btnAddToCart;
     private RecyclerView recyclerViewRelatedDishes;
     private FoodDetailAndRelated foodDetailAndRelated;
     private Long foodId;
+    private SuggestionsFragment.OnFoodSelectedListener callback;
 
     public FoodDetailFragment(Long foodId) {
         this.foodId = foodId;
+    }
+
+    public interface OnFoodSelectedListener {
+        void onFoodSelected(Long foodId);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof SuggestionsFragment.OnFoodSelectedListener) {
+            callback = (SuggestionsFragment.OnFoodSelectedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFoodSelectedListener");
+        }
     }
 
     @Override
@@ -49,8 +69,10 @@ public class FoodDetailFragment extends Fragment {
         viewPagerImages = view.findViewById(R.id.viewPagerImages);
         tvDishName = view.findViewById(R.id.tvDishName);
         tvDishDescription = view.findViewById(R.id.tvDishDescription);
+        tvPageIndicator = view.findViewById(R.id.tvPageIndicator);
         btnAddToCart = view.findViewById(R.id.btnAddToCart);
         recyclerViewRelatedDishes = view.findViewById(R.id.recyclerViewRelatedDishes);
+        tvFoodPrice = view.findViewById(R.id.tv_food_price);
 
         fetchFoodDetails();
 
@@ -59,13 +81,28 @@ public class FoodDetailFragment extends Fragment {
             bottomSheet.show(getParentFragmentManager(), "FoodOptionsBottomSheet");
         });
 
+        recyclerViewRelatedDishes.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerViewRelatedDishes, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Food food = foodDetailAndRelated.getRelatedFoods().get(position);
+                callback.onFoodSelected(food.getId());
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+            }
+        }));
+
         return view;
     }
 
     private void fetchFoodDetails() {
         FoodApi foodApi = ApiClient.getClient().create(FoodApi.class);
 
-        Call<FoodDetailAndRelated> call = foodApi.getFoodDetailAndRelated(foodId);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
+
+        Call<FoodDetailAndRelated> call = foodApi.getFoodDetailAndRelated(foodId, "Bearer " + token);
         call.enqueue(new Callback<FoodDetailAndRelated>() {
             @Override
             public void onResponse(Call<FoodDetailAndRelated> call, Response<FoodDetailAndRelated> response) {
@@ -91,12 +128,24 @@ public class FoodDetailFragment extends Fragment {
 
     private void displayFoodDetails(Food food) {
         tvDishName.setText(food.getName());
+        tvFoodPrice.setText(String.format("%,dđ", food.getPrice()));
         tvDishDescription.setText(food.getDescription());
 
         // Tải ảnh vào ViewPager2, giả sử bạn có danh sách URL hình ảnh trong food.getImages()
         List<String> fileCodes = food.getImageList();
         ImagePagerAdapter adapter = new ImagePagerAdapter(fileCodes);
         viewPagerImages.setAdapter(adapter);
+
+        tvPageIndicator.setText("1/" + fileCodes.size());
+
+        viewPagerImages.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                // Cập nhật chỉ số trang hiện tại khi người dùng thay đổi trang
+                tvPageIndicator.setText((position + 1) + "/" + fileCodes.size());
+            }
+        });
     }
 
     private void setupRelatedDishesRecyclerView(List<Food> relatedDishes) {

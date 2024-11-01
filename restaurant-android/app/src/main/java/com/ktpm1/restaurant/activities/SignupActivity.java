@@ -11,6 +11,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +25,7 @@ import com.ktpm1.restaurant.apis.AuthApi;
 import com.ktpm1.restaurant.configs.ApiClient;
 import com.ktpm1.restaurant.dtos.requests.RegisterRequest;
 import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
+import com.ktpm1.restaurant.models.User;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,14 +43,13 @@ public class SignupActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Fullscreen mode
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_FULLSCREEN |
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-
         setContentView(R.layout.activity_sign_in);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         // Ánh xạ các thành phần trong giao diện
         fullNameInput = findViewById(R.id.full_name);
@@ -104,21 +107,16 @@ public class SignupActivity extends AppCompatActivity {
         String confirmPassword = confirmPasswordInput.getText().toString();
 
         if (password.equals(confirmPassword)) {
-            // Tạo Set cho vai trò
-            Set<String> roles = new HashSet<>();
-            roles.add("USER"); // Thêm vai trò mặc định là "USER"
-
-            RegisterRequest registerRequest = new RegisterRequest(fullName, username, password, confirmPassword, email, phoneNumber, roles);
+            RegisterRequest registerRequest = new RegisterRequest(fullName, username, password, confirmPassword, email, phoneNumber);
 
             AuthApi authApi = ApiClient.getClient().create(AuthApi.class);
-            Call<ResponseMessage> call = authApi.signup(registerRequest);
+            Call<User> call = authApi.signup(registerRequest);
 
-            call.enqueue(new Callback<ResponseMessage>() {
+            call.enqueue(new Callback<User>() {
                 @Override
-                public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
+                public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful()) {
-                        ResponseMessage responseMessage = response.body();
-                        Toast.makeText(SignupActivity.this, responseMessage.getMessage(), Toast.LENGTH_SHORT).show();
+                        User user = response.body();
 
                         sendVerificationCode(username, phoneNumber);
 
@@ -131,7 +129,7 @@ public class SignupActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<ResponseMessage> call, Throwable throwable) {
+                public void onFailure(Call<User> call, Throwable throwable) {
                     Toast.makeText(SignupActivity.this, "Đăng ký thất bại!", Toast.LENGTH_SHORT).show();
                 }
             });

@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,5 +16,4 @@ public class RegisterRequest {
     private String rePassword;
     private String email;
     private String phoneNumber;
-    private Set<String> roles;
 }
