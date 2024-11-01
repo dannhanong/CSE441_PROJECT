@@ -53,4 +53,8 @@ public class BookingTableRequest implements Parcelable {
     public int describeContents() {
         return 0;
     }
+
+    public void setDishes(List<String> dishList) {
+
+    }
 }

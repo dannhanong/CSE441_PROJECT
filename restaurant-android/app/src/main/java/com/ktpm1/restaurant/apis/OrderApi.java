@@ -22,4 +22,8 @@ public interface OrderApi {
 
     @POST("/orders/create-food-only")
     Call<ResponseMessage> createOrderFoodOnly(@Header("Authorization") String token);
+
+    Call getOrderDetails(String invoiceId);
+
+    Call<VNPayMessage> createOrderWithFoodAndTable(BookingTableRequest bookingTableRequest);
 }

@@ -12,4 +12,8 @@ import lombok.Setter;
 public class VNPayMessage {
     private String message;
     private String vnpayUrl;
+
+    public String getPaymentUrl() {
+        return message;
+    }
 }
