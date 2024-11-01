@@ -21,5 +21,5 @@ public interface OrderApi {
     Call<List<Order>> createOrderTableOnly(@Header("Authorization") String token);
 
     @POST("/orders/create-food-only")
-    Call<ResponseMessage> createOrderFoodOnly(@Header("Authorization") String token);
+    Call<VNPayMessage> createOrderFoodOnly(@Header("Authorization") String token);
 }

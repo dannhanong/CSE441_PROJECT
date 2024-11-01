@@ -1,5 +1,8 @@
 package com.ktpm1.restaurant.fragments.homeofs;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,11 +21,18 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.adapters.SliderAdapter;
+import com.ktpm1.restaurant.apis.FoodApi;
+import com.ktpm1.restaurant.configs.ApiClient;
+import com.ktpm1.restaurant.models.Food;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator3;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SliderFragment extends Fragment {
 
@@ -97,4 +107,28 @@ public class SliderFragment extends Fragment {
         super.onResume();
         sliderHandler.postDelayed(sliderRunnable, 6000);
     }
+//    public void getSliderImages() {
+//        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+//        String token = sharedPreferences.getString("token", null);
+//
+//        FoodApi foodApi = ApiClient.getClient().create(FoodApi.class);
+//        Call<List<Food>> call = foodApi.getTop5Foods("Bearer " + token);
+//        call.enqueue(new Callback<List<Food>>() {
+//            @Override
+//            public void onResponse(Call<List<Food>> call, Response<List<Food>> response) {
+//                if (response.isSuccessful()) {
+//                    List<Food> foodList = response.body();
+//                    for (Food food : foodList) {
+//                        imageList = food.getImageList();
+//                    }
+//                    sliderAdapter.notifyDataSetChanged();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<Food>> call, Throwable throwable) {
+//
+//            }
+//        });
+//    }
 }

@@ -71,7 +71,14 @@ public class RecentFragment extends Fragment {
         }
 
         FoodHistoryApi api = ApiClient.getClient().create(FoodHistoryApi.class);
-        Call<List<Food>> call = api.getMyFoodHistory("Bearer " + token);
+
+        Call<List<Food>> call;
+
+        if (tabLayout.getSelectedTabPosition() == 0) {
+            call = api.getMyFoodHistory("Bearer " + token, "desc");
+        } else {
+            call = api.getMyFoodHistory("Bearer " + token, "asc");
+        }
 
         call.enqueue(new Callback<List<Food>>() {
             @Override

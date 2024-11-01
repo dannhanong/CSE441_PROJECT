@@ -92,7 +92,7 @@ public class ChangePasswordFragment extends Fragment {
                 }
             }
         });
-        buttonBack = view.findViewById(R.id.btn_Back);
+//        buttonBack = view.findViewById(R.id.btn_Back);
         editTextCurrentPassword = view.findViewById(R.id.txt_OldPassword);
         editTextNewPassword = view.findViewById(R.id.txt_NewPassword);
         editTextConfirmPassword = view.findViewById(R.id.txt_ConfirmPassword);
@@ -105,13 +105,6 @@ public class ChangePasswordFragment extends Fragment {
             }
         });
 
-        buttonBack.setOnClickListener(view1 -> {
-            ProfileFragment profileFragment = new ProfileFragment();
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, profileFragment) // Change 'fragment_container' to your actual container ID
-                    .addToBackStack(null)
-                    .commit();
-        });
         setPasswordVisibilityToggle(editTextCurrentPassword, isOldPasswordVisible);
         setPasswordVisibilityToggle(editTextNewPassword, isNewPasswordVisible);
         setPasswordVisibilityToggle(editTextConfirmPassword, isConfirmPasswordVisible);
