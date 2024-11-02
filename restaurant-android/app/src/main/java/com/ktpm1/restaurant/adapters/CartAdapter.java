@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.apis.CartApi;
@@ -58,11 +57,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         holder.productName.setText(item.getFood().getName());
         holder.quantity.setText(String.valueOf(item.getQuantity()));
-        Glide.with(holder.itemView)
-                .load(imageUrl)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .into(holder.productImage);
+        Glide.with(holder.itemView).load(imageUrl).into(holder.productImage);
 
         // Tính toán giá dựa trên số lượng
         int totalPrice = (int) item.getPrice();
@@ -90,6 +85,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         // Xử lý sự kiện tăng số lượng
         holder.btnIncrease.setOnClickListener(v -> {
+            updateItem(position, item.getQuantity() + 1);
             int currentQuantity = Integer.parseInt(holder.quantity.getText().toString());
             holder.quantity.setText(String.valueOf(currentQuantity + 1));
             int updatedPrice = (int) food.getPrice() * (currentQuantity + 1) + item.getOptions().stream().mapToInt(FoodOption::getPrice).sum() * (currentQuantity + 1);
@@ -98,6 +94,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         // Xử lý sự kiện giảm số lượng
         holder.btnDecrease.setOnClickListener(v -> {
+            updateItem(position, item.getQuantity() - 1);
             int currentQuantity = Integer.parseInt(holder.quantity.getText().toString());
             if (currentQuantity > 1) {
                 holder.quantity.setText(String.valueOf(currentQuantity - 1));
@@ -158,6 +155,29 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                     notifyItemRemoved(position);
                 } else {
                     // Xử lý khi không xóa được
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseMessage> call, Throwable t) {
+                // Xử lý khi lỗi
+            }
+        });
+    }
+
+    public void updateItem(int position, int quantity) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
+
+        CartApi cartApi = ApiClient.getClient().create(CartApi.class);
+        Call<ResponseMessage> call = cartApi.updateCart("Bearer " + token, cartItemList.get(position).getId(), quantity);
+        call.enqueue(new Callback<ResponseMessage>() {
+            @Override
+            public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
+                if (response.isSuccessful()) {
+                    cartItemList.get(position).setQuantity(quantity);
+                } else {
+                    // Xử lý khi không cập nhật được
                 }
             }
 

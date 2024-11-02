@@ -23,4 +23,7 @@ public interface FoodApi {
 
     @GET("/foods/get/{id}")
     Call<Food> getFoodById(@Path("id") Long id);
+
+    @GET("/order-items/top-5")
+    Call<List<Food>> getTop5Foods(@Header("Authorization") String token);
 }

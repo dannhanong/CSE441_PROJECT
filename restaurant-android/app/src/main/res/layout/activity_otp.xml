@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/white"
     android:layout_height="match_parent">
 
 
@@ -93,12 +92,12 @@
 
         <!-- Button để xác thực OTP -->
 
-<!--        <Button-->
-<!--            android:id="@+id/buttonVerifyOtp"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:text="Xác thực OTP" />-->
+        <Button
+            android:id="@+id/buttonVerifyOtp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Xác thực OTP" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -117,7 +116,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/txt_resend_otp"
+                android:id="@+id/txt_Message_Otp_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Gửi lại?"

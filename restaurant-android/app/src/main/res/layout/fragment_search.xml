@@ -24,7 +24,6 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:drawableStart="@drawable/ic_search"
-            android:drawableEnd="@drawable/ic_mic"
             android:drawablePadding="8dp"
             android:hint="Tìm kiếm"
             android:inputType="text"

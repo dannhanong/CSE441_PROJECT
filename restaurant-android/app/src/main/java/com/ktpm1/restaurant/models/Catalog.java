@@ -18,4 +18,7 @@ public class Catalog {
     String description;
     String image;
     Set<Table> tables;
+
+    public Catalog(String khuA) {
+    }
 }

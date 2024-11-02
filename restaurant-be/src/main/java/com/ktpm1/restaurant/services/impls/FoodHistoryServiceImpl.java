@@ -31,10 +31,14 @@ public class FoodHistoryServiceImpl implements FoodHistoryService {
     }
 
     @Override
-    public List<Food> getFoodHistory(String username) {
+    public List<Food> getFoodHistory(String username, String sort) {
         User user = userRepository.findByUsername(username);
         List<FoodHistory> foodHistories = foodHistoryRepository.findByUser(user);
-        foodHistories.sort(Comparator.comparing(FoodHistory::getId).reversed());
+        if (sort.equals("asc")) {
+            foodHistories.sort(Comparator.comparing(FoodHistory::getId));
+        } else {
+            foodHistories.sort(Comparator.comparing(FoodHistory::getId).reversed());
+        }
         List<Food> foods = foodHistories.stream().map(FoodHistory::getFood).toList();
         return foods;
     }

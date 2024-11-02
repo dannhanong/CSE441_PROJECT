@@ -5,11 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".activities.PaymentMethodActivity">
-
+    android:padding="16dp">
     <!-- Title -->
-
     <!-- RadioGroup for payment methods -->
     <TextView
         android:id="@+id/tvTitle"
@@ -22,7 +19,6 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
     <RadioGroup
         android:id="@+id/radioGroupPayment"
         android:layout_width="match_parent"
@@ -31,7 +27,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
         app:layout_constraintEnd_toEndOf="parent">
-
         <!-- MB Bank option -->
         <RadioButton
             android:id="@+id/rbMBBank"
@@ -40,7 +35,6 @@
             android:drawableStart="@drawable/ic_mb_bank"
             android:padding="13dp"
             android:text="    MB Bank" />
-
         <!-- Vietinbank option -->
         <RadioButton
             android:id="@+id/rbVietinbank"
@@ -49,7 +43,6 @@
             android:drawableStart="@drawable/ic_vietinbank"
             android:padding="13dp"
             android:text="    Vietinbank" />
-
         <!-- Other payment methods -->
         <RadioButton
             android:id="@+id/rbOther"
@@ -58,7 +51,6 @@
             android:text="Phương thức thanh toán khác"
             android:padding="8dp"/>
     </RadioGroup>
-
     <!-- Payment button -->
     <Button
         android:id="@+id/btnPay"
@@ -71,7 +63,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="31dp"
@@ -80,5 +71,4 @@
         tools:layout_editor_absoluteX="7dp"
         tools:layout_editor_absoluteY="7dp"
         tools:ignore="MissingConstraints" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.models.Catalog;
@@ -42,10 +41,7 @@ public class CatalogAdapter extends RecyclerView.Adapter<CatalogAdapter.CatalogV
         String imageUrl = BuildConfig.BASE_URL + "/files/preview/" + fileCode;
         holder.tvCatalogName.setText(catalog.getName());
         holder.tvCatalogDescription.setText(catalog.getDescription());
-        Glide.with(holder.itemView).load(imageUrl)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .into(holder.imgCatalog);
+        Glide.with(holder.itemView).load(imageUrl).into(holder.imgCatalog);
     }
 
     @Override
