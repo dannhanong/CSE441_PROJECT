@@ -11,15 +11,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.activities.ReviewOrderActivity;
 import com.ktpm1.restaurant.dtos.responses.InvoiceResponse;
+import com.ktpm1.restaurant.models.Order;
 
 import java.util.List;
 
 public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.InvoiceViewHolder> {
 
-    private List<InvoiceResponse> invoiceList;
+    private List<Order> invoiceList;
     private Context context;
 
-    public InvoiceAdapter(Context context, List<InvoiceResponse> invoiceList) {
+    public InvoiceAdapter(Context context, List<Order> invoiceList) {
         this.context = context;
         this.invoiceList = invoiceList;
     }
@@ -33,15 +34,15 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.InvoiceV
 
     @Override
     public void onBindViewHolder(@NonNull InvoiceViewHolder holder, int position) {
-        InvoiceResponse invoice = invoiceList.get(position);
+        Order invoice = invoiceList.get(position);
 
-        holder.tvInvoiceCode.setText("Mã hóa đơn: " + invoice.getInvoiceCode());
-        holder.tvInvoiceDate.setText("Ngày: " + invoice.getDate());
-        holder.tvTotalAmount.setText("Tổng tiền: " + invoice.getTotalAmount() + " VND");
+        holder.tvInvoiceCode.setText("Mã hóa đơn: " + invoice.getId());
+        holder.tvInvoiceDate.setText("Ngày: " + invoice.getCreatedAt());
+        holder.tvTotalAmount.setText("Tổng tiền: " + invoice.getTotalPrice() + " VNĐ");
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ReviewOrderActivity.class);
-            intent.putExtra("invoiceId", invoice.getInvoiceId());  // Truyền mã hóa đơn
+            intent.putExtra("invoiceId", invoice.getId());  // Truyền mã hóa đơn
             context.startActivity(intent);
         });
     }

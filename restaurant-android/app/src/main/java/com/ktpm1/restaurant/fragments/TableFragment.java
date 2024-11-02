@@ -105,7 +105,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
 //        webSocketClient = new WebSocketClient();
 //        webSocketClient.connectWebSocket("ws://192.168.1.10:8080/ws/websocket");
 
-        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.1.7:8080/ws/websocket");
+        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.160.88:8080/ws/websocket");
 
         // Kết nối
         stompClient.connect();

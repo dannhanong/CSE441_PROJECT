@@ -48,9 +48,9 @@ public class SliderFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_slider, container, false);
 
         imageList = Arrays.asList(
-                R.drawable.foodsample,
-                R.drawable.foodsample,
-                R.drawable.foodsample
+                R.drawable.km1,
+                R.drawable.km2,
+                R.drawable.km3
         );
 
         viewPager = view.findViewById(R.id.viewPager);

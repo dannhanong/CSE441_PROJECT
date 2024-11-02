@@ -10,7 +10,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="red_orange">#CB664F</color>
     <color name="green">#00FF00</color>
-    <color name="red">#FF0000</color>
     <color name="semi_transparent">#80000000</color> <!-- Nền mờ (50% đen) -->
     <color name="refuse_bg">#D9D9D9</color>
 

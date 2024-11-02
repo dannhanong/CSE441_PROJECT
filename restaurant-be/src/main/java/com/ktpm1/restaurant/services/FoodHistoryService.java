@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface FoodHistoryService {
     void addFoodToHistory(Food food, User user);
-    List<Food> getFoodHistory(String username);
+    List<Food> getFoodHistory(String username, String sort);
 }

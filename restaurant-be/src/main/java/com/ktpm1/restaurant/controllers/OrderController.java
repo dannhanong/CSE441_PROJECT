@@ -91,15 +91,15 @@ public class OrderController {
     }
 
     @GetMapping("/my-orders")
-    public ResponseEntity<Page<Order>> getMyOrders(@RequestParam(defaultValue = "0") int page,
-                                                   @RequestParam(defaultValue = "10") int size,
+    public ResponseEntity<List<Order>> getMyOrders(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "20") int size,
                                                    @RequestParam(defaultValue = "orderTime") String sortBy,
                                                    @RequestParam(defaultValue = "desc") String order,
                                                    HttpServletRequest request) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortBy));
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
-        return ResponseEntity.ok(orderService.getMyOrder(pageable, username));
+        return ResponseEntity.ok(orderService.getMyOrder(pageable, username).getContent());
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
