@@ -94,7 +94,7 @@ public class CartFragment extends Fragment {
                 if (shouldInterceptBackPress()) {
                     Toast.makeText(getContext(), "Back pressed in CartFragment", Toast.LENGTH_SHORT).show();
                 } else {
-                    setEnabled(false); // Cho phép hệ thống xử lý sự kiện back
+                    setEnabled(false);
                     requireActivity().onBackPressed();
                 }
             }

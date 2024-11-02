@@ -105,7 +105,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
 //        webSocketClient = new WebSocketClient();
 //        webSocketClient.connectWebSocket("ws://192.168.1.10:8080/ws/websocket");
 
-        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.160.88:8080/ws/websocket");
+        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://172.20.10.3:8080/ws/websocket");
 
         // Kết nối
         stompClient.connect();
@@ -336,7 +336,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
 
     private void showTimePicker() {
         TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (view, hourOfDay, minute) -> {
-            // Kiểm tra giờ được chọn có nằm ngoài phạm vi hợp lệ không
+
             if (hourOfDay < 7 || (hourOfDay == 19 && minute > 30) || hourOfDay > 19) {
                 // Hiển thị thông báo nếu giờ không hợp lệ
                 Snackbar snackbar = Snackbar.make(getView(), "Chỉ có thể chọn thời gian từ 7:00 đến 19:30", 5000);

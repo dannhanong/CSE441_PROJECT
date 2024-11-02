@@ -17,7 +17,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"http://192.168.160.88:8080\"")
+        buildConfigField("String", "BASE_URL", "\"http://172.20.10.3:8080\"")
     }
 
     // Bật tính năng BuildConfig

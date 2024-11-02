@@ -24,9 +24,9 @@
         Call<List<Order>> createOrderTableOnly(@Header("Authorization") String token);
 
         @POST("/orders/create-food-only")
-        Call<ResponseMessage> createOrderFoodOnly(@Header("Authorization") String token);
+        Call<VNPayMessage> createOrderFoodOnly(@Header("Authorization") String token);
 
         // Thêm phương thức lấy danh sách bàn đã đặt
         @GET("/orders/my-orders")
-        Call<List<TableResponse>> getReservedTables(@Header("Authorization") String token);
+        Call<List<Order>> getReservedTables(@Header("Authorization") String token);
     }
