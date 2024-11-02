@@ -87,6 +87,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
     private Toolbar toolbar;
     private Button btnConfirm;
     private ImageView imgHelp;
+
     private Spinner additionalTimeSpinner;
     private HashMap<String, Integer> additionalTimeMap;
     private int additionalTime;

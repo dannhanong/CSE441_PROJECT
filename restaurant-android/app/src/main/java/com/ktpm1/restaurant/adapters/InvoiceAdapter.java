@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ktpm1.restaurant.R;
 import com.ktpm1.restaurant.activities.ReviewOrderActivity;
 import com.ktpm1.restaurant.dtos.responses.InvoiceResponse;
+import com.ktpm1.restaurant.dtos.responses.TableResponse;
+import com.ktpm1.restaurant.models.Order;
 
 import java.util.List;
 
@@ -18,6 +20,8 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.InvoiceV
 
     private List<InvoiceResponse> invoiceList;
     private Context context;
+    private List<Order> orderedFood;
+    private List<TableResponse> reservedTables;
 
     public InvoiceAdapter(Context context, List<InvoiceResponse> invoiceList) {
         this.context = context;
@@ -49,6 +53,21 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.InvoiceV
     @Override
     public int getItemCount() {
         return invoiceList.size();
+    }
+
+    public void setOrderedFood(List<Order> food) {
+        this.orderedFood = food;
+        notifyDataSetChanged(); // Cập nhật dữ liệu sau khi nhận danh sách món ăn
+    }
+
+    public void setReservedTables(List<TableResponse> tables) {
+        this.reservedTables = tables;
+        notifyDataSetChanged(); // Cập nhật dữ liệu sau khi nhận danh sách bàn
+    }
+
+    public void setInvoiceList(List<InvoiceResponse> invoiceList) {
+        this.invoiceList = invoiceList;
+        notifyDataSetChanged();
     }
 
     public static class InvoiceViewHolder extends RecyclerView.ViewHolder {
