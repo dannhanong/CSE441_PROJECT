@@ -109,7 +109,7 @@ public class FoodDetailFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     foodDetailAndRelated = response.body();
 
-                    // Hiển thị chi tiết món ăn và các món liên quan
+
                     displayFoodDetails(foodDetailAndRelated.getFood());
                     setupRelatedDishesRecyclerView(foodDetailAndRelated.getRelatedFoods());
                 } else {

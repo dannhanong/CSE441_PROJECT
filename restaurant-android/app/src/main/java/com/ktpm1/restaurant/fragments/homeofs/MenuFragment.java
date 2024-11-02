@@ -44,14 +44,12 @@ public class MenuFragment extends Fragment {
         menuAdapter = new MenuAdapter(menuItems, position -> {
             switch (position) {
                 case 0:
-                    // Điều hướng đến Fragment Đồ ăn
-//                    openFragment(new FoodFragment());
                     break;
                 case 1:
                     openFragment(new CatalogFragment());
                     break;
                 case 2:
-                    // Điều hướng đến Fragment Thanh toán
+
                     openFragment(new InvoiceListFragment());
                     break;
             }
