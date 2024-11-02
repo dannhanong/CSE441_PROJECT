@@ -3,6 +3,7 @@ package com.ktpm1.restaurant.fragments;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -208,7 +209,8 @@ public class CartFragment extends Fragment {
                 if (response.isSuccessful()) {
                     cartItems.clear();
                     cartAdapter.setCartItems(cartItems);
-                    toggleEmptyCartMessage();
+                    cartAdapter.notifyDataSetChanged(); // Cập nhật lại giao diện
+                    toggleEmptyCartMessage(); // Hiển thị thông báo giỏ hàng trống (nếu cần)
                 }
             }
 
@@ -234,6 +236,8 @@ public class CartFragment extends Fragment {
         if (bookingRequest != null) {
             // Gọi API tạo đơn hàng với BookingTableRequest
             createOrderWithBookingRequest(bookingRequest);
+        } else if (bookingRequest == null && cartItems.size() > 0) {
+            submitCartOnly();
         } else {
             // Gọi API khác nếu không có BookingTableRequest
             submitCartOnly();
@@ -277,19 +281,22 @@ public class CartFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String token = sharedPreferences.getString("token", null);
 
-        Call<ResponseMessage> call = orderApi.createOrderFoodOnly("Bearer " + token);
-        call.enqueue(new Callback<ResponseMessage>() {
+        Call<VNPayMessage> call = orderApi.createOrderFoodOnly("Bearer " + token);
+        call.enqueue(new Callback<VNPayMessage>() {
             @Override
-            public void onResponse(Call<ResponseMessage> call, Response<ResponseMessage> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(getContext(), "Giỏ hàng đã được gửi thành công", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "Gửi giỏ hàng thất bại", Toast.LENGTH_SHORT).show();
-                }
+            public void onResponse(Call<VNPayMessage> call, Response<VNPayMessage> response) {
+                String url = response.body().getVnpayUrl();
+
+                // Tạo instance WebFragment và truyền URL
+                WebFragment webFragment = WebFragment.newInstance(url);
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, webFragment)
+                        .addToBackStack(null)
+                        .commit();
             }
 
             @Override
-            public void onFailure(Call<ResponseMessage> call, Throwable t) {
+            public void onFailure(Call<VNPayMessage> call, Throwable t) {
                 t.printStackTrace();
             }
         });

@@ -10,6 +10,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface CartApi {
@@ -26,4 +27,9 @@ public interface CartApi {
 
     @DELETE("/cart/clear")
     Call<ResponseMessage> clearCart(@Header("Authorization") String token);
+
+    @PUT("/cart/update/{cartItemId}/{quantity}")
+    Call<ResponseMessage> updateCart(@Header("Authorization") String token,
+                                    @Path("cartItemId") Long cartItemId,
+                                    @Path("quantity") Integer quantity);
 }

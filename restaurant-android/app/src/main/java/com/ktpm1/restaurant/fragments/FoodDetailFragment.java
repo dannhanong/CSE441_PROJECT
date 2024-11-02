@@ -128,7 +128,7 @@ public class FoodDetailFragment extends Fragment {
 
     private void displayFoodDetails(Food food) {
         tvDishName.setText(food.getName());
-        tvFoodPrice.setText(String.format("%,dđ", food.getPrice()));
+        tvFoodPrice.setText(String.format("%,dVNĐ", food.getPrice()));
         tvDishDescription.setText(food.getDescription());
 
         // Tải ảnh vào ViewPager2, giả sử bạn có danh sách URL hình ảnh trong food.getImages()

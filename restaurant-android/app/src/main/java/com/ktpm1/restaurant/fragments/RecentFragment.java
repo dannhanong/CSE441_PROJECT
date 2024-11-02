@@ -42,7 +42,6 @@ public class RecentFragment extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("Mới nhất"));
         tabLayout.addTab(tabLayout.newTab().setText("Cũ nhất"));
 
-        // Gọi phương thức load dữ liệu
         loadFoodHistory();
 
         // Xử lý sự kiện chọn tab
@@ -52,7 +51,6 @@ public class RecentFragment extends Fragment {
                 // Tải lại dữ liệu dựa trên tab được chọn
                 loadFoodHistory();
             }
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {}
 
@@ -73,7 +71,14 @@ public class RecentFragment extends Fragment {
         }
 
         FoodHistoryApi api = ApiClient.getClient().create(FoodHistoryApi.class);
-        Call<List<Food>> call = api.getMyFoodHistory("Bearer " + token);
+
+        Call<List<Food>> call;
+
+        if (tabLayout.getSelectedTabPosition() == 0) {
+            call = api.getMyFoodHistory("Bearer " + token, "desc");
+        } else {
+            call = api.getMyFoodHistory("Bearer " + token, "asc");
+        }
 
         call.enqueue(new Callback<List<Food>>() {
             @Override

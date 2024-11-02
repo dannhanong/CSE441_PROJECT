@@ -67,10 +67,20 @@ public class OrderController {
     }
 
     @PostMapping("/create-food-only")
-    public ResponseEntity<Order> createOrderFoodOnly(HttpServletRequest request) {
+    public ResponseEntity<VNPayMessage> createOrderFoodOnly(HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
-        return ResponseEntity.ok(orderService.createOrderFoodOnly(username));
+
+        Order order = orderService.createOrderFoodOnly(username);
+
+        int totalPayment = order.getTotalPrice();
+        String orderIdsString = String.valueOf(order.getId());
+
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        String vnpayUrl = vnPayService.createOrder(totalPayment, orderIdsString, baseUrl);
+
+        VNPayMessage VNPayMessage = new VNPayMessage("payment", vnpayUrl);
+        return ResponseEntity.ok(VNPayMessage);
     }
 
     @PostMapping("/create-table-only")
@@ -81,15 +91,15 @@ public class OrderController {
     }
 
     @GetMapping("/my-orders")
-    public ResponseEntity<Page<Order>> getMyOrders(@RequestParam(defaultValue = "0") int page,
-                                                   @RequestParam(defaultValue = "10") int size,
+    public ResponseEntity<List<Order>> getMyOrders(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "20") int size,
                                                    @RequestParam(defaultValue = "orderTime") String sortBy,
                                                    @RequestParam(defaultValue = "desc") String order,
                                                    HttpServletRequest request) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortBy));
         String token = getTokenFromRequest(request);
         String username = jwtService.extractUsername(token);
-        return ResponseEntity.ok(orderService.getMyOrder(pageable, username));
+        return ResponseEntity.ok(orderService.getMyOrder(pageable, username).getContent());
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

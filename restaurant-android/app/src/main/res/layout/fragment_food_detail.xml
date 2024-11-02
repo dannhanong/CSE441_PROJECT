@@ -6,28 +6,40 @@
     android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <!-- LinearLayout bên trong ScrollView để chứa các view con -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
 
             <!-- ViewPager2 cho các hình ảnh của món ăn -->
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/CustomToolbarTheme"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:navigationIconTint="@color/black"
+                app:titleTextColor="@color/black" />
+
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPagerImages"
                 android:layout_width="match_parent"
-                android:layout_height="240dp" />
+                android:padding="8dp"
+                android:layout_height="230dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="5dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -36,22 +48,22 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginStart="20dp"
-                    android:padding="4dp"
-                    android:textStyle="bold"
                     android:gravity="center"
+                    android:padding="4dp"
                     android:text="60000"
-                    android:textSize="17sp" />
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvPageIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="250dp"
                     android:layout_gravity="center_horizontal"
-                    android:text="1/10"
-                    android:textSize="15sp"
+                    android:layout_marginStart="210dp"
                     android:layout_marginTop="2dp"
-                    android:gravity="center" />
+                    android:gravity="center"
+                    android:text="1/10"
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Tên món ăn -->
@@ -59,9 +71,9 @@
                 android:id="@+id/tvDishName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
                 android:padding="8dp"
                 android:text="Tên món ăn"
+                android:textAlignment="center"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -77,20 +89,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Những món liên quan"
-                android:textStyle="bold"
-                android:textSize="20sp"/>
+                android:layout_marginStart="8dp"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <!-- RecyclerView cho các món ăn liên quan -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewRelatedDishes"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="5dp" />
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:padding="10dp" />
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="50dp">
-            </TextView>
+                android:layout_height="50dp"></TextView>
         </LinearLayout>
     </ScrollView>
 

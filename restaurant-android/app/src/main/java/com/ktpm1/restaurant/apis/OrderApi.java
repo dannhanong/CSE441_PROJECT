@@ -1,7 +1,6 @@
     package com.ktpm1.restaurant.apis;
 
     import com.ktpm1.restaurant.dtos.requests.BookingTableRequest;
-    import com.ktpm1.restaurant.dtos.responses.InvoiceResponse;
     import com.ktpm1.restaurant.dtos.responses.ResponseMessage;
     import com.ktpm1.restaurant.dtos.responses.TableResponse;
     import com.ktpm1.restaurant.dtos.responses.VNPayMessage;
@@ -30,8 +29,4 @@
         // Thêm phương thức lấy danh sách bàn đã đặt
         @GET("/orders/my-orders")
         Call<List<TableResponse>> getReservedTables(@Header("Authorization") String token);
-
-        Call<List<Order>> getOrderedFood(String token);
-
-        Call<List<InvoiceResponse>> getInvoiceList(String token);
     }

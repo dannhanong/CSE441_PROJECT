@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ktpm1.restaurant.R;
+import com.ktpm1.restaurant.adapters.InvoiceListFragment;
 import com.ktpm1.restaurant.adapters.MenuAdapter;
 import com.ktpm1.restaurant.fragments.CatalogFragment;
 import com.ktpm1.restaurant.fragments.PaymentFragment;
@@ -51,7 +52,7 @@ public class MenuFragment extends Fragment {
                     break;
                 case 2:
                     // Điều hướng đến Fragment Thanh toán
-                    openFragment(new PaymentFragment());
+                    openFragment(new InvoiceListFragment());
                     break;
             }
         });

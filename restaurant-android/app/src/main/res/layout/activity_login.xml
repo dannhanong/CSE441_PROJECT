@@ -47,7 +47,7 @@
         android:layout_marginTop="56dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/rounded_edit_text"
-        android:drawableEnd="@drawable/ic_eye_icon"
+
         android:hint="Mật khẩu"
         android:inputType="textPassword"
         android:minHeight="48dp"
@@ -56,6 +56,21 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etUsername" />
+
+
+    <ImageView
+        android:id="@+id/ivTogglePasswordVisibility"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignEnd="@id/etPassword"
+        android:layout_alignBottom="@id/etPassword"
+        android:contentDescription="Toggle password visibility"
+        android:src="@drawable/ic_eye_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/etPassword"
+        app:layout_constraintEnd_toEndOf="@+id/etPassword"
+        app:layout_constraintHorizontal_bias="0.976"
+        app:layout_constraintStart_toStartOf="@+id/etPassword"
+        app:layout_constraintTop_toTopOf="@+id/etPassword" />
 
     <Button
         android:id="@+id/btnLogin"

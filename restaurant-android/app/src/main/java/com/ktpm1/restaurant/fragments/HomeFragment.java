@@ -62,6 +62,6 @@ public class HomeFragment extends Fragment {
         } else if (hour >= 18 && hour < 22) {
             return "Gợi ý cho buổi tối";
         }
-        return "Tạm thời chưa có gợi ý";
+        return "Hết ngày rồi, xem tạm nhé!";
     }
 }

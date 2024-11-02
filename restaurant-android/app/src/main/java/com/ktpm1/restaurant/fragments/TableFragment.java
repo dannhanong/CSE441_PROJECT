@@ -8,7 +8,6 @@ import android.app.TimePickerDialog;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -87,7 +86,6 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
     private Toolbar toolbar;
     private Button btnConfirm;
     private ImageView imgHelp;
-
     private Spinner additionalTimeSpinner;
     private HashMap<String, Integer> additionalTimeMap;
     private int additionalTime;
@@ -107,7 +105,7 @@ public class TableFragment extends Fragment implements TableAdapter.OnTableSelec
 //        webSocketClient = new WebSocketClient();
 //        webSocketClient.connectWebSocket("ws://192.168.1.10:8080/ws/websocket");
 
-        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.110.68:8080/ws/websocket");
+        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.160.88:8080/ws/websocket");
 
         // Kết nối
         stompClient.connect();

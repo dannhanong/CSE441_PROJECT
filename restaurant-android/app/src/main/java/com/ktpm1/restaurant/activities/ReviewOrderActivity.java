@@ -34,6 +34,7 @@ public class ReviewOrderActivity extends AppCompatActivity {
     private TextView tvTotalAmount;
     private Button btnConfirmOrder;
     private List<TableResponse> selectedTables;
+    List<Order> orders;
     private OrderApi orderApi;
 
     @Override
@@ -56,7 +57,7 @@ public class ReviewOrderActivity extends AppCompatActivity {
 
         String token = "Bearer " + getToken();
 
-        fetchReservedTables(token);
+//        fetchReservedTables(token);
 
         List<String> dishList = Arrays.asList("Gà chiên", "Cá kho tộ", "Bún bò Huế");
 
@@ -69,34 +70,6 @@ public class ReviewOrderActivity extends AppCompatActivity {
             finish();
         });
     }
-
-    private void fetchReservedTables(String token) {
-        orderApi.getReservedTables(token).enqueue(new Callback<List<TableResponse>>() {
-            @Override
-            public void onResponse(Call<List<TableResponse>> call, Response<List<TableResponse>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    selectedTables = response.body();
-
-                    rvTables.setLayoutManager(new LinearLayoutManager(ReviewOrderActivity.this));
-                    rvTables.setAdapter(new SelectedTableAdapter(selectedTables));
-                } else {
-                    try {
-                        String errorResponse = response.errorBody() != null ? response.errorBody().string() : "Phản hồi rỗng";
-                        Log.e("ReviewOrderActivity", "Lỗi từ server: " + errorResponse + ", Mã trạng thái: " + response.code());
-                    } catch (Exception e) {
-                        Log.e("ReviewOrderActivity", "Không thể xử lý lỗi từ server.", e);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<TableResponse>> call, Throwable t) {
-                Log.e("ReviewOrderActivity", "Lỗi khi gọi API: " + t.getMessage());
-            }
-        });
-    }
-
-
 
     private String getToken() {
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
