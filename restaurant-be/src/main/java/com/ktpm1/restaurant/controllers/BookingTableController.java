@@ -63,6 +63,11 @@ public class BookingTableController {
         return ResponseEntity.ok(bookingTableService.cancelBooking(username, id));
     }
 
+    @PostMapping("/manage/booking")
+    public ResponseEntity<ResponseMessage> manageBooking(@RequestBody BookingTableRequest bookingTableRequest) {
+        return ResponseEntity.ok(bookingTableService.createBookingTableByEmployeeRole(bookingTableRequest));
+    }
+
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {

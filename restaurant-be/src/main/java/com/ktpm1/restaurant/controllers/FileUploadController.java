@@ -2,6 +2,7 @@ package com.ktpm1.restaurant.controllers;
 
 import com.ktpm1.restaurant.services.FileUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
@@ -38,6 +39,7 @@ public class FileUploadController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
+                .cacheControl(CacheControl.noCache().mustRevalidate())
                 .body(imageData);
     }
 }

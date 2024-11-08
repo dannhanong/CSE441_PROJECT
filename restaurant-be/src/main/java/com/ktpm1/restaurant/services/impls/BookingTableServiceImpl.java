@@ -131,7 +131,7 @@ public class BookingTableServiceImpl implements BookingTableService {
                 bookingTableRepository.save(bookingTable);
             }
         }
-
+        simpMessagingTemplate.convertAndSend("/topic/bookings", "success_booking");
         return new ResponseMessage(200, "Đặt bàn thành công.");
     }
 

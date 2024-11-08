@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ktpm1.restaurant.BuildConfig;
 import com.ktpm1.restaurant.R;
 
@@ -38,6 +39,8 @@ public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.Im
         // Sử dụng Glide hoặc Picasso để tải ảnh
         Glide.with(holder.imageView.getContext())
                 .load(imageUrl)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .into(holder.imageView);
     }
 

@@ -18,6 +18,7 @@ public class Endpoints {
             "/foods/admin/create",
             "/tables/admin/create",
             "/catalogs/admin/**",
+            "/booking-table/manage/**"
     };
 
     public static final String[] PUBLIC_GET_ENDPOINTS = {

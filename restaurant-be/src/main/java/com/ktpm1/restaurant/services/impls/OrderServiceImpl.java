@@ -8,6 +8,7 @@ import com.ktpm1.restaurant.dtos.response.VNPayMessage;
 import com.ktpm1.restaurant.models.*;
 import com.ktpm1.restaurant.repositories.*;
 import com.ktpm1.restaurant.services.BookingTableService;
+import com.ktpm1.restaurant.services.CartService;
 import com.ktpm1.restaurant.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,8 @@ public class OrderServiceImpl implements OrderService {
     private HistoryBookingTableRepository historyBookingTableRepository;
     @Autowired
     private BookingTableService bookingTableService;
+    @Autowired
+    private CartService cartService;
 
     @Override
     public EventCreateOrder createOrder(String username) {
@@ -272,6 +275,8 @@ public class OrderServiceImpl implements OrderService {
 
             orders.add(oderRepository.save(order));
         }
+
+        cartService.clearCart(username);
 
         return EventCreateOrder.builder()
                 .orders(orders)
